@@ -17,6 +17,22 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 #uv-lines p.on { opacity:1; }
 #uv-lines .warn { color:#e0b64b; }
 #uv-lines .ok { color:#9fe8b0; }
+#bp-zoom { position:fixed; inset:0; background:rgba(4,6,10,.96); z-index:985; display:none; font-family:Consolas,monospace; }
+#bp-zoom.show { display:block; }
+.bp-stage { position:absolute; inset:0 0 64px 0; overflow:hidden; cursor:grab; }
+.bp-stage.dragging { cursor:grabbing; }
+.bp-stage svg { position:absolute; top:0; left:0; transform-origin:0 0; }
+.bp-bar { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; align-items:center; background:#141a28; border:1px solid #39445c; border-radius:6px; padding:8px 12px; }
+.bp-bar span { color:#8fa3c0; font-size:12px; min-width:44px; text-align:center; }
+.bp-bar button { background:#1e2a42; color:#dfe9f5; border:1px solid #39445c; padding:4px 12px; cursor:pointer; font-size:12px; border-radius:3px; }
+.bp-bar button:hover { background:#2a3a5c; }
+.bp-card { display:flex; gap:12px; align-items:center; padding:10px; border:1px solid #20283a; border-radius:4px; margin-bottom:8px; cursor:pointer; background:#10141f; }
+.bp-card:hover { background:#1a2236; border-color:#39445c; }
+.bp-thumb { width:110px; height:78px; border:1px solid #2a3348; background:#f2ecd9; flex-shrink:0; overflow:hidden; }
+.bp-thumb svg { width:110px; height:78px; }
+.bp-card .t { color:#dfe9f5; font-size:13px; }
+.bp-card .d { color:#8fa3c0; font-size:11.5px; margin-top:3px; line-height:1.6; }
+.bp-empty { color:#5f7090; font-size:12.5px; padding:14px 4px; line-height:2; }
 #boot p { opacity:0; transition:opacity .15s; }
 #boot p.on { opacity:1; }
 #boot .dim { color:#4a6b55; }
@@ -106,6 +122,11 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .arch-detail .red { color:#e06060; }
 .arch-detail .dim { color:#777; }
 .arch-detail .arch-note { margin:4px 0 8px; padding:10px 12px; border:1px solid #3a4a2a; border-left:3px solid #6b8f3a; background:#141a10; color:#cfe0b0; font-family:'SimSun','宋体',serif; font-size:12.5px; line-height:2; }
+.arch-gate { margin:6px 0; display:flex; gap:6px; }
+.arch-gate input { background:#10141f; border:1px solid #39445c; color:#dfe9f5; width:130px; padding:5px 8px; font-size:13px; font-family:Consolas,monospace; }
+.arch-gate button { background:#1e2a42; border:1px solid #39445c; color:#dfe9f5; padding:5px 12px; cursor:pointer; font-size:12px; }
+.arch-gate-err { color:#e06060; font-size:11.5px; margin-top:4px; }
+.arch-gate-err.hidden { display:none; }
 .msg-item { border:1px solid #222b40; border-radius:4px; margin-bottom:8px; padding:10px 12px; background:#121827; }
 .msg-item .m-from { font-size:11px; color:#8fa3c0; margin-bottom:2px; font-family:Consolas,monospace; }
 .msg-item .m-body { font-size:12.5px; color:#d5deec; }
@@ -162,6 +183,18 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   <div id="uv-lines"></div>
 </div>
 
+<!-- 建筑图纸放大查看 -->
+<div id="bp-zoom">
+  <div class="bp-stage" id="bp-stage"></div>
+  <div class="bp-bar">
+    <span id="bp-zoom-label">100%</span>
+    <button onclick="bpZoomBy(1/1.25)">−</button>
+    <button onclick="bpZoomAt(1)">1:1</button>
+    <button onclick="bpZoomBy(1.25)">＋</button>
+    <button id="bp-zoom-close" onclick="closeBPZoom()">✕</button>
+  </div>
+</div>
+
 <!-- 桌面 -->
 <div id="desktop">
   <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
@@ -201,7 +234,12 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <div class="arch-detail" id="arch-01">
         <div><span class="k">卷宗编号：</span><span class="v">CE-2009-001</span></div>
         <div><span class="k">内容：</span><span class="v">槐树街7号教会 · 建筑结构图纸备案</span></div>
-        <div><span class="k">状态：</span><span class="v red">已加密。需门禁密码。</span></div>
+        <div><span class="k">状态：</span><span class="v red" id="arch01-st">已加密。需门禁密码。</span></div>
+        <div class="arch-gate" id="arch01-gate">
+          <input type="text" id="arch01-input" maxlength="4" placeholder="4位数字门禁密码" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          <button onclick="archGate01()">解锁收录</button>
+        </div>
+        <div class="arch-gate-err hidden" id="arch01-err">门禁密码错误。请核对王执事生平信息后重试。</div>
       </div>
       <div class="arch-detail" id="arch-05">
         <div><span class="k">卷宗编号：</span><span class="v">CE-2009-005</span></div>
@@ -282,6 +320,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <button class="tab-btn" onclick="switchTab(this,'restore')">文件恢复</button>
         <button class="tab-btn" onclick="switchTab(this,'calc')">计算器</button>
         <button class="tab-btn" onclick="switchTab(this,'handover')">交接班</button>
+        <button class="tab-btn" onclick="switchTab(this,'blueprint');renderBlueprints()">建筑图</button>
       </div>
       <div class="tab-pane show" id="pane-notepad">
         <textarea class="notepad" id="notepad" spellcheck="false">2009-03-17 03:00 已备份卷宗 005</textarea>
@@ -308,6 +347,10 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <button class="btn" id="btn-handover" onclick="genHandover()">生成交接记录</button>
         <button class="btn" id="btn-handover-copy" style="display:none;margin-left:6px" onclick="copyHandover()">复制记录</button>
         <div class="restored" id="handover"></div>
+      </div>
+      <div class="tab-pane" id="pane-blueprint">
+        <p style="font-size:12px;color:#8fa3c0">已收录的建筑图纸（d:\archive\maps\），点击放大查看。</p>
+        <div id="bp-list"></div>
       </div>
     </div>
   </div>
@@ -641,6 +684,9 @@ var MSG_TEXTS = {
   search_chenshouzheng: '该账号仍在职。其人事档案与 2009 年度材料存在交叉引用。',
   search_chenmou:     '该账号已注销。其任职档案已移交。',
   search_biji:        '相关材料未录入电子档案系统。检索记录已存档。',
+  search_bp:          '检索词涉及建筑图纸。相关条目 2 件：1 件加密，1 件可下载。',
+  blueprint_p2:       '已收录建筑图纸：槐树街7号平面图（手绘标注）。存放路径：d:\\archive\\maps\\。',
+  blueprint_001:      '已收录建筑图纸：教会建筑图纸备案（CE-2009-001）。存放路径：d:\\archive\\maps\\。',
   gate_fail:          '密码错误。档案将永久封存。还有 2 次机会。',
   gate_ok:            '身份确认：检索人「林远」。档案已解封。',
   admin_ok:           '权限已授予。欢迎回来。',
@@ -709,6 +755,9 @@ function pollEvents(){
     cz_evt_search_chenshouzheng: 'search_chenshouzheng',
     cz_evt_search_chenmou:    'search_chenmou',
     cz_evt_search_biji:       'search_biji',
+    cz_evt_search_bp:         'search_bp',
+    cz_evt_blueprint_p2:      'blueprint_p2',
+    cz_evt_blueprint_001:     'blueprint_001',
     cz_evt_gate_fail:         'gate_fail',
     cz_evt_gate_ok:           'gate_ok',
     cz_evt_gate3_ok:          'gate3_ok'
@@ -857,6 +906,156 @@ function fallbackCopy(txt){
   document.body.appendChild(ta); ta.select();
   try { document.execCommand('copy'); } catch(e) {}
   document.body.removeChild(ta);
+}
+
+/* ============ 建筑图纸系统（雨穴式：图纸本身就是证据） ============ */
+/* 图 A：手绘批注图（2009-补-002）——主殿西侧有一间「被划掉的房间」，只剩轮廓和一个问号 */
+var BP_A = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="KaiTi,STKaiti,SimSun,serif">' +
+  '<rect x="0" y="0" width="640" height="470" fill="#f2ecd9"/>' +
+  '<text x="24" y="30" font-size="14" fill="#4a4a4a">槐树街7号平面图（手绘标注） 2009-02</text>' +
+  '<rect x="34" y="60" width="70" height="170" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-dasharray="4 3"/>' +
+  '<path d="M42 222 L96 68 M96 222 L42 68" stroke="#8a8a8a" stroke-width="1.5"/>' +
+  '<text x="60" y="152" font-size="15" fill="#9a9a9a">？</text>' +
+  '<rect x="120" y="45" width="300" height="290" fill="none" stroke="#4a4a4a" stroke-width="2.5"/>' +
+  '<text x="255" y="100" font-size="13" fill="#6b6b6b">主殿</text>' +
+  '<text x="150" y="132" font-size="13" fill="#b03a2e" transform="rotate(-1.5 150 132)">隔三岔五有人下去</text>' +
+  '<text x="150" y="154" font-size="13" fill="#b03a2e" transform="rotate(-1 150 154)">东西越放越多</text>' +
+  '<text x="150" y="176" font-size="13" fill="#b03a2e" transform="rotate(-2 150 176)">灯从来不关</text>' +
+  '<circle cx="165" cy="268" r="28" fill="none" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="8 4"/>' +
+  '<path d="M165 240 L165 296 M137 268 L193 268 M150 252 L180 284 M180 252 L150 284" stroke="#4a4a4a" stroke-width="1"/>' +
+  '<text x="138" y="312" font-size="11" fill="#4a4a4a">旋转楼梯 17级</text>' +
+  '<rect x="430" y="85" width="140" height="240" fill="none" stroke="#4a4a4a" stroke-width="2.5"/>' +
+  '<path d="M430 215 h14" stroke="#f2ecd9" stroke-width="4"/>' +
+  '<text x="475" y="112" font-size="13" fill="#6b6b6b">圣器室</text>' +
+  '<path d="M465 85 H555" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="6 5"/>' +
+  '<path d="M505 85 L499 72 L513 74 Z" fill="#b03a2e"/>' +
+  '<text x="444" y="62" font-size="11" fill="#b03a2e">暗门（可容一人）</text>' +
+  '<rect x="438" y="120" width="26" height="170" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="5 4"/>' +
+  '<text x="470" y="148" font-size="11" fill="#b03a2e">夹层 · 备案图纸上没有</text>' +
+  '<rect x="120" y="345" width="300" height="95" fill="none" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="7 5"/>' +
+  '<text x="225" y="396" font-size="12" fill="#4a4a4a">地下室（深约 4.5 米）</text>' +
+  '</svg>';
+/* 图 B：正式备案图纸（CE-2009-001）——主殿西侧有一间没有门的「西侧储物间」 */
+var BP_B = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="SimSun,serif">' +
+  '<rect x="0" y="0" width="640" height="470" fill="#f7f3e8"/>' +
+  '<rect x="8" y="8" width="624" height="454" fill="none" stroke="#1a1a1a" stroke-width="2"/>' +
+  '<rect x="20" y="20" width="600" height="430" fill="none" stroke="#1a1a1a" stroke-width="1"/>' +
+  '<text x="40" y="46" font-size="14" fill="#1a1a1a" font-weight="bold">慈恩镇教会建筑图纸备案</text>' +
+  '<text x="40" y="68" font-size="11" fill="#444">编号：CE-2009-001 ｜ 1952年测绘 ｜ 比例 1:200 ｜ 存档：慈恩镇档案管理办公室</text>' +
+  '<path d="M596 40 L608 18 L620 40 Z" fill="#1a1a1a"/><text x="603" y="52" font-size="10" fill="#1a1a1a">北</text>' +
+  '<rect x="40" y="105" width="64" height="170" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>' +
+  '<text x="47" y="190" font-size="10" fill="#333">西侧储物间</text>' +
+  '<rect x="120" y="90" width="300" height="270" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>' +
+  '<text x="255" y="140" font-size="13" fill="#333">主殿</text>' +
+  '<path d="M258 90 h10 M272 90 h10 M286 90 h10" stroke="#f7f3e8" stroke-width="4"/>' +
+  '<text x="255" y="82" font-size="10" fill="#555">正门</text>' +
+  '<rect x="430" y="100" width="110" height="230" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>' +
+  '<path d="M430 200 h14" stroke="#f7f3e8" stroke-width="5"/>' +
+  '<text x="452" y="130" font-size="13" fill="#333">圣器室</text>' +
+  '<circle cx="588" cy="180" r="32" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>' +
+  '<path d="M588 148 L588 212 M556 180 L620 180 M570 156 L606 204 M606 156 L570 204" stroke="#1a1a1a" stroke-width="1"/>' +
+  '<text x="552" y="238" font-size="11" fill="#333">旋转楼梯</text>' +
+  '<rect x="120" y="360" width="300" height="75" fill="none" stroke="#1a1a1a" stroke-width="1.2" stroke-dasharray="8 4"/>' +
+  '<text x="205" y="392" font-size="11" fill="#444">地下室（战时避难所）</text>' +
+  '<text x="190" y="410" font-size="11" fill="#444">1965年改作教会档案存放</text>' +
+  '<rect x="430" y="360" width="190" height="75" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>' +
+  '<line x1="430" y1="382" x2="620" y2="382" stroke="#1a1a1a" stroke-width="1"/>' +
+  '<line x1="520" y1="382" x2="520" y2="435" stroke="#1a1a1a" stroke-width="1"/>' +
+  '<text x="438" y="376" font-size="10" fill="#333">审定：档案管理办公室</text>' +
+  '<text x="438" y="402" font-size="10" fill="#333">图纸：1952.06</text>' +
+  '<text x="528" y="402" font-size="10" fill="#333">复核：2008.12</text>' +
+  '<text x="438" y="422" font-size="10" fill="#333">CE-2009-001</text>' +
+  '</svg>';
+
+function hasBP(k){
+  try { return !!localStorage.getItem(k); } catch(e){ return false; }
+}
+function renderBlueprints(){
+  var list = document.getElementById('bp-list');
+  if (!list) return;
+  var p2 = hasBP('cz_evt_blueprint_p2'), b1 = hasBP('cz_evt_blueprint_001');
+  if (!p2 && !b1) {
+    list.innerHTML = '<div class="bp-empty">未收录图纸。<br>收录途径：官网「档案查询」检索「图纸」下载附件；或于内部档案 CE-2009-001 输入门禁密码收录。</div>';
+    return;
+  }
+  var html = '';
+  if (p2) html += bpCard('p2', '槐树街7号平面图（手绘标注）', '来源：2009-补-002 复印件 ｜ 批注笔迹与 2009-补-001 一致', BP_A);
+  if (b1) html += bpCard('001', '教会建筑图纸备案（CE-2009-001）', '来源：内部档案 ｜ 1952年测绘 · 2008年12月复核', BP_B);
+  list.innerHTML = html;
+}
+function bpCard(id, t, d, svg){
+  return '<div class="bp-card" onclick="openBPZoom(\'' + id + '\')">' +
+    '<div class="bp-thumb">' + svg + '</div>' +
+    '<div><div class="t">' + t + '</div><div class="d">' + d + '<br>点击放大查看</div></div></div>';
+}
+
+/* 放大查看：缩放（以视口中心为锚）+ 拖拽平移 */
+var bpIsOpen = false, bpZoom = 1, bpDX = 0, bpDY = 0, bpSvgEl = null;
+function bpApply(){
+  if (!bpSvgEl) return;
+  bpSvgEl.style.transform = 'translate(' + bpDX + 'px,' + bpDY + 'px) scale(' + bpZoom + ')';
+  var lb = document.getElementById('bp-zoom-label');
+  if (lb) lb.textContent = Math.round(bpZoom * 100) + '%';
+}
+function bpZoomBy(f){
+  var stage = document.getElementById('bp-stage');
+  var r = stage.getBoundingClientRect();
+  var nz = Math.min(4, Math.max(0.25, bpZoom * f));
+  var mx = r.width / 2, my = r.height / 2;
+  bpDX = mx - (mx - bpDX) * (nz / bpZoom);
+  bpDY = my - (my - bpDY) * (nz / bpZoom);
+  bpZoom = nz; bpApply();
+}
+function bpZoomAt(z){ bpZoom = z; bpApply(); }
+function openBPZoom(id){
+  bpIsOpen = true; bpZoom = 1; bpDX = 0; bpDY = 0;
+  var stage = document.getElementById('bp-stage');
+  stage.innerHTML = (id === '001') ? BP_B : BP_A;
+  bpSvgEl = stage.firstChild;
+  bpSvgEl.style.position = 'absolute';
+  var sw = bpSvgEl.viewBox.baseVal.width, sh = bpSvgEl.viewBox.baseVal.height;
+  bpSvgEl.style.width = sw + 'px'; bpSvgEl.style.height = sh + 'px';
+  var r = stage.getBoundingClientRect();
+  bpDX = Math.max(0, (r.width - sw) / 2);
+  bpDY = Math.max(0, (r.height - sh) / 2);
+  document.getElementById('bp-zoom').classList.add('show');
+  bpApply();
+}
+function closeBPZoom(){ document.getElementById('bp-zoom').classList.remove('show'); bpIsOpen = false; }
+document.getElementById('bp-stage').addEventListener('wheel', function(e){
+  if (!bpIsOpen) return;
+  e.preventDefault();
+  bpZoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12);
+}, { passive: false });
+(function(){
+  var stage = document.getElementById('bp-stage');
+  var sx = 0, sy = 0, ox = 0, oy = 0, dragging = false;
+  stage.addEventListener('mousedown', function(e){
+    if (!bpIsOpen) return;
+    dragging = true; sx = e.clientX; sy = e.clientY; ox = bpDX; oy = bpDY;
+    stage.classList.add('dragging');
+  });
+  document.addEventListener('mousemove', function(e){
+    if (!dragging) return;
+    bpDX = ox + (e.clientX - sx); bpDY = oy + (e.clientY - sy); bpApply();
+  });
+  document.addEventListener('mouseup', function(){
+    dragging = false; stage.classList.remove('dragging');
+  });
+})();
+
+/* 内部档案 CE-2009-001 门禁收录 */
+function archGate01(){
+  var v = document.getElementById('arch01-input').value;
+  if (v === '1942') {
+    try { localStorage.setItem('cz_evt_blueprint_001', Date.now()); } catch(e){}
+    document.getElementById('arch01-gate').style.display = 'none';
+    var st = document.getElementById('arch01-st');
+    st.textContent = '已收录。可于【工具 → 建筑图】放大查看。';
+    st.style.color = '#7fb98a';
+  } else {
+    document.getElementById('arch01-err').classList.remove('hidden');
+  }
 }
 
 /* 记事本自动保存（file:// 下可能受限，静默降级） */
