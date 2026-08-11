@@ -148,6 +148,12 @@ const BASE = 'http://localhost:8081';
   const handoverText = await page.locator('#handover').textContent();
   const copyVisible = await page.locator('#btn-handover-copy').isVisible();
 
+  console.log('[B6] 交接后重扫 → 红本第23页之后');
+  await page.click('#win-tools .tab-btn:has-text("文件恢复")');
+  await page.click('#btn-restore');
+  await waitLog('restore3', undefined, 20000);
+  await page.waitForSelector('#restored3.show', { timeout: 5000 });
+
   /* ================= 断言 ================= */
   const log = await getLog();
   const seq = pairs(log);
@@ -164,20 +170,20 @@ const BASE = 'http://localhost:8081';
        唯一确定约束：unlock→task1_done 相邻；簇整体在 gate3_ok 之后、操作节点之前 */
   const cluster = ['bp_p2', 'task3_done', 'task2_done', 'unlock', 'task1_done'];
   const rest = seq.filter(s => cluster.indexOf(s) === -1);
-  const tail = ['arch_05', 'arch_06', 'arch_p1', 'arch_p2', 'arch_01', 'bp_001', 'dig', 'restore', 'handover'];
-  check('剔除桌面加载簇后 = 官网19 + 桌面操作9',
+  const tail = ['arch_05', 'arch_06', 'arch_p1', 'arch_p2', 'arch_01', 'bp_001', 'dig', 'restore', 'handover', 'restore3'];
+  check('剔除桌面加载簇后 = 官网19 + 桌面操作10',
     JSON.stringify(rest) === JSON.stringify(expectSite.concat(tail)));
   check('unlock 与 task1_done 相邻', seq.indexOf('task1_done') === seq.indexOf('unlock') + 1);
   check('桌面加载簇均在 gate3_ok 之后', cluster.every(s => seq.indexOf(s) > seq.indexOf('gate3_ok')));
   const tailIdx = tail.map(k => seq.indexOf(k));
   const maxClu = Math.max(...cluster.map(s => seq.indexOf(s)));
   check('桌面操作节点均在加载簇之后', tailIdx.every(i => i > maxClu));
-  check('日志总长 = 33 条', log.length === 33);
+  check('日志总长 = 34 条', log.length === 34);
 
   /* 3. 交接班日志节 */
   const section = handoverText.split('—— 附：系统操作日志（本班）——')[1] || '';
   const lines = section.trim().split('\n').filter(Boolean);
-  check('日志节存在且 32 行（含 handover 在内 33 条 - 1）', lines.length === 32);
+  check('日志节 32 行（交接班快照时 restore3 尚未发生：33 条 - 1）', lines.length === 32);
   check('首行 = 01 官网 打开 · 0:00', lines[0] === '01 官网 打开 · 0:00');
   check('行格式 = NN 名称 · 分:秒', lines.every(l => /^\d{2} .+ · \d+:\d{2}$/.test(l)));
   let mono = true, prev = -1;

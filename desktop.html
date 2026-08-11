@@ -359,6 +359,12 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
           ……3月16日 老陈走前说：红本里还有别的东西，第23页之后，等值完班再看。他说这话的时候，没有看我。<br><br>
           <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
+        <div class="restored" id="restored3">已恢复：红本抄本（第23页之后 · 节选）<br><br>
+          ……3月17日 21:40 老陈又来了，看了我白天抄的东西，没说话。走前他翻出那张剪报又放回去，说：那年我父亲也在镇上。就这一句。<br>
+          ……我查了教会旧志：1972年6月，库房盘点少了一件东西，登记人写了「不见即补」，再没人提。同月，镇上有人走失，寻人启事贴到教会门口——男，约五十岁，报头烂了，名字看不清。我算过：1972 年，老陈的父亲五十岁上下。<br>
+          ……1942年教会起屋那年，有人从地下室搬出一口箱子，锁着。红本上没有记箱子里是什么。<br>
+          ……3月18日 02:00 林远还是没消息。我把第23页之后撕下来，锁进柜子。等值完班再看——我不知道自己还能不能等到值完班。<br><br>
+          <span style="color:#5f7090">[抄本末页。其余内容已永久损坏。]</span></div>
       </div>
       <div class="tab-pane" id="pane-calc">
         <div class="calc">
@@ -721,6 +727,7 @@ var MSG_TEXTS = {
   admin_ok:           '权限已授予。欢迎回来。',
   gate3_ok:           '门禁密码验证通过。地下档案室备案记录（07）已加载。',
   restore_done:       '文件恢复完成。发现 2 个文件：CE-2009-006（37%）、未编号抄本（43%）。',
+  restore3_done:      '文件恢复完成。又发现 1 件文件：未编号抄本（第23页之后 · 节选）。',
   bp_dig_done:        '墙体检验完成。夹壁中发现纸张类物证，已登记入档。'
 };
 
@@ -879,6 +886,17 @@ function runRestore(){
         fireMsg('restore_done');
         logStage('restore');
         btn.disabled = false; btn.style.opacity = 1;
+        // 值完班（交接班已生成）→ 第23页之后可恢复
+        var hd = false;
+        try { hd = !!localStorage.getItem('cz_evt_handover_done'); } catch(e){}
+        if (hd) {
+          setTimeout(function(){
+            document.getElementById('restored3').classList.add('show');
+            document.getElementById('restored3').closest('.window').style.height='auto';
+            fireMsg('restore3_done');
+            logStage('restore3');
+          }, 800);
+        }
       }, 1100);
     } else fill.style.width = p+'%';
   }, 130);
@@ -922,7 +940,7 @@ var STAGE_NAMES = {
   unlock:'系统时钟同步', arch_open:'内部档案 打开', arch_01:'档案 CE-2009-001', arch_05:'档案 CE-2009-005',
   arch_06:'档案 CE-2009-006', arch_p1:'档案 2009-补-001', arch_p2:'档案 2009-补-002',
   gate3_open:'门禁 07 打开', gate3_ok:'门禁 07 通过', restore:'文件恢复', dig:'墙体检验',
-  bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成',
+  bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成', restore3:'文件恢复（续）',
   task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成'
 };
 function fmtStageLog(){
@@ -972,6 +990,13 @@ function genHandover(){
   document.getElementById('btn-handover-copy').style.display = 'inline-block';
   document.getElementById('btn-handover').textContent = '重新生成';
   logStage('handover');
+  // 首次交接 → 解锁红本第23页之后（值完班再看）
+  try {
+    if (!localStorage.getItem('cz_evt_handover_done')) {
+      localStorage.setItem('cz_evt_handover_done', Date.now());
+      fireIncoming('交接记录我收到了，整理得不错。老陈那本红本，第23页之后——他说过等值完班再看。你值完了，去文件恢复再扫一遍。');
+    }
+  } catch(e){}
 }
 function copyHandover(){
   var txt = document.getElementById('handover').textContent;
