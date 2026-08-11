@@ -70,6 +70,19 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 #toast { position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-80px); background:#1a2438; border:1px solid #4a5f8c; color:#dfe9f5; font-size:13px; padding:10px 22px; border-radius:6px; z-index:900; opacity:0; transition:all .4s; box-shadow:0 6px 20px rgba(0,0,0,.5); font-family:Consolas,monospace; }
 #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
+/* ============ 实时消息通知 ============ */
+#notify { position:fixed; right:16px; bottom:44px; width:300px; background:#141a28; border:1px solid #4a5f8c; border-radius:6px; box-shadow:0 8px 28px rgba(0,0,0,.6); z-index:800; display:none; cursor:pointer; overflow:hidden; }
+#notify.show { display:block; animation:notifyIn .3s ease; }
+@keyframes notifyIn { from { transform:translateY(14px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+#notify .n-head { display:flex; align-items:center; padding:8px 12px; background:linear-gradient(#2b3954,#1c2740); font-size:11px; color:#9fb0c9; letter-spacing:1px; }
+#notify .n-head .n-ico { margin-right:6px; }
+#notify .n-body { padding:10px 12px; font-size:12.5px; color:#d8e0ec; line-height:1.7; font-family:Consolas,monospace; }
+#notify:hover { border-color:#6a80b8; }
+.msg-badge { position:absolute; top:-8px; right:-10px; background:#8b1f1f; color:#fff; font-size:10px; min-width:16px; height:16px; line-height:16px; border-radius:8px; text-align:center; padding:0 4px; display:none; font-family:Consolas,monospace; }
+.msg-badge.show { display:block; }
+.task-badge { display:inline-block; background:#8b1f1f; color:#fff; font-size:10px; min-width:14px; height:14px; line-height:14px; border-radius:7px; text-align:center; margin-left:6px; padding:0 3px; font-family:Consolas,monospace; }
+.msg-item.m-live { border-color:#3a4a68; border-left:3px solid #4a5f8c; background:#11182a; }
+
 /* ============ 程序内容 ============ */
 .sect-label { color:#5f7090; font-size:11px; letter-spacing:2px; margin:10px 0 6px; }
 .arch-list { border:1px solid #2a3348; border-radius:4px; overflow:hidden; }
@@ -133,7 +146,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 <div id="desktop">
   <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
   <div class="icon locked" data-win="archive" style="left:26px;top:130px;"><span class="ico">📁<span class="lock-badge">🔒</span></span>内部档案</div>
-  <div class="icon locked" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="lock-badge">🔒</span></span>信息</div>
+  <div class="icon locked" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="lock-badge">🔒</span><span class="msg-badge" id="icon-msg-badge">1</span></span>信息</div>
   <div class="icon locked" data-win="tools" style="left:26px;top:342px;"><span class="ico">🧰<span class="lock-badge">🔒</span></span>工具</div>
 
   <!-- 窗口：内网浏览器（内嵌官网） -->
@@ -198,6 +211,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <div class="msg-item"><div class="m-from">2009-03-16 23:54 ｜ 王执事 → 我</div><div class="m-body">明天的事，你我都别露面。</div></div>
       <div class="msg-item m-sys"><div class="m-from">2009-03-17 03:02 ｜ 系统</div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
       <div class="msg-item m-sys"><div class="m-from">系统 ｜ 登录记录</div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+      <div id="live-msgs"></div>
     </div>
   </div>
 
@@ -257,6 +271,12 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 <!-- 解锁提示 -->
 <div id="toast"></div>
 
+<!-- 实时消息通知（系统气泡） -->
+<div id="notify" onclick="openWin('msg')">
+  <div class="n-head"><span class="n-ico">📡</span>系统消息 ｜ 实时</div>
+  <div class="n-body" id="notify-body"></div>
+</div>
+
 <script>
 /* ============ 启动画面 ============ */
 (function(){
@@ -277,6 +297,7 @@ var unlocked = false;
 
 function openWin(id){
   if (id !== 'browser' && !unlocked) { lockedToast(); return; }
+  if (id === 'msg') { liveCount = 0; document.getElementById('icon-msg-badge').classList.remove('show'); refreshTasks(); }
   var w = document.getElementById('win-'+id);
   if (!w.classList.contains('open')) {
     cascade = (cascade + 1) % 5;
@@ -333,6 +354,11 @@ function refreshTasks(){
     var id = w.id.replace('win-','');
     var b = document.createElement('div');
     b.className = 'task-btn'; b.textContent = wins[id];
+    if (id === 'msg' && liveCount > 0) {
+      var bd = document.createElement('span');
+      bd.className = 'task-badge'; bd.textContent = liveCount;
+      b.appendChild(bd);
+    }
     var top = true;
     document.querySelectorAll('.window').forEach(function(x){ if (x.classList.contains('open') && parseInt(x.style.zIndex) > parseInt(w.style.zIndex)) top=false; });
     if (top) b.classList.add('active');
@@ -410,6 +436,75 @@ function checkUnlock(){
   }
 }
 setInterval(checkUnlock, 1000);
+
+/* ============ 实时消息系统：官网行为 → 系统消息 ============ */
+var liveCount = 0;
+var msgSeq = 0;
+var MSG_TEXTS = {
+  site_loaded:   '检测到新的网络连接。今日访问记录：1 次。',
+  search_linyuan:'该检索词无结果。您是不是记错了？',
+  search_huaishu:'槐树街 7 号。地址已确认。',
+  gate_fail:     '密码错误。档案将永久封存。还有 2 次机会。',
+  gate_ok:       '身份确认：检索人「林远」。档案已解封。',
+  admin_ok:      '权限已授予。欢迎回来。'
+};
+
+function seenLog(){
+  try { return JSON.parse(sessionStorage.getItem('cz_evt_seen') || '{}'); } catch(e){ return {}; }
+}
+function saveSeen(s){ try { sessionStorage.setItem('cz_evt_seen', JSON.stringify(s)); } catch(e){} }
+
+function fireMsg(key){
+  var text = MSG_TEXTS[key];
+  if (!text) return;
+  var seen = seenLog();
+  var now = Date.now();
+  if (seen[key] && now - seen[key] < 15000) return;   // 15秒内不重复
+  seen[key] = now; saveSeen(seen);
+  msgSeq++;
+  var ts = '03:' + String(3 + msgSeq).padStart(2, '0');
+  // 系统气泡（右下角）
+  var nt = document.getElementById('notify');
+  document.getElementById('notify-body').textContent = '[' + ts + '] ' + text;
+  nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
+  clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
+  // 信息窗口：实时消息（锁定期间也会记录，解锁后可看）
+  var box = document.getElementById('live-msgs');
+  var div = document.createElement('div');
+  div.className = 'msg-item m-sys m-live';
+  div.innerHTML = '<div class="m-from">' + ts + ' ｜ 系统 ｜ 实时</div><div class="m-body">' + text + '</div>';
+  box.insertBefore(div, box.firstChild);
+  // 未读红点
+  liveCount++;
+  document.getElementById('icon-msg-badge').textContent = liveCount;
+  document.getElementById('icon-msg-badge').classList.add('show');
+  refreshTasks();
+}
+
+/* 轮询官网行为标记（与 checkUnlock 共用 1 秒节奏） */
+var evtProcessed = {};
+function pollEvents(){
+  var map = {
+    cz_evt_search_linyuan: 'search_linyuan',
+    cz_evt_search_huaishu: 'search_huaishu',
+    cz_evt_gate_fail:      'gate_fail',
+    cz_evt_gate_ok:        'gate_ok',
+    cz_admin_ok:           'admin_ok'
+  };
+  for (var k in map) {
+    var v = null;
+    try { v = parseInt(localStorage.getItem(k) || '0', 10); } catch(e){}
+    // 每个时间戳只处理一次（新搜索/新操作 → 新时间戳 → 才再弹）
+    if (v && v !== evtProcessed[k]) {
+      evtProcessed[k] = v;
+      fireMsg(map[k]);
+    }
+  }
+}
+setInterval(pollEvents, 1000);
+
+/* 官网首次打开即收到系统消息 */
+document.getElementById('site-frame').addEventListener('load', function(){ fireMsg('site_loaded'); });
 
 /* ============ 内部档案 ============ */
 function openArch(no){

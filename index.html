@@ -915,9 +915,11 @@ function checkGate() {
     document.getElementById('gate-modal').classList.remove('show');
     AudioMgr.resume(); AudioMgr.melody();
     document.getElementById('dossier').classList.add('show');
+    try { localStorage.setItem('cz_evt_gate_ok', Date.now()); } catch (e) {}
   } else {
     document.getElementById('gate-err').classList.remove('hidden');
     AudioMgr.resume(); AudioMgr.warn();
+    try { localStorage.setItem('cz_evt_gate_fail', Date.now()); } catch (e) {}
   }
 }
 function closeDossier() {
@@ -1027,6 +1029,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
     if (q === '林远' || q === 'linyuan') {
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      try { localStorage.setItem('cz_evt_search_linyuan', Date.now()); } catch (e) {}
       return;
     }
     // 特殊检索：槐树街调查记录（解锁馆藏目录的管理员入口）
@@ -1034,6 +1037,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">找到 1 条相关档案：<b>槐树街调查记录</b><br><span style="color:#8B0000">（数据异常，暂不可在线查阅）</span><br><span style="color:#999;font-size:12px">请前往馆藏目录尝试访问该条目。</span></div>';
       sessionStorage.setItem('cz_admin_unlock', '1');
+      try { localStorage.setItem('cz_evt_search_huaishu', Date.now()); } catch (e) {}
       return;
     }
     var found = [];
