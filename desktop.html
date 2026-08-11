@@ -138,16 +138,26 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .arch-gate button { background:#1e2a42; border:1px solid #39445c; color:#dfe9f5; padding:5px 12px; cursor:pointer; font-size:12px; }
 .arch-gate-err { color:#e06060; font-size:11.5px; margin-top:4px; }
 .arch-gate-err.hidden { display:none; }
-.msg-item { border:1px solid #222b40; border-radius:4px; margin-bottom:8px; padding:10px 12px; background:#121827; }
-.msg-item .m-from { font-size:11px; color:#8fa3c0; margin-bottom:2px; font-family:Consolas,monospace; }
-.msg-item .m-body { font-size:12.5px; color:#d5deec; }
-.msg-item.m-sys { border-color:#3a2830; background:#161012; }
-.msg-item.m-sys .m-from { color:#a06a6a; }
+/* 消息：手机聊天样式——身份分明（系统/王执事/值班员）、时间正序 */
+#msg-list { display:flex; flex-direction:column; }
+.msg-item { align-self:flex-start; max-width:88%; border:1px solid #2a3a5a; border-radius:10px; background:#1c2740; padding:8px 12px; margin-bottom:8px; }
+.msg-item .m-head { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.msg-item .m-avatar { width:20px; height:20px; border-radius:50%; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; }
+.msg-item .m-name { font-size:11px; color:#7ba7d9; font-family:Consolas,monospace; }
+.msg-item .m-time { font-size:10px; color:#6b7a95; margin-left:auto; font-family:Consolas,monospace; flex-shrink:0; }
+.msg-item .m-body { font-size:12.5px; color:#d5deec; line-height:1.7; }
+/* 系统：居中通知条（像手机系统通知） */
+.msg-item.m-sys { align-self:center; max-width:96%; border-radius:6px; border-color:#3a2830; background:#161012; }
+.msg-item.m-sys .m-name { color:#a06a6a; }
+/* 王执事：暖金色身份 */
+.msg-item.m-wang { border-color:#4a3a22; background:#1a1510; }
+.msg-item.m-wang .m-name { color:#c9a35a; }
+/* 值班员：档案蓝 */
 .msg-item.m-person { border-color:#2c3a52; background:#101826; }
-.msg-item.m-person .m-from { color:#7ba7d9; }
+.msg-item.m-person .m-name { color:#7ba7d9; }
 .task-card { padding:8px 12px; margin:0 0 10px; border-left:3px solid #7ba7d9; background:#131a26; font-size:12px; color:#c3d2e6; border-radius:2px; }
 .task-card.done { border-color:#5fbf8f; color:#7fb98a; }
-#win-msg.locked-hist #history-msgs { display:none; }
+#win-msg.locked-hist .msg-item[data-hist] { display:none; }
 .hist-hint { display:none; padding:8px 12px; margin:0 0 10px; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; }
 #win-msg.locked-hist .hist-hint { display:block; }
 .tabs { display:flex; gap:4px; margin-bottom:10px; }
@@ -304,20 +314,20 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <button class="t-btn" onclick="minWin('msg')">—</button>
       <button class="t-btn t-close" onclick="closeWin('msg')">✕</button></div>
     <div class="w-body">
-      <div id="history-msgs">
-        <div class="msg-item"><div class="m-from">2009-03-10 09:14 ｜ 王执事 → 我</div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
-        <div class="msg-item"><div class="m-from">2009-03-15 21:03 ｜ 王执事 → 我</div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
-        <div class="msg-item"><div class="m-from">2009-03-16 23:54 ｜ 王执事 → 我</div><div class="m-body">明天的事，你我都别露面。</div></div>
-        <div class="msg-item m-sys"><div class="m-from">2009-03-17 03:02 ｜ 系统</div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
-        <div class="msg-item m-sys"><div class="m-from">系统 ｜ 登录记录</div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
-      </div>
-      <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
       <div class="task-card" id="task-card">
         <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开浏览器 → 过一遍官网档案 → 回来汇报</div>
         <div id="task-2" style="display:none">📋 任务 2/3：核对 05 号档案登记异常（馆藏动态 → 补录通知）</div>
         <div id="task-3" style="display:none">📋 任务 3/3：07 号档案需门禁密码（调阅限制）</div>
       </div>
-      <div id="live-msgs"></div>
+      <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
+      <div id="msg-list">
+        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-10 09:14</span></div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
+        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-15 21:03</span></div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
+        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-16 23:54</span></div><div class="m-body">明天的事，你我都别露面。</div></div>
+        <div class="msg-item m-sys" data-hist="1"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+        <div class="msg-item m-person" data-hist="1"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。</div></div>
+        <div class="msg-item m-sys" data-hist="1"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+      </div>
     </div>
   </div>
 
@@ -425,8 +435,7 @@ function showOpening(){
   if (openingShown) return;
   openingShown = true;
   try { if (sessionStorage.getItem('cz_opening_done')) return; sessionStorage.setItem('cz_opening_done','1'); } catch(e){}
-  playDing();
-  fireIncoming('03:01', '新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。');
+  playDing();   // 开场消息已在通讯记录中（2009-03-17 03:01），此处只响提示
 }
 
 /* ============ 提示音（Web Audio 合成，无音频文件） ============ */
@@ -682,7 +691,7 @@ function checkUnlock(){
       task1DoneFlag = true;
       logStage('unlock'); logStage('task1_done');
       playUnlockMelody();
-      fireIncoming('auto', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
+      fireIncoming('收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
     });
   }
 }
@@ -720,19 +729,23 @@ function seenLog(){
 }
 function saveSeen(s){ try { sessionStorage.setItem('cz_evt_seen', JSON.stringify(s)); } catch(e){} }
 
-/* 公共：弹气泡 + 写入消息窗口 + 未读红点 */
-function pushMsg(cls, ico, head, from, ts, text){
+/* 公共：弹气泡 + 写入消息窗口（手机聊天样式：身份 + 时间，正序追加）+ 未读红点 */
+function pushMsg(cls, ico, name, text){
+  msgSeq++;
+  var ts = (unlocked ? '2026-08-11' : '2009-03-17') + ' 03:' + String(3 + msgSeq).padStart(2, '0');
   var nt = document.getElementById('notify');
   document.getElementById('n-head-ico').textContent = ico;
-  document.getElementById('n-head-txt').textContent = head;
-  document.getElementById('notify-body').textContent = '[' + ts + '] ' + text;
+  document.getElementById('n-head-txt').textContent = name + ' ｜ 实时';
+  document.getElementById('notify-body').textContent = text;
   nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
   clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
-  var box = document.getElementById('live-msgs');
+  var box = document.getElementById('msg-list');
   var div = document.createElement('div');
-  div.className = 'msg-item ' + cls + ' m-live';
-  div.innerHTML = '<div class="m-from">' + from + '</div><div class="m-body">' + text + '</div>';
-  box.insertBefore(div, box.firstChild);
+  div.className = 'msg-item ' + cls;
+  div.innerHTML = '<div class="m-head"><span class="m-avatar">' + ico + '</span><span class="m-name">' + name + '</span><span class="m-time">' + ts + '</span></div><div class="m-body">' + text + '</div>';
+  box.appendChild(div);
+  var wb = document.getElementById('win-msg').querySelector('.w-body');
+  if (wb) wb.scrollTop = wb.scrollHeight;
   liveCount++;
   document.getElementById('icon-msg-badge').textContent = liveCount;
   document.getElementById('icon-msg-badge').classList.add('show');
@@ -752,15 +765,12 @@ function fireMsg(key){
   var now = Date.now();
   if (seen[key] && now - seen[key] < 15000) return;   // 15秒内不重复
   seen[key] = now; saveSeen(seen);
-  msgSeq++;
-  var ts = '03:' + String(3 + msgSeq).padStart(2, '0');
-  pushMsg('m-sys', '📡', '系统消息 ｜ 实时', ts + ' ｜ 系统 ｜ 实时', ts, text);
+  pushMsg('m-sys', '📡', '系统', text);
 }
 
-/* 值班员主动消息（开场任务 / 解锁回执）；ts 传 'auto' 自动排到最新消息之后 */
-function fireIncoming(ts, text){
-  if (ts === 'auto') { msgSeq++; ts = '03:' + String(3 + msgSeq); }
-  pushMsg('m-person', '📩', '档案科 · 值班员 ｜ 实时', ts + ' ｜ 档案科 · 值班员', ts, text);
+/* 值班员主动消息（解锁回执 / 任务布置） */
+function fireIncoming(text){
+  pushMsg('m-person', '📩', '值班员 · 档案科', text);
 }
 
 /* 轮询官网行为标记（与 checkUnlock 共用 1 秒节奏） */
@@ -810,7 +820,7 @@ function task3Done(){
   var t3 = document.getElementById('task-3');
   if (t3) { t3.textContent = '✅ 任务 3/3：07 号档案已调阅（地下档案室备案记录）。'; t3.style.color = '#7fb98a'; }
   playDing();
-  fireIncoming('auto', '07 号档案你调出来了？看完了别声张。老王说地下室每份东西他都有备份——交接记录在工具里，你整理一下，交给下一位值班员。');
+  fireIncoming('07 号档案你调出来了？看完了别声张。老王说地下室每份东西他都有备份——交接记录在工具里，你整理一下，交给下一位值班员。');
 }
 
 /* 任务 2：核对 05 号档案登记异常（解锁后展开补录通知 → 完成） */
@@ -827,7 +837,7 @@ function checkTask2(){
   var t3 = document.getElementById('task-3');
   if (t3) { t3.style.display = 'block'; }
   playDing();
-  fireIncoming('auto', '核对结果我看了，登记人确实对不上。先记一笔。还有件事——07 号档案要门禁密码才能调阅，老王走之前留了点东西，你有空查查。');
+  fireIncoming('核对结果我看了，登记人确实对不上。先记一笔。还有件事——07 号档案要门禁密码才能调阅，老王走之前留了点东西，你有空查查。');
 }
 setInterval(pollEvents, 1000);
 
