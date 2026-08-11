@@ -103,6 +103,13 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .msg-item .m-body { font-size:12.5px; color:#d5deec; }
 .msg-item.m-sys { border-color:#3a2830; background:#161012; }
 .msg-item.m-sys .m-from { color:#a06a6a; }
+.msg-item.m-person { border-color:#2c3a52; background:#101826; }
+.msg-item.m-person .m-from { color:#7ba7d9; }
+.task-card { padding:8px 12px; margin:0 0 10px; border-left:3px solid #7ba7d9; background:#131a26; font-size:12px; color:#c3d2e6; border-radius:2px; }
+.task-card.done { border-color:#5fbf8f; color:#7fb98a; }
+#win-msg.locked-hist #history-msgs { display:none; }
+.hist-hint { display:none; padding:8px 12px; margin:0 0 10px; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; }
+#win-msg.locked-hist .hist-hint { display:block; }
 .tabs { display:flex; gap:4px; margin-bottom:10px; }
 .tab-btn { padding:5px 14px; font-size:12px; color:#8fa3c0; border:1px solid #2a3348; border-radius:4px; cursor:pointer; background:transparent; }
 .tab-btn.active { background:#2c3a58; color:#fff; border-color:#4a5f8c; }
@@ -146,7 +153,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 <div id="desktop">
   <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
   <div class="icon locked" data-win="archive" style="left:26px;top:130px;"><span class="ico">📁<span class="lock-badge">🔒</span></span>内部档案</div>
-  <div class="icon locked" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="lock-badge">🔒</span><span class="msg-badge" id="icon-msg-badge">1</span></span>信息</div>
+  <div class="icon" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="msg-badge" id="icon-msg-badge">1</span></span>信息</div>
   <div class="icon locked" data-win="tools" style="left:26px;top:342px;"><span class="ico">🧰<span class="lock-badge">🔒</span></span>工具</div>
 
   <!-- 窗口：内网浏览器（内嵌官网） -->
@@ -200,17 +207,21 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   </div>
 
   <!-- 窗口：信息 -->
-  <div class="window" id="win-msg">
+  <div class="window locked-hist" id="win-msg">
     <div class="w-titlebar"><span class="t-ico">✉️</span><span class="t-title">信息 · 通讯记录</span>
       <button class="t-btn" onclick="maxWin('msg')">▢</button>
       <button class="t-btn" onclick="minWin('msg')">—</button>
       <button class="t-btn t-close" onclick="closeWin('msg')">✕</button></div>
     <div class="w-body">
-      <div class="msg-item"><div class="m-from">2009-03-10 09:14 ｜ 王执事 → 我</div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
-      <div class="msg-item"><div class="m-from">2009-03-15 21:03 ｜ 王执事 → 我</div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
-      <div class="msg-item"><div class="m-from">2009-03-16 23:54 ｜ 王执事 → 我</div><div class="m-body">明天的事，你我都别露面。</div></div>
-      <div class="msg-item m-sys"><div class="m-from">2009-03-17 03:02 ｜ 系统</div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
-      <div class="msg-item m-sys"><div class="m-from">系统 ｜ 登录记录</div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+      <div id="history-msgs">
+        <div class="msg-item"><div class="m-from">2009-03-10 09:14 ｜ 王执事 → 我</div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
+        <div class="msg-item"><div class="m-from">2009-03-15 21:03 ｜ 王执事 → 我</div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
+        <div class="msg-item"><div class="m-from">2009-03-16 23:54 ｜ 王执事 → 我</div><div class="m-body">明天的事，你我都别露面。</div></div>
+        <div class="msg-item m-sys"><div class="m-from">2009-03-17 03:02 ｜ 系统</div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+        <div class="msg-item m-sys"><div class="m-from">系统 ｜ 登录记录</div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+      </div>
+      <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
+      <div class="task-card" id="task-card">📋 当前任务：整理今日补录档案 → 打开浏览器 → 过一遍官网档案 → 回来汇报</div>
       <div id="live-msgs"></div>
     </div>
   </div>
@@ -263,7 +274,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   <div class="sm-title">慈恩镇档案管理终端</div>
   <div class="sm-item" onclick="launch('browser')">🌐 内网浏览器</div>
   <div class="sm-item lock" id="sm-archive" onclick="launch('archive')">🔒 内部档案</div>
-  <div class="sm-item lock" id="sm-msg" onclick="launch('msg')">🔒 信息</div>
+  <div class="sm-item" id="sm-msg" onclick="launch('msg')">✉️ 信息</div>
   <div class="sm-item lock" id="sm-tools" onclick="launch('tools')">🔒 工具</div>
   <div class="sm-item" style="border-top:1px solid #222c40;border-radius:0;margin-top:4px;padding-top:10px" onclick="shutdown()">⏻ 关机…</div>
 </div>
@@ -273,7 +284,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 
 <!-- 实时消息通知（系统气泡） -->
 <div id="notify" onclick="openWin('msg')">
-  <div class="n-head"><span class="n-ico">📡</span>系统消息 ｜ 实时</div>
+  <div class="n-head"><span class="n-ico" id="n-head-ico">📡</span><span id="n-head-txt">系统消息 ｜ 实时</span></div>
   <div class="n-body" id="notify-body"></div>
 </div>
 
@@ -284,10 +295,54 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   var i = 0;
   var t = setInterval(function(){
     if (i < lines.length) lines[i++].classList.add('on');
-    else { clearInterval(t); setTimeout(function(){ document.getElementById('boot').style.display='none'; }, 600); }
+    else { clearInterval(t); setTimeout(hideBoot, 600); }
   }, 350);
-  document.getElementById('boot').addEventListener('click', function(){ clearInterval(t); this.style.display='none'; });
+  document.getElementById('boot').addEventListener('click', function(){ clearInterval(t); hideBoot(); });
+  function hideBoot(){
+    document.getElementById('boot').style.display='none';
+    bootDone();
+  }
 })();
+
+/* ============ 开机任务：值班员开场消息 ============ */
+var booted = false;
+var openingShown = false;
+function bootDone(){ booted = true; setTimeout(showOpening, 3000); }  // 3 秒兜底（无点击时也触发）
+document.addEventListener('click', function(){ if (booted && !openingShown) showOpening(); });  // 首次点击即触发（保证有用户手势可播音频）
+function showOpening(){
+  if (openingShown) return;
+  openingShown = true;
+  try { if (sessionStorage.getItem('cz_opening_done')) return; sessionStorage.setItem('cz_opening_done','1'); } catch(e){}
+  playDing();
+  fireIncoming('03:01', '新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。');
+}
+
+/* ============ 提示音（Web Audio 合成，无音频文件） ============ */
+var ac = null;
+function audioCtx(){
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  } catch(e){ return null; }
+}
+document.addEventListener('click', function(){ var c = audioCtx(); if (c && c.state === 'suspended') c.resume(); });
+function playDing(){
+  var ctx = audioCtx(); if (!ctx) return;
+  try {
+    var t0 = ctx.currentTime + 0.02;
+    [[880,0],[1174.66,0.13]].forEach(function(s){
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = s[0];
+      o.connect(g); g.connect(ctx.destination);
+      var t = t0 + s[1];
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.3, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+      o.start(t); o.stop(t + 0.65);
+    });
+  } catch(e){}
+}
 
 /* ============ 窗口管理 ============ */
 var winStack = 10;
@@ -296,7 +351,7 @@ var wins = { browser:'内网浏览器', archive:'内部档案', msg:'信息', to
 var unlocked = false;
 
 function openWin(id){
-  if (id !== 'browser' && !unlocked) { lockedToast(); return; }
+  if (id !== 'browser' && id !== 'msg' && !unlocked) { lockedToast(); return; }
   if (id === 'msg') { liveCount = 0; document.getElementById('icon-msg-badge').classList.remove('show'); refreshTasks(); }
   var w = document.getElementById('win-'+id);
   if (!w.classList.contains('open')) {
@@ -432,7 +487,13 @@ function checkUnlock(){
       });
       document.getElementById('clock').textContent = '2026-08-11 03:00';
       document.getElementById('clock').classList.add('synced');
+      document.getElementById('win-msg').classList.remove('locked-hist');
       adminToast();
+      // 任务闭环：值班员回执（仅解锁瞬间一次）
+      var tc = document.getElementById('task-card');
+      if (tc) { tc.textContent = '✅ 任务完成：补录档案已整理，记录已存档。'; tc.classList.add('done'); }
+      playDing();
+      fireIncoming('03:12', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
   }
 }
 setInterval(checkUnlock, 1000);
@@ -454,6 +515,25 @@ function seenLog(){
 }
 function saveSeen(s){ try { sessionStorage.setItem('cz_evt_seen', JSON.stringify(s)); } catch(e){} }
 
+/* 公共：弹气泡 + 写入消息窗口 + 未读红点 */
+function pushMsg(cls, ico, head, from, ts, text){
+  var nt = document.getElementById('notify');
+  document.getElementById('n-head-ico').textContent = ico;
+  document.getElementById('n-head-txt').textContent = head;
+  document.getElementById('notify-body').textContent = '[' + ts + '] ' + text;
+  nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
+  clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
+  var box = document.getElementById('live-msgs');
+  var div = document.createElement('div');
+  div.className = 'msg-item ' + cls + ' m-live';
+  div.innerHTML = '<div class="m-from">' + from + '</div><div class="m-body">' + text + '</div>';
+  box.insertBefore(div, box.firstChild);
+  liveCount++;
+  document.getElementById('icon-msg-badge').textContent = liveCount;
+  document.getElementById('icon-msg-badge').classList.add('show');
+  refreshTasks();
+}
+
 function fireMsg(key){
   var text = MSG_TEXTS[key];
   if (!text) return;
@@ -463,22 +543,12 @@ function fireMsg(key){
   seen[key] = now; saveSeen(seen);
   msgSeq++;
   var ts = '03:' + String(3 + msgSeq).padStart(2, '0');
-  // 系统气泡（右下角）
-  var nt = document.getElementById('notify');
-  document.getElementById('notify-body').textContent = '[' + ts + '] ' + text;
-  nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
-  clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
-  // 信息窗口：实时消息（锁定期间也会记录，解锁后可看）
-  var box = document.getElementById('live-msgs');
-  var div = document.createElement('div');
-  div.className = 'msg-item m-sys m-live';
-  div.innerHTML = '<div class="m-from">' + ts + ' ｜ 系统 ｜ 实时</div><div class="m-body">' + text + '</div>';
-  box.insertBefore(div, box.firstChild);
-  // 未读红点
-  liveCount++;
-  document.getElementById('icon-msg-badge').textContent = liveCount;
-  document.getElementById('icon-msg-badge').classList.add('show');
-  refreshTasks();
+  pushMsg('m-sys', '📡', '系统消息 ｜ 实时', ts + ' ｜ 系统 ｜ 实时', ts, text);
+}
+
+/* 值班员主动消息（开场任务 / 解锁回执） */
+function fireIncoming(ts, text){
+  pushMsg('m-person', '📩', '档案科 · 值班员 ｜ 实时', ts + ' ｜ 档案科 · 值班员', ts, text);
 }
 
 /* 轮询官网行为标记（与 checkUnlock 共用 1 秒节奏） */
