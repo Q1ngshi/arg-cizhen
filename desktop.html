@@ -331,6 +331,11 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <div id="restore-bar"><div class="fill" id="restore-fill"></div></div>
         <button class="btn" id="btn-restore" onclick="runRestore()">扫描已删除文件</button>
         <div class="restored" id="restored">已恢复：CE-2009-006（片段，37%）<br><br>……安息祭。仪式定于月圆之夜。<br>……林远自愿。<br>……3月17日 03:00，槐树街7号。<br><br><span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
+        <div class="restored" id="restored2">已恢复：红本抄本（节选 · 43%）<br><br>
+          ……3月14日 老陈来了。他说门禁密码是他父亲设的，那年他父亲刚二十岁。问他为什么是1942，他说：房子那年起的。<br>
+          ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
+          ……3月16日 老陈走前说：红本里还有别的东西，第23页之后，等值完班再看。他说这话的时候，没有看我。<br><br>
+          <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
       </div>
       <div class="tab-pane" id="pane-calc">
         <div class="calc">
@@ -690,7 +695,8 @@ var MSG_TEXTS = {
   gate_fail:          '密码错误。档案将永久封存。还有 2 次机会。',
   gate_ok:            '身份确认：检索人「林远」。档案已解封。',
   admin_ok:           '权限已授予。欢迎回来。',
-  gate3_ok:           '门禁密码验证通过。地下档案室备案记录（07）已加载。'
+  gate3_ok:           '门禁密码验证通过。地下档案室备案记录（07）已加载。',
+  restore_done:       '文件恢复完成。发现 2 个文件：CE-2009-006（37%）、未编号抄本（43%）。'
 };
 
 function seenLog(){
@@ -834,8 +840,13 @@ function runRestore(){
       setTimeout(function(){
         document.getElementById('restored').classList.add('show');
         document.getElementById('restored').closest('.window').style.height='auto';
-        btn.disabled = false; btn.style.opacity = 1;
       }, 400);
+      setTimeout(function(){
+        document.getElementById('restored2').classList.add('show');
+        document.getElementById('restored2').closest('.window').style.height='auto';
+        fireMsg('restore_done');
+        btn.disabled = false; btn.style.opacity = 1;
+      }, 1100);
     } else fill.style.width = p+'%';
   }, 130);
 }
