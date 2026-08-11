@@ -680,6 +680,7 @@ function checkUnlock(){
       var t2 = document.getElementById('task-2');
       if (t2) { t2.style.display = 'block'; }
       task1DoneFlag = true;
+      logStage('unlock'); logStage('task1_done');
       playUnlockMelody();
       fireIncoming('auto', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
     });
@@ -789,6 +790,7 @@ function pollEvents(){
     if (v && v !== evtProcessed[k]) {
       evtProcessed[k] = v;
       if (k === 'cz_evt_gate3_ok') { task3Done(); continue; }
+      if (k === 'cz_evt_blueprint_p2') logStage('bp_p2');   // 官网下载附件 → 终端收录（手绘）
       fireMsg(map[k]);
     }
   }
@@ -801,6 +803,7 @@ var task3DoneFlag = false;
 function task3Done(){
   if (task3DoneFlag) return;
   task3DoneFlag = true;
+  logStage('task3_done');
   fireMsg('gate3_ok');
   var t3 = document.getElementById('task-3');
   if (t3) { t3.textContent = '✅ 任务 3/3：07 号档案已调阅（地下档案室备案记录）。'; t3.style.color = '#7fb98a'; }
@@ -816,6 +819,7 @@ function checkTask2(){
   try { v = parseInt(localStorage.getItem('cz_evt_check_05') || '0', 10); } catch(e){}
   if (!v) return;
   task2Done = true;
+  logStage('task2_done'); logStage('check05');
   var t2 = document.getElementById('task-2');
   if (t2) { t2.textContent = '✅ 任务 2/3：05 号档案登记异常已核对。'; t2.style.color = '#7fb98a'; }
   var t3 = document.getElementById('task-3');
@@ -833,6 +837,8 @@ function openArch(no){
   document.querySelectorAll('.arch-detail').forEach(function(d){ d.classList.remove('show'); });
   var d = document.getElementById('arch-'+no);
   if (d) { d.classList.add('show'); d.closest('.window').style.height='auto'; }
+  logStage('arch_' + no);
+  if (no === '01') logStage('gate3_open');
 }
 
 /* ============ 工具 ============ */
@@ -859,6 +865,7 @@ function runRestore(){
         document.getElementById('restored2').classList.add('show');
         document.getElementById('restored2').closest('.window').style.height='auto';
         fireMsg('restore_done');
+        logStage('restore');
         btn.disabled = false; btn.style.opacity = 1;
       }, 1100);
     } else fill.style.width = p+'%';
@@ -880,6 +887,45 @@ function calc(k){
   }
   cExpr += k;
   d.textContent = cExpr;
+}
+
+/* 游玩轨迹埋点：关键操作 → cz_stage_log（官网/桌面同源共享，交接班时输出） */
+function logStage(k, extra){
+  try {
+    var arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]');
+    if (!Array.isArray(arr)) arr = [];
+    var t = Date.now();
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].k === k && (extra === undefined || arr[i].e === extra)) return;   // 同 key 只记首次
+    }
+    arr.push({ k: k, e: extra, t: t });
+    if (arr.length > 60) arr = arr.slice(arr.length - 60);
+    localStorage.setItem('cz_stage_log', JSON.stringify(arr));
+  } catch(e){}
+}
+var STAGE_NAMES = {
+  site_open:'官网 打开', search:'检索', gate_open:'密码门 打开', gate_fail:'密码门 尝试失败',
+  gate_ok:'卷宗解锁', admin_open:'管理员门 打开', admin_ok:'管理员解锁',
+  dl_bp:'图纸 下载附件', s_bp:'检索 图纸', s_chen:'检索 陈守正', check05:'补录通知 展开核对',
+  unlock:'系统时钟同步', arch_open:'内部档案 打开', arch_01:'档案 CE-2009-001', arch_05:'档案 CE-2009-005',
+  arch_06:'档案 CE-2009-006', arch_p1:'档案 2009-补-001', arch_p2:'档案 2009-补-002',
+  gate3_open:'门禁 07 打开', gate3_ok:'门禁 07 通过', restore:'文件恢复', dig:'墙体检验',
+  bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成',
+  task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成'
+};
+function fmtStageLog(){
+  var arr = [];
+  try { arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]'); } catch(e){}
+  if (!arr.length) return '';
+  var t0 = arr[0].t;
+  var lines = ['\n—— 附：系统操作日志（本班）——'];
+  arr.forEach(function(it, idx){
+    var name = STAGE_NAMES[it.k] || it.k;
+    var dt = it.t - t0, m = Math.floor(dt / 60000), s = Math.floor((dt % 60000) / 1000);
+    var t = m + ':' + String(s).padStart(2, '0');
+    lines.push(String(idx + 1).padStart(2, '0') + ' ' + name + (it.e ? ' ' + it.e : '') + ' · ' + t);
+  });
+  return lines.join('\n');
 }
 
 /* 交接班记录 */
@@ -907,11 +953,13 @@ function genHandover(){
   s += '（材料目录仅供内部核对使用）\n';
   s += '════════════════════════════════════\n';
   s += '本记录为值班工具自动生成。';
+  s += fmtStageLog();
   out.textContent = s;
   out.classList.add('show');
   out.closest('.window').style.height = 'auto';
   document.getElementById('btn-handover-copy').style.display = 'inline-block';
   document.getElementById('btn-handover').textContent = '重新生成';
+  logStage('handover');
 }
 function copyHandover(){
   var txt = document.getElementById('handover').textContent;
@@ -1116,6 +1164,7 @@ function digSpot(){
       var rv = document.getElementById('bp-reveal');
       if (rv) rv.classList.add('on');
       try { localStorage.setItem('cz_evt_bp_dig', Date.now()); } catch(e){}
+      logStage('dig');
       fireMsg('bp_dig_done');
     }, 350);
   }
@@ -1169,6 +1218,7 @@ function archGate01(){
   var v = document.getElementById('arch01-input').value;
   if (v === '1942') {
     try { localStorage.setItem('cz_evt_blueprint_001', Date.now()); } catch(e){}
+    logStage('bp_001'); logStage('gate3_ok');
     document.getElementById('arch01-gate').style.display = 'none';
     var st = document.getElementById('arch01-st');
     st.textContent = '已收录。可于【工具 → 建筑图】放大查看。';

@@ -922,6 +922,7 @@ function toggleNews(el) {
     // 补录通知展开 → 埋点（值班任务 2：核对 05 号档案登记异常）
     if (body.style.display === 'block' && body.textContent.indexOf('补录') !== -1) {
       try { localStorage.setItem('cz_evt_check_05', Date.now()); } catch (e) {}
+      logStage('check05');
     }
   }
 }
@@ -935,6 +936,7 @@ AudioMgr.updateIcon();
 
 // ===== 密码门 =====
 function openGate() {
+  logStage('gate_open');
   document.getElementById('gate-modal').classList.add('show');
   document.getElementById('gate-input').value = '';
   document.getElementById('gate-err').classList.add('hidden');
@@ -949,10 +951,12 @@ function checkGate() {
     AudioMgr.resume(); AudioMgr.melody();
     document.getElementById('dossier').classList.add('show');
     try { localStorage.setItem('cz_evt_gate_ok', Date.now()); } catch (e) {}
+    logStage('gate_ok');
   } else {
     document.getElementById('gate-err').classList.remove('hidden');
     AudioMgr.resume(); AudioMgr.warn();
     try { localStorage.setItem('cz_evt_gate_fail', Date.now()); } catch (e) {}
+    logStage('gate_fail');
   }
 }
 function closeDossier() {
@@ -977,6 +981,7 @@ function tryOpenAdmin() {
   }
 }
 function openAdmin() {
+  logStage('admin_open');
   document.getElementById('admin-modal').classList.add('show');
   document.getElementById('admin-err').classList.add('hidden');
   document.getElementById('admin-user').value = '';
@@ -993,6 +998,7 @@ function checkAdmin() {
     AudioMgr.resume(); AudioMgr.melody();
     window.l2Unlocked = true;
     try { localStorage.setItem('cz_admin_ok', '1'); } catch (e) {}
+    logStage('admin_ok');
     // 动态添加 L3 档案条目
     window._catalog['07'] = { title:'教会地下档案室备案记录（1965-2009）', status:'限制调阅，需门禁密码', desc:'收录慈恩镇槐树街7号教会地下档案室结构备案、人员出入登记及1965-2009年间内部活动记录。部分内容涉密。' };
     document.getElementById('dossier2').classList.add('show');
@@ -1013,6 +1019,7 @@ document.getElementById('admin-modal').addEventListener('click', function(e) {
 
 // ===== 地下档案室门禁（L3） =====
 function openGate3() {
+  logStage('gate3_open');
   document.getElementById('gate3-modal').classList.add('show');
   document.getElementById('gate3-input').value = '';
   document.getElementById('gate3-err').classList.add('hidden');
@@ -1028,6 +1035,7 @@ function checkGate3() {
     AudioMgr.resume(); AudioMgr.melody();
     document.getElementById('dossier3').classList.add('show');
     try { localStorage.setItem('cz_evt_gate3_ok', Date.now()); } catch (e) {}
+    logStage('gate3_ok');
   } else {
     document.getElementById('gate3-err').classList.remove('hidden');
     AudioMgr.resume(); AudioMgr.warn();
@@ -1039,6 +1047,7 @@ function closeDossier3() {
 /* 建筑图纸附件下载（收录到值班终端 d:\archive\maps\） */
 function downloadBP() {
   try { localStorage.setItem('cz_evt_blueprint_p2', Date.now()); } catch (e) {}
+  logStage('dl_bp');
   var r = document.getElementById('search-result');
   if (r) r.innerHTML = '<div style="padding:20px;text-align:center;color:#2a7f2a;font-size:13px">附件已下载（2009-补-002 · 槐树街7号平面图）。<br><span style="color:#999;font-size:12px">请通过值班终端「工具 → 建筑图」查看。</span></div>';
 }
@@ -1065,6 +1074,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
   function doSearch() {
     var q = (input.value || '').trim().toLowerCase();
     if (!q) return;
+    logStage('search', q);   // 每个不同关键词记一次（同词重复只记首次）
     // 特殊检索：被抹去的人
     if (q === '林远' || q === 'linyuan') {
       result.style.display = '';
@@ -1102,6 +1112,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
         '主要经历：2009年12月起主持档案办工作；其父陈某（前主任）于2010年调离慈恩镇。<br>' +
         '<span style="color:#8B0000">移交说明：2010年陈某调离时移交材料一批。其中红色笔记本 1 册未登记编号，未录入电子档案目录，现由本人保管。</span></div></div>';
       try { localStorage.setItem('cz_evt_search_chenshouzheng', Date.now()); } catch (e) {}
+      logStage('s_chen');
       return;
     }
     // 特殊检索：陈某（前主任，已调离）
@@ -1127,6 +1138,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
         '② 槐树街7号平面图（手绘标注）｜<span style="color:#2a7f2a">附件可下载</span> <a href="javascript:downloadBP()" style="color:#8B0000">[下载附件]</a><br>' +
         '<span style="color:#999;font-size:12px">下载的附件请使用值班终端查看。</span></div></div>';
       try { localStorage.setItem('cz_evt_search_bp', Date.now()); } catch (e) {}
+      logStage('s_bp');
       return;
     }
     // 特殊检索：失踪（引导任务）
@@ -1203,6 +1215,23 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
     });
   }
 })();
+
+/* 游玩轨迹埋点：关键操作 → cz_stage_log（官网/桌面同源共享，交接班时输出）
+   与 desktop.html 同一份实现，key 命名空间一致 */
+function logStage(k, extra){
+  try {
+    var arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]');
+    if (!Array.isArray(arr)) arr = [];
+    var t = Date.now();
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].k === k && (extra === undefined || arr[i].e === extra)) return;   // 同 key 只记首次
+    }
+    arr.push({ k: k, e: extra, t: t });
+    if (arr.length > 60) arr = arr.slice(arr.length - 60);
+    localStorage.setItem('cz_stage_log', JSON.stringify(arr));
+  } catch(e){}
+}
+logStage('site_open');
 </script>
 </body>
 </html>
