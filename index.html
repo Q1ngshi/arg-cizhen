@@ -957,6 +957,7 @@ function checkAdmin() {
     document.getElementById('admin-modal').classList.remove('show');
     AudioMgr.resume(); AudioMgr.melody();
     window.l2Unlocked = true;
+    try { localStorage.setItem('cz_admin_ok', '1'); } catch (e) {}
     // 动态添加 L3 档案条目
     window._catalog['07'] = { title:'教会地下档案室备案记录（1965-2009）', status:'限制调阅，需门禁密码', desc:'收录慈恩镇槐树街7号教会地下档案室结构备案、人员出入登记及1965-2009年间内部活动记录。部分内容涉密。' };
     document.getElementById('dossier2').classList.add('show');

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>慈恩镇档案管理 · 内网终端</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; height:100vh; background:#000; }
+
+/* ============ 启动画面 ============ */
+#boot { position:fixed; inset:0; background:#05070d; color:#7fb98a; font-family:Consolas,monospace; z-index:999; padding:60px 80px; font-size:14px; line-height:2; }
+#boot p { opacity:0; transition:opacity .15s; }
+#boot p.on { opacity:1; }
+#boot .dim { color:#4a6b55; }
+
+/* ============ 桌面 ============ */
+#desktop { position:fixed; inset:0; background:radial-gradient(ellipse at 30% 18%, #131f38 0%, #0a0f1d 55%, #05070d 100%); }
+#desktop::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 3px); }
+
+.icon { position:absolute; width:96px; padding:10px 4px; text-align:center; cursor:default; border:1px solid transparent; border-radius:4px; color:#c8d3e0; font-size:12px; }
+.icon:hover { background:rgba(80,110,160,.25); border-color:rgba(120,160,220,.5); }
+.icon:active { background:rgba(80,110,160,.4); }
+.icon .ico { font-size:30px; display:block; margin-bottom:4px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.6)); position:relative; }
+.icon .lock-badge { position:absolute; top:-6px; right:-8px; font-size:15px; filter:none; }
+.icon.locked { opacity:.75; }
+.icon.locked:hover { background:rgba(160,120,60,.2); border-color:rgba(200,160,80,.5); }
+
+/* ============ 窗口 ============ */
+.window { position:absolute; min-width:340px; min-height:180px; background:#171d29; border:1px solid #39445c; border-radius:6px; box-shadow:0 10px 34px rgba(0,0,0,.55); display:none; z-index:10; }
+.window.open { display:block; }
+.window.maxed { left:0 !important; top:0 !important; width:100% !important; height:calc(100% - 34px) !important; }
+.w-titlebar { display:flex; align-items:center; height:30px; background:linear-gradient(#2b3954,#1c2740); border-radius:6px 6px 0 0; cursor:move; }
+.w-titlebar .t-ico { padding:0 8px 0 10px; font-size:13px; }
+.w-titlebar .t-title { flex:1; color:#aebfd8; font-size:12px; letter-spacing:1px; white-space:nowrap; overflow:hidden; }
+.w-titlebar .t-btn { width:30px; height:30px; border:0; background:transparent; color:#7e90ad; font-size:12px; cursor:pointer; font-family:Consolas,monospace; }
+.w-titlebar .t-btn:hover { background:#3a4c70; color:#dfe9f5; }
+.w-titlebar .t-close:hover { background:#8b1f1f; color:#fff; }
+.w-body { padding:14px; color:#c6cfdd; font-size:13px; line-height:1.8; overflow:auto; }
+
+/* 浏览器窗口 */
+#win-browser .w-body { padding:0; }
+.browser-frame { display:flex; flex-direction:column; height:calc(100% - 30px); }
+.browser-bar { display:flex; gap:6px; padding:8px 10px; align-items:center; }
+.browser-bar input { flex:1; background:#0d1220; border:1px solid #2a3348; color:#9fb8d8; font-size:12px; font-family:Consolas,monospace; padding:5px 10px; border-radius:4px; outline:none; }
+.browser-bar .b-status { font-size:11px; color:#5f7090; font-family:Consolas,monospace; }
+#site-frame { flex:1; width:100%; border:0; background:#fff; }
+
+/* ============ 任务栏 ============ */
+#taskbar { position:fixed; left:0; right:0; bottom:0; height:34px; background:rgba(9,13,22,.92); border-top:1px solid #33405a; display:flex; align-items:center; z-index:500; }
+#start { margin:0 8px; padding:4px 14px; background:linear-gradient(#2b3954,#1c2740); color:#dfe9f5; font-size:12px; border-radius:4px; cursor:pointer; border:1px solid #3a4a68; }
+#start:hover { background:linear-gradient(#33456a,#222f4e); }
+#tasks { flex:1; display:flex; gap:6px; padding:0 6px; overflow:hidden; }
+.task-btn { padding:4px 14px; background:#202838; color:#9fb0c9; font-size:12px; border-radius:4px; cursor:pointer; border:1px solid #2c3750; white-space:nowrap; max-width:150px; overflow:hidden; text-overflow:ellipsis; }
+.task-btn.active { background:#33456a; color:#fff; border-color:#4a5f8c; }
+.task-btn:hover { background:#2a3550; }
+#clock { padding:0 12px; color:#8fa3c0; font-size:12px; font-family:Consolas,monospace; letter-spacing:1px; }
+#clock.synced { color:#a08a4a; }
+
+/* ============ 开始菜单 ============ */
+#startmenu { position:fixed; left:8px; bottom:40px; width:220px; background:#141a28; border:1px solid #39445c; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.6); display:none; z-index:600; padding:6px; }
+#startmenu.show { display:block; }
+#startmenu .sm-title { padding:8px 10px; color:#5f7090; font-size:11px; letter-spacing:2px; border-bottom:1px solid #222c40; margin-bottom:4px; }
+#startmenu .sm-item { padding:8px 12px; color:#c0cde0; font-size:13px; border-radius:4px; cursor:pointer; }
+#startmenu .sm-item:hover { background:#2a3550; }
+#startmenu .sm-item.lock { color:#7a6a4a; }
+
+/* ============ Toast ============ */
+#toast { position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-80px); background:#1a2438; border:1px solid #4a5f8c; color:#dfe9f5; font-size:13px; padding:10px 22px; border-radius:6px; z-index:900; opacity:0; transition:all .4s; box-shadow:0 6px 20px rgba(0,0,0,.5); font-family:Consolas,monospace; }
+#toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* ============ 程序内容 ============ */
+.sect-label { color:#5f7090; font-size:11px; letter-spacing:2px; margin:10px 0 6px; }
+.arch-list { border:1px solid #2a3348; border-radius:4px; overflow:hidden; }
+.arch-item { padding:8px 12px; font-size:12.5px; cursor:pointer; display:flex; justify-content:space-between; border-bottom:1px solid #20283a; }
+.arch-item:last-child { border-bottom:0; }
+.arch-item:hover { background:#243049; }
+.arch-item .a-no { font-family:Consolas,monospace; color:#8fa3c0; }
+.arch-item .a-lock { color:#b8860b; }
+.arch-item .a-del { color:#a33; }
+.arch-detail { margin-top:10px; border:1px solid #3a2830; border-left:3px solid #8b1f1f; background:#1a1418; padding:12px; font-size:12.5px; line-height:2; display:none; }
+.arch-detail.show { display:block; }
+.arch-detail .k { color:#9fb0c9; }
+.arch-detail .v { color:#e8edf5; }
+.arch-detail .red { color:#e06060; }
+.arch-detail .dim { color:#777; }
+.msg-item { border:1px solid #222b40; border-radius:4px; margin-bottom:8px; padding:10px 12px; background:#121827; }
+.msg-item .m-from { font-size:11px; color:#8fa3c0; margin-bottom:2px; font-family:Consolas,monospace; }
+.msg-item .m-body { font-size:12.5px; color:#d5deec; }
+.msg-item.m-sys { border-color:#3a2830; background:#161012; }
+.msg-item.m-sys .m-from { color:#a06a6a; }
+.tabs { display:flex; gap:4px; margin-bottom:10px; }
+.tab-btn { padding:5px 14px; font-size:12px; color:#8fa3c0; border:1px solid #2a3348; border-radius:4px; cursor:pointer; background:transparent; }
+.tab-btn.active { background:#2c3a58; color:#fff; border-color:#4a5f8c; }
+.tab-pane { display:none; }
+.tab-pane.show { display:block; }
+textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px solid #2a3348; color:#b9d8b9; font-family:Consolas,monospace; font-size:12.5px; padding:10px; resize:vertical; outline:none; }
+.notepad-status { font-size:11px; color:#5f7090; margin-top:4px; font-family:Consolas,monospace; }
+.btn { padding:6px 16px; background:#2c3a58; color:#dfe9f5; border:1px solid #4a5f8c; border-radius:4px; font-size:12px; cursor:pointer; }
+.btn:hover { background:#34466e; }
+#restore-bar { height:8px; background:#0d1220; border:1px solid #2a3348; border-radius:4px; margin:12px 0; overflow:hidden; display:none; }
+#restore-bar .fill { height:100%; width:0%; background:linear-gradient(90deg,#2e7d4f,#4aaf77); transition:width .3s; }
+.restored { border:1px solid #3a2830; border-left:3px solid #8b1f1f; background:#1a1418; padding:12px; font-size:12.5px; line-height:2; display:none; font-family:Consolas,monospace; color:#d8bfbf; }
+.restored.show { display:block; }
+.calc { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; width:200px; }
+.calc .k { padding:10px; text-align:center; background:#202a40; border-radius:4px; cursor:pointer; color:#cfdaea; font-size:13px; font-family:Consolas,monospace; }
+.calc .k:hover { background:#2c3a58; }
+.calc .k.op { background:#27405c; }
+.calc .disp { grid-column:1/-1; background:#0d1220; color:#9fe0b9; padding:8px 10px; text-align:right; font-family:Consolas,monospace; font-size:16px; border-radius:4px; }
+
+/* ============ 手机适配 ============ */
+@media (max-width:700px) {
+  .icon { width:80px; font-size:11px; }
+  .window { width:100% !important; left:0 !important; height:calc(100% - 34px) !important; top:0 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- 启动画面 -->
+<div id="boot">
+  <p>慈恩镇档案管理办公室 · 内网终端</p>
+  <p class="dim">系统版本 v1.0.2（build 2008.11）</p>
+  <p>正在启动系统……</p>
+  <p>加载卷宗索引 [==========] 100%</p>
+  <p class="dim">警告：d:\archive 部分目录损坏，已跳过</p>
+  <p>登录身份：xf001（档案修复室）</p>
+  <p>今天是 2009年3月17日 星期二</p>
+</div>
+
+<!-- 桌面 -->
+<div id="desktop">
+  <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
+  <div class="icon locked" data-win="archive" style="left:26px;top:130px;"><span class="ico">📁<span class="lock-badge">🔒</span></span>内部档案</div>
+  <div class="icon locked" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="lock-badge">🔒</span></span>信息</div>
+  <div class="icon locked" data-win="tools" style="left:26px;top:342px;"><span class="ico">🧰<span class="lock-badge">🔒</span></span>工具</div>
+
+  <!-- 窗口：内网浏览器（内嵌官网） -->
+  <div class="window" id="win-browser">
+    <div class="w-titlebar"><span class="t-ico">🌐</span><span class="t-title">内网浏览器 · 慈恩镇档案门户</span>
+      <button class="t-btn" onclick="maxWin('browser')">▢</button>
+      <button class="t-btn" onclick="minWin('browser')">—</button>
+      <button class="t-btn t-close" onclick="closeWin('browser')">✕</button></div>
+    <div class="browser-frame">
+      <div class="browser-bar"><input value="http://cizhen-archives.net/" readonly><span class="b-status">加载完成</span></div>
+      <iframe id="site-frame" src="index.html"></iframe>
+    </div>
+  </div>
+
+  <!-- 窗口：内部档案 -->
+  <div class="window" id="win-archive">
+    <div class="w-titlebar"><span class="t-ico">📁</span><span class="t-title">内部档案 · CE-2009 系列卷宗</span>
+      <button class="t-btn" onclick="maxWin('archive')">▢</button>
+      <button class="t-btn" onclick="minWin('archive')">—</button>
+      <button class="t-btn t-close" onclick="closeWin('archive')">✕</button></div>
+    <div class="w-body">
+      <div class="arch-list">
+        <div class="arch-item" onclick="openArch('01')"><span>CE-2009-001 · 教会建筑图纸备案</span><span class="a-no a-lock">🔒 已加密</span></div>
+        <div class="arch-item"><span>CE-2009-002 · 槐树街片区户籍</span><span class="a-no">损坏</span></div>
+        <div class="arch-item"><span>CE-2009-003 · 水利工程备案</span><span class="a-no">损坏</span></div>
+        <div class="arch-item"><span>CE-2009-004 · 人事档案（教会）</span><span class="a-no">损坏</span></div>
+        <div class="arch-item" onclick="openArch('05')"><span>CE-2009-005 · 林远失踪案</span><span class="a-no">可查阅</span></div>
+        <div class="arch-item" onclick="openArch('06')"><span>CE-2009-006 · 安息祭</span><span class="a-no a-del">✕ 已删除</span></div>
+      </div>
+      <div class="arch-detail" id="arch-01">
+        <div><span class="k">卷宗编号：</span><span class="v">CE-2009-001</span></div>
+        <div><span class="k">内容：</span><span class="v">槐树街7号教会 · 建筑结构图纸备案</span></div>
+        <div><span class="k">状态：</span><span class="v red">已加密。需门禁密码。</span></div>
+      </div>
+      <div class="arch-detail" id="arch-05">
+        <div><span class="k">卷宗编号：</span><span class="v">CE-2009-005</span></div>
+        <div><span class="k">姓名：</span><span class="v">林远，男，槐树街73号</span></div>
+        <div><span class="k">失踪日期：</span><span class="v">2009年3月17日</span></div>
+        <div><span class="k">最后目击：</span><span class="v">槐树街7号（教会）</span></div>
+        <div><span class="k">死因结论：</span><span class="v">溺水<span class="red">（打捞报告：未见遗体）</span></span></div>
+        <div><span class="k">关联人员：</span><span class="v">王某（教会执事，已故）· 陈某（档案办主任）</span></div>
+        <div><span class="k">补录编号：</span><span class="v">05</span> <span class="dim">——与官网《失踪人口补录》公告一致</span></div>
+        <div><span class="k">备注：</span><span class="v dim">检索记录：最后一次被检索 2009-03-17 03:02</span></div>
+      </div>
+      <div class="arch-detail" id="arch-06">
+        <div><span class="k">卷宗编号：</span><span class="v">CE-2009-006</span></div>
+        <div><span class="k">状态：</span><span class="v red">该卷宗已被删除。</span></div>
+        <div><span class="k">提示：</span><span class="v">可使用【工具 → 文件恢复】尝试找回。</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 窗口：信息 -->
+  <div class="window" id="win-msg">
+    <div class="w-titlebar"><span class="t-ico">✉️</span><span class="t-title">信息 · 通讯记录</span>
+      <button class="t-btn" onclick="maxWin('msg')">▢</button>
+      <button class="t-btn" onclick="minWin('msg')">—</button>
+      <button class="t-btn t-close" onclick="closeWin('msg')">✕</button></div>
+    <div class="w-body">
+      <div class="msg-item"><div class="m-from">2009-03-10 09:14 ｜ 王执事 → 我</div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
+      <div class="msg-item"><div class="m-from">2009-03-15 21:03 ｜ 王执事 → 我</div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
+      <div class="msg-item"><div class="m-from">2009-03-16 23:54 ｜ 王执事 → 我</div><div class="m-body">明天的事，你我都别露面。</div></div>
+      <div class="msg-item m-sys"><div class="m-from">2009-03-17 03:02 ｜ 系统</div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+      <div class="msg-item m-sys"><div class="m-from">系统 ｜ 登录记录</div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+    </div>
+  </div>
+
+  <!-- 窗口：工具 -->
+  <div class="window" id="win-tools">
+    <div class="w-titlebar"><span class="t-ico">🧰</span><span class="t-title">工具</span>
+      <button class="t-btn" onclick="maxWin('tools')">▢</button>
+      <button class="t-btn" onclick="minWin('tools')">—</button>
+      <button class="t-btn t-close" onclick="closeWin('tools')">✕</button></div>
+    <div class="w-body">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'notepad')">记事本</button>
+        <button class="tab-btn" onclick="switchTab(this,'restore')">文件恢复</button>
+        <button class="tab-btn" onclick="switchTab(this,'calc')">计算器</button>
+      </div>
+      <div class="tab-pane show" id="pane-notepad">
+        <textarea class="notepad" id="notepad" spellcheck="false">2009-03-17 03:00 已备份卷宗 005</textarea>
+        <div class="notepad-status">状态：自动保存中…… ｜ 修改时间：2009-03-17 03:00</div>
+      </div>
+      <div class="tab-pane" id="pane-restore">
+        <p style="font-size:12px;color:#8fa3c0">扫描 d:\archive 中已删除的卷宗文件。</p>
+        <div id="restore-bar"><div class="fill" id="restore-fill"></div></div>
+        <button class="btn" id="btn-restore" onclick="runRestore()">扫描已删除文件</button>
+        <div class="restored" id="restored">已恢复：CE-2009-006（片段，37%）<br><br>……安息祭。仪式定于月圆之夜。<br>……林远自愿。<br>……3月17日 03:00，槐树街7号。<br><br><span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
+      </div>
+      <div class="tab-pane" id="pane-calc">
+        <div class="calc">
+          <div class="disp" id="cdisp">0</div>
+          <div class="k op" onclick="calc('C')">C</div><div class="k op" onclick="calc('(')">(</div><div class="k op" onclick="calc(')')">)</div><div class="k op" onclick="calc('÷')">÷</div>
+          <div class="k" onclick="calc('7')">7</div><div class="k" onclick="calc('8')">8</div><div class="k" onclick="calc('9')">9</div><div class="k op" onclick="calc('×')">×</div>
+          <div class="k" onclick="calc('4')">4</div><div class="k" onclick="calc('5')">5</div><div class="k" onclick="calc('6')">6</div><div class="k op" onclick="calc('-')">−</div>
+          <div class="k" onclick="calc('1')">1</div><div class="k" onclick="calc('2')">2</div><div class="k" onclick="calc('3')">3</div><div class="k op" onclick="calc('+')">+</div>
+          <div class="k" style="grid-column:1/3" onclick="calc('0')">0</div><div class="k" onclick="calc('.')">.</div><div class="k op" onclick="calc('=')">=</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 任务栏 -->
+<div id="taskbar">
+  <div id="start" onclick="toggleStart()">▤ 开始</div>
+  <div id="tasks"></div>
+  <div id="clock">2009-03-17 03:00</div>
+</div>
+
+<!-- 开始菜单 -->
+<div id="startmenu">
+  <div class="sm-title">慈恩镇档案管理终端</div>
+  <div class="sm-item" onclick="launch('browser')">🌐 内网浏览器</div>
+  <div class="sm-item lock" id="sm-archive" onclick="launch('archive')">🔒 内部档案</div>
+  <div class="sm-item lock" id="sm-msg" onclick="launch('msg')">🔒 信息</div>
+  <div class="sm-item lock" id="sm-tools" onclick="launch('tools')">🔒 工具</div>
+  <div class="sm-item" style="border-top:1px solid #222c40;border-radius:0;margin-top:4px;padding-top:10px" onclick="shutdown()">⏻ 关机…</div>
+</div>
+
+<!-- 解锁提示 -->
+<div id="toast"></div>
+
+<script>
+/* ============ 启动画面 ============ */
+(function(){
+  var lines = document.querySelectorAll('#boot p');
+  var i = 0;
+  var t = setInterval(function(){
+    if (i < lines.length) lines[i++].classList.add('on');
+    else { clearInterval(t); setTimeout(function(){ document.getElementById('boot').style.display='none'; }, 600); }
+  }, 350);
+  document.getElementById('boot').addEventListener('click', function(){ clearInterval(t); this.style.display='none'; });
+})();
+
+/* ============ 窗口管理 ============ */
+var winStack = 10;
+var cascade = 0;
+var wins = { browser:'内网浏览器', archive:'内部档案', msg:'信息', tools:'工具' };
+var unlocked = false;
+
+function openWin(id){
+  if (id !== 'browser' && !unlocked) { lockedToast(); return; }
+  var w = document.getElementById('win-'+id);
+  if (!w.classList.contains('open')) {
+    cascade = (cascade + 1) % 5;
+    var cl = 120 + cascade*28, ct = 60 + cascade*22;
+    w.style.left = cl+'px'; w.style.top = ct+'px';
+    if (id === 'browser') { w.style.width = '760px'; w.style.height = '560px'; }
+    else { w.style.width = '460px'; w.style.height = 'auto'; }
+    w.classList.add('open');
+  }
+  focusWin(id);
+  refreshTasks();
+}
+function focusWin(id){
+  var w = document.getElementById('win-'+id);
+  winStack++; w.style.zIndex = winStack;
+  refreshTasks();
+}
+function closeWin(id){
+  document.getElementById('win-'+id).classList.remove('open','maxed');
+  refreshTasks();
+}
+function minWin(id){
+  var w = document.getElementById('win-'+id);
+  w.classList.remove('open','maxed');
+  refreshTasks();
+}
+function maxWin(id){
+  var w = document.getElementById('win-'+id);
+  w.classList.toggle('maxed');
+  if (w.classList.contains('maxed')) { w.style.width=''; w.style.height=''; }
+  focusWin(id);
+}
+function launch(id){ openWin(id); toggleStart(false); }
+
+function lockedToast(){
+  var t = document.getElementById('toast');
+  t.textContent = '⚠ 权限不足。请先在「内网浏览器」中，以管理员身份登录档案门户。';
+  t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 4000);
+}
+function adminToast(){
+  var t = document.getElementById('toast');
+  t.textContent = '▸ 已授予管理员权限。终端系统时间已同步。';
+  t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 5000);
+}
+
+/* 任务栏 */
+function refreshTasks(){
+  var box = document.getElementById('tasks');
+  box.innerHTML = '';
+  document.querySelectorAll('.window').forEach(function(w){
+    if (!w.classList.contains('open')) return;
+    var id = w.id.replace('win-','');
+    var b = document.createElement('div');
+    b.className = 'task-btn'; b.textContent = wins[id];
+    var top = true;
+    document.querySelectorAll('.window').forEach(function(x){ if (x.classList.contains('open') && parseInt(x.style.zIndex) > parseInt(w.style.zIndex)) top=false; });
+    if (top) b.classList.add('active');
+    b.onclick = function(){
+      if (w.classList.contains('open')) { w.classList.remove('open','maxed'); }
+      else openWin(id);
+      refreshTasks();
+    };
+    box.appendChild(b);
+  });
+}
+
+/* 拖拽 */
+document.querySelectorAll('.w-titlebar').forEach(function(tb){
+  var win = tb.parentElement;
+  tb.addEventListener('pointerdown', function(e){
+    if (e.target.classList.contains('t-btn')) return;
+    if (win.classList.contains('maxed')) return;
+    var r = win.getBoundingClientRect();
+    var dx = e.clientX - r.left, dy = e.clientY - r.top;
+    function mv(ev){ win.style.left = Math.min(Math.max(0,ev.clientX-dx), innerWidth-120)+'px'; win.style.top = Math.max(0,ev.clientY-dy)+'px'; }
+    function up(){ window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); }
+    window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up);
+  });
+  tb.addEventListener('pointerdown', function(){ focusWin(win.id.replace('win-','')); });
+});
+
+/* 双击桌面图标 */
+document.querySelectorAll('.icon').forEach(function(ic){
+  ic.addEventListener('dblclick', function(){ launch(ic.dataset.win); });
+});
+
+/* 开始菜单 */
+function toggleStart(force){
+  var m = document.getElementById('startmenu');
+  m.classList.toggle('show', force === undefined ? !m.classList.contains('show') : force);
+}
+document.addEventListener('click', function(e){
+  if (!e.target.closest('#start') && !e.target.closest('#startmenu')) toggleStart(false);
+});
+
+/* 关机 → 重启 */
+function shutdown(){
+  toggleStart(false);
+  document.getElementById('boot').style.display = 'flex';
+  document.getElementById('boot').style.flexDirection = 'column';
+  var lines = document.querySelectorAll('#boot p');
+  lines.forEach(function(p){ p.classList.remove('on'); });
+  var i = 0;
+  var t = setInterval(function(){
+    if (i < lines.length) lines[i++].classList.add('on');
+    else { clearInterval(t); setTimeout(function(){ document.getElementById('boot').style.display='none'; }, 600); }
+  }, 300);
+}
+
+/* ============ 解锁联动：轮询官网 iframe 的 l2Unlocked ============ */
+function checkUnlock(){
+  if (unlocked) return;
+  var ok = false;
+  var fr = document.getElementById('site-frame');
+  try { if (fr.contentWindow && fr.contentWindow.l2Unlocked) ok = true; } catch (e) {}
+  try { if (localStorage.getItem('cz_admin_ok') === '1') ok = true; } catch (e) {}
+  if (ok) {
+    unlocked = true;
+      document.querySelectorAll('.icon.locked').forEach(function(ic){
+        ic.classList.remove('locked');
+        var b = ic.querySelector('.lock-badge'); if (b) b.remove();
+      });
+      document.querySelectorAll('#startmenu .sm-item.lock').forEach(function(sm){
+        sm.classList.remove('lock'); sm.textContent = sm.textContent.replace('🔒 ','');
+      });
+      document.getElementById('clock').textContent = '2026-08-11 03:00';
+      document.getElementById('clock').classList.add('synced');
+      adminToast();
+  }
+}
+setInterval(checkUnlock, 1000);
+
+/* ============ 内部档案 ============ */
+function openArch(no){
+  document.querySelectorAll('.arch-detail').forEach(function(d){ d.classList.remove('show'); });
+  var d = document.getElementById('arch-'+no);
+  if (d) { d.classList.add('show'); d.closest('.window').style.height='auto'; }
+}
+
+/* ============ 工具 ============ */
+function switchTab(btn, name){
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('show'); });
+  document.getElementById('pane-'+name).classList.add('show');
+}
+function runRestore(){
+  var bar = document.getElementById('restore-bar'), fill = document.getElementById('restore-fill');
+  var btn = document.getElementById('btn-restore');
+  bar.style.display = 'block'; btn.disabled = true; btn.style.opacity = .5;
+  var p = 0;
+  var t = setInterval(function(){
+    p += 7 + Math.random()*9;
+    if (p >= 100) {
+      clearInterval(t); fill.style.width = '100%';
+      setTimeout(function(){
+        document.getElementById('restored').classList.add('show');
+        document.getElementById('restored').closest('.window').style.height='auto';
+        btn.disabled = false; btn.style.opacity = 1;
+      }, 400);
+    } else fill.style.width = p+'%';
+  }, 130);
+}
+
+/* 计算器 */
+var cExpr = '';
+function calc(k){
+  var d = document.getElementById('cdisp');
+  if (k === 'C') { cExpr = ''; d.textContent = '0'; return; }
+  if (k === '=') {
+    try {
+      var r = Function('return (' + cExpr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-') + ')')();
+      d.textContent = Math.round(r*1e8)/1e8;
+      cExpr = String(d.textContent);
+    } catch(e){ d.textContent = '错误'; cExpr=''; }
+    return;
+  }
+  cExpr += k;
+  d.textContent = cExpr;
+}
+
+/* 记事本自动保存（file:// 下可能受限，静默降级） */
+setInterval(function(){
+  try { localStorage.setItem('cz_note', document.getElementById('notepad').value); } catch(e){}
+}, 1500);
+try { var saved = localStorage.getItem('cz_note'); if (saved) document.getElementById('notepad').value = saved; } catch(e){}
+</script>
+</body>
+</html>
