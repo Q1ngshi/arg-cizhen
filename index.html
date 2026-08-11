@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慈恩镇档案管理办公室</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color: #333; min-width: 1100px; }
+
+/* ===== 灰顶条 ===== */
+.top-bar { background: #555; color: #ddd; font-size: 12px; padding: 4px 0; text-align: center; }
+.top-bar-inner { width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; }
+.top-bar a { color: #ddd; text-decoration: none; margin: 0 8px; }
+.top-bar a:hover { color: #fff; }
+
+/* ===== Logo 搜索区 ===== */
+.header { background: linear-gradient(135deg, #fdf3f3 0%, #fff8f0 50%, #fdf3f3 100%); padding: 18px 0; border-bottom: 1px solid #e8c8c8; }
+.header-inner { width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.logo-area { display: flex; align-items: center; gap: 14px; }
+.logo-badge { width: 64px; height: 64px; background: #8B0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #f5d78c; font-size: 28px; font-weight: bold; border: 2px solid #c9a84c; }
+.logo-text h1 { font-size: 24px; color: #8B0000; font-weight: bold; letter-spacing: 2px; }
+.logo-text .sub { font-size: 12px; color: #999; font-style: italic; margin-top: 2px; }
+.search-box { display: flex; align-items: center; }
+.search-box input { width: 260px; height: 36px; border: 2px solid #e8c8c8; border-right: none; border-radius: 4px 0 0 4px; padding: 0 12px; font-size: 13px; outline: none; background: #fff; }
+.search-box input:focus { border-color: #8B0000; }
+.search-box button { width: 40px; height: 36px; background: #8B0000; border: none; border-radius: 0 4px 4px 0; cursor: pointer; color: #fff; font-size: 18px; }
+
+/* ===== 主导航 ===== */
+.nav-bar { background: #8B0000; }
+.nav-inner { width: 1100px; margin: 0 auto; display: flex; }
+.nav-inner a { color: #fff; text-decoration: none; padding: 12px 24px; font-size: 14px; display: block; white-space: nowrap; }
+.nav-inner a:hover, .nav-inner a.on { background: #a00000; }
+
+/* ===== 主标题 ===== */
+.main-title { width: 1100px; margin: 16px auto 12px; font-size: 20px; font-weight: bold; color: #222; text-align: center; padding: 0 20px; }
+
+/* ===== 主内容双栏 ===== */
+.main-row { width: 1100px; margin: 0 auto 16px; display: flex; gap: 16px; }
+.main-left { flex: 0 0 500px; }
+.main-right { flex: 1; }
+
+/* 左栏大图 */
+.hero-card { background: #fff; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.hero-img { width: 100%; height: 300px; background: linear-gradient(135deg, #2a1a0a 0%, #4a2a1a 40%, #6a3020 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.hero-img .h-text { color: #f5d78c; font-size: 22px; text-align: center; z-index: 1; letter-spacing: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+.hero-img .h-stars { position: absolute; inset: 0; background: radial-gradient(circle at 20% 30%, rgba(245,215,140,0.15) 0%, transparent 50%),
+  radial-gradient(circle at 70% 60%, rgba(245,215,140,0.1) 0%, transparent 40%); }
+.hero-img .h-title { font-size: 16px; color: #f5d78c; opacity: 0.7; margin-top: 8px; }
+
+/* 右栏新闻 */
+.news-panel { background: #fff; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-height: 300px; }
+.news-tabs { display: flex; border-bottom: 2px solid #8B0000; }
+.news-tab { padding: 10px 18px; font-size: 14px; cursor: pointer; color: #666; border: none; background: none; }
+.news-tab.on { color: #8B0000; font-weight: bold; border-bottom: 2px solid #8B0000; margin-bottom: -2px; }
+.news-list { padding: 8px 16px; display: none; }
+.news-list.show { display: block; }
+.news-item { padding: 8px 0; border-bottom: 1px dotted #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: flex-start; }
+.news-item:last-child { border-bottom: none; }
+.news-item .n-title { color: #333; line-height: 1.6; flex: 1; cursor: pointer; }
+.news-item .n-title:hover { color: #8B0000; }
+.news-item .n-title.alert { color: #8B0000; font-weight: bold; }
+.news-item .n-date { color: #999; font-size: 11px; white-space: nowrap; margin-left: 10px; }
+
+/* ===== 下双栏 ===== */
+.bottom-row { width: 1100px; margin: 0 auto 16px; display: flex; gap: 16px; }
+.bottom-left { flex: 0 0 700px; background: #fff; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.bottom-right { flex: 1; background: #fff; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+.section-hd { padding: 14px 16px 0; font-size: 16px; font-weight: bold; color: #333; border-bottom: 2px solid #8B0000; display: inline-block; margin: 0 16px; }
+.sub-tabs { display: flex; padding: 10px 16px; gap: 8px; flex-wrap: wrap; }
+.sub-tab { padding: 4px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; background: #f5f5f5; color: #666; border: 1px solid #ddd; }
+.sub-tab.on { background: #8B0000; color: #fff; border-color: #8B0000; }
+.sub-list { padding: 0 16px 14px; }
+
+/* ===== 查阅须知提示条 ===== */
+.notice-bar { width: 1100px; margin: 0 auto 16px; background: #fffbe6; border: 1px solid #f0d88a; border-radius: 4px; padding: 10px 16px; font-size: 12px; color: #8a6d3b; }
+.notice-bar strong { color: #8B0000; }
+
+/* ===== 底部 ===== */
+.footer { background: #555; color: #ccc; text-align: center; padding: 14px 0; font-size: 11px; line-height: 2; }
+.footer .ft-red { color: #ff9999; }
+
+/* ===== 密码门弹窗 ===== */
+.modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; align-items: center; justify-content: center; }
+.modal-mask.show { display: flex; }
+.gate-card { background: #1a1a1a; border: 2px solid #8B0000; border-radius: 8px; padding: 30px; width: 400px; text-align: center; }
+.gate-title { color: #8B0000; font-size: 20px; font-weight: bold; margin-bottom: 12px; }
+.gate-desc { color: #ccc; font-size: 13px; margin-bottom: 16px; line-height: 1.6; }
+.gate-input { width: 100%; height: 40px; background: #000; border: 1px solid #555; color: #0f0; font-size: 16px; text-align: center; border-radius: 4px; outline: none; font-family: "Courier New",monospace; }
+.gate-input:focus { border-color: #8B0000; }
+.gate-err { color: #f44; font-size: 12px; margin-top: 10px; }
+.gate-err.hidden { display: none; }
+.gate-actions { margin-top: 16px; }
+.gate-btn { padding: 8px 32px; background: #8B0000; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin: 0 6px; }
+.gate-btn.cancel { background: #444; }
+
+/* ===== 全屏卷宗面板 ===== */
+.dossier-overlay { display: none; position: fixed; inset: 0; background: #0d0d0d; z-index: 9999; overflow-y: auto; font-family: "Microsoft YaHei","SimSun",sans-serif; }
+.dossier-overlay.show { display: block; }
+.dossier-topbar { background: #8B0000; color: #fff; padding: 12px 30px; font-size: 15px; font-weight: bold; letter-spacing: 2px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+.dossier-close { background: none; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 6px 18px; cursor: pointer; font-size: 13px; border-radius: 3px; }
+.dossier-close:hover { background: rgba(255,255,255,0.15); }
+.dossier-stamp { position: absolute; top: 80px; right: 40px; border: 3px solid #8B0000; color: #8B0000; padding: 8px 16px; font-size: 14px; font-weight: bold; transform: rotate(12deg); opacity: 0.6; letter-spacing: 4px; pointer-events: none; }
+.dossier-body { max-width: 900px; margin: 0 auto; padding: 40px 30px 60px; color: #ccc; }
+.dossier-head { border-bottom: 2px solid #8B0000; padding-bottom: 20px; margin-bottom: 30px; }
+.dossier-head h1 { font-size: 24px; color: #8B0000; margin: 0 0 8px; }
+.dossier-head .dossier-meta { font-size: 12px; color: #666; font-family: "Courier New",monospace; }
+.dossier-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+.dossier-table th { text-align: right; width: 120px; padding: 10px 16px; color: #8B0000; font-size: 13px; font-weight: normal; border-bottom: 1px solid #222; vertical-align: top; white-space: nowrap; }
+.dossier-table td { padding: 10px 16px; color: #ddd; font-size: 14px; border-bottom: 1px solid #222; }
+.dossier-section { margin-top: 32px; border-top: 1px solid #333; padding-top: 20px; }
+.dossier-section h3 { color: #8B0000; font-size: 16px; margin: 0 0 12px; }
+.dossier-link-list { list-style: none; padding: 0; }
+.dossier-link-list li { padding: 8px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #888; font-family: "Courier New",monospace; }
+.dossier-link-list li.locked { color: #660000; }
+.dossier-footer-hint { margin-top: 40px; padding: 16px; background: #111; border-left: 3px solid #8B0000; font-size: 13px; color: #666; font-family: "Courier New",monospace; line-height: 1.8; }
+
+/* dossier2 (管理员) 专用 */
+.dossier-container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+.dossier-header { text-align: center; border-bottom: 2px solid #333; padding: 50px 0 30px; margin-bottom: 20px; }
+.dossier-header h1 { font-size: 26px; color: #8B0000; margin: 14px 0 6px; letter-spacing: 3px; }
+.dossier-header p { font-size: 12px; color: #555; font-family: "Courier New",monospace; margin: 0; }
+.dossier-badge2 { display: inline-block; background: #1a0a0a; border: 1px solid #8B0000; color: #8B0000; padding: 4px 16px; font-size: 12px; letter-spacing: 2px; border-radius: 2px; }
+.dossier-section h2 { color: #8B0000; font-size: 17px; margin: 0 0 14px; letter-spacing: 1px; }
+.dossier-text { font-size: 14px; line-height: 1.9; color: #aaa; margin: 0; text-align: justify; }
+.dossier-clue { color: #c41e3a; font-weight: bold; font-family: "Courier New",monospace; }
+.dossier-footer { margin-top: 40px; padding: 18px; background: #111; border-left: 3px solid #c41e3a; font-size: 13px; color: #777; font-family: "Courier New",monospace; line-height: 1.8; }
+
+/* ===== 内部页面面板（机构概况 / 档案查询 等）===== */
+.page-panel { display: none; width: 1100px; margin: 16px auto; background: #fff; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 20px; }
+.page-panel.show { display: block; }
+.page-panel h2 { font-size: 18px; color: #8B0000; border-bottom: 2px solid #8B0000; padding-bottom: 8px; margin-bottom: 14px; }
+.page-panel table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.page-panel table th { background: #f8f0f0; padding: 8px 12px; text-align: left; font-size: 13px; color: #8B0000; border: 1px solid #ddd; }
+.page-panel table td { padding: 8px 12px; border: 1px solid #ddd; font-size: 13px; color: #555; }
+.page-panel p { font-size: 13px; color: #555; line-height: 2; margin-bottom: 10px; }
+
+.search-result-item { padding: 10px 14px; border-bottom: 1px solid #eee; cursor: pointer; }
+.search-result-item:hover { background: #fdf3f3; }
+.search-result-item .sr-no { color: #8B0000; font-weight: bold; }
+.search-result-item .sr-title { color: #333; }
+.search-result-item .sr-status { font-size: 11px; margin-top: 4px; }
+.search-result-item.broken .sr-status { color: #999; }
+.search-result-item.broken:hover { background: #fffbe6; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ===== 灰顶条 ===== -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <span>慈恩镇档案管理办公室 · 在线服务平台 &nbsp; archive.cizhen.gov.cn</span>
+    <span><a href="#">公务邮箱</a> | <a href="#">微信</a> | <a href="#">简</a> | <a href="#" id="btn-bgm" onclick="toggleBgm();return false;">🔊 背景音乐：开</a></span>
+  </div>
+</div>
+
+<!-- ===== Logo 搜索区 ===== -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-badge">慈</div>
+      <div class="logo-text">
+        <h1>慈恩镇档案管理办公室</h1>
+        <div class="sub">Ci'en Town Archives Administration Office</div>
+      </div>
+    </div>
+    <div class="search-box">
+      <input type="text" id="top-search" placeholder="请输入关键字搜索">
+      <button id="top-search-btn">&#128269;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 主导航 ===== -->
+<div class="nav-bar">
+  <div class="nav-inner" id="main-nav">
+    <a href="#" class="on" data-page="home">首 页</a>
+    <a href="#" data-page="org">机构概况</a>
+    <a href="#" data-page="news">新闻动态</a>
+    <a href="#" data-page="work">工作动态</a>
+    <a href="#" data-page="law">法规标准库</a>
+    <a href="#" data-page="search">档案查询</a>
+    <a href="#" data-page="topic">专题热点</a>
+    <a href="#" data-page="contact">互动交流</a>
+  </div>
+</div>
+
+<!-- ===== 首页 ===== -->
+<div id="page-home" class="page-home">
+
+  <!-- 主标题 -->
+  <div class="main-title">慈恩镇档案管理办公室持续推进馆藏档案数字化修复工作</div>
+
+  <!-- 主内容双栏 -->
+  <div class="main-row">
+    <!-- 左栏：大图 -->
+    <div class="main-left">
+      <div class="hero-card">
+        <div class="hero-img">
+          <div class="h-stars"></div>
+          <div style="text-align:center">
+            <div class="h-text">慈恩镇馆藏档案</div>
+            <div class="h-title">数字化修复工程 · 第五批档案文献遗产</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右栏：要闻 -->
+    <div class="main-right">
+      <div class="news-panel">
+        <div class="news-tabs">
+          <button class="news-tab on" data-tab="tab1">要 闻</button>
+          <button class="news-tab" data-tab="tab2">通知公告</button>
+          <button class="news-tab" data-tab="tab3">馆藏动态</button>
+        </div>
+        <div class="news-list show" id="tab1">
+          <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 慈恩镇特大案件卷宗（2008-2009）数字化修复工作正在推进</span><span class="n-date">2026-08-05</span></div>
+          <div class="news-item"><span class="n-title">县公安局配合档案办完成历年未结案件卷宗移交，含2009年槐树街林某失踪案</span><span class="n-date">2026-08-04</span></div>
+          <div class="news-item"><span class="n-title">国家档案局调研组赴慈恩镇指导档案保护工作</span><span class="n-date">2026-08-03</span></div>
+          <div class="news-item"><span class="n-title">慈恩镇档案管理办公室召开2026年度工作会议</span><span class="n-date">2026-07-28</span></div>
+          <div class="news-item"><span class="n-title">浙江省档案局印发《关于进一步加强历史档案保护的通知》</span><span class="n-date">2026-07-20</span></div>
+          <div class="news-item"><span class="n-title">慈恩镇启动第五批馆藏档案数字化扫描工程</span><span class="n-date">2026-07-15</span></div>
+          <div class="news-item"><span class="n-title">我办荣获2025年度全省档案工作先进集体</span><span class="n-date">2026-06-30</span></div>
+          <div class="news-item"><span class="n-title">槐树街三号档案库房完成恒温恒湿系统升级改造</span><span class="n-date">2026-06-22</span></div>
+        </div>
+        <div class="news-list" id="tab2">
+          <div class="news-item"><span class="n-title">关于开展2026年度馆藏档案整理工作的通知</span><span class="n-date">2026-08-03</span></div>
+          <div class="news-item"><span class="n-title">慈恩镇志（2009-2024）修订意见征集</span><span class="n-date">2026-07-18</span></div>
+          <div class="news-item"><span class="n-title">关于部分历史档案暂停借阅的通告</span><span class="n-date">2026-06-05</span></div>
+          <div class="news-item" onclick="toggleNews(this)"><span class="n-title">关于举办档案修复技术培训班（第三期）的通知 ▸</span><span class="n-date">2026-03-15</span></div>
+          <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">为提升我镇档案修复技术水平，现定于2026年3月举办第三期培训班，共12学时，主要内容为纸浆补洞、脱酸加固及数码修复技术。<br>附：本期学员名单（部分）——王守诚、刘慧兰、周建民、<b style="color:#8B0000">林远（旁听）</b>、赵敏、郑文斌……</span></div>
+          <div class="news-item"><span class="n-title">2009年度老旧卷宗数字化修复项目启动通知</span><span class="n-date">2026-05-12</span></div>
+          <div class="news-item"><span class="n-title">关于规范档案查阅登记制度的通知</span><span class="n-date">2026-03-20</span></div>
+        </div>
+        <div class="news-list" id="tab3">
+          <div class="news-item"><span class="n-title">慈恩镇户籍档案（1952-1980）增设在线检索入口</span><span class="n-date">2026-08-06</span></div>
+          <div class="news-item"><span class="n-title">土地批文与地籍资料（1983-2001）完成数字化扫描</span><span class="n-date">2026-07-25</span></div>
+          <div class="news-item" onclick="toggleNews(this)"><span class="n-title">关于完成2009年度失踪人口档案补录工作的通知 ▸</span><span class="n-date">2026-06-30</span></div>
+          <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">我办于2026年6月完成2009年度失踪人口档案补录工作，共补录相关档案1件（编号：05）。该档案此前因故未纳入馆藏目录，现已整理归档。因涉及个人隐私，档案内容仅限内部查阅。</span></div>
+          <div class="news-item"><span class="n-title">民政救助与优抚档案（1970-2008）扩容索引库</span><span class="n-date">2026-07-10</span></div>
+          <div class="news-item"><span class="n-title">慈恩镇河流治理与水文观测记录开放查阅</span><span class="n-date">2026-06-18</span></div>
+          <div class="news-item"><span class="n-title">教会活动备案记录（1965-1998）整理完毕</span><span class="n-date">2026-05-25</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查阅须知提示条 -->
+  <div class="notice-bar">
+    <strong>查阅须知：</strong>部分老旧档案在数字化过程中出现数据损坏（如编号05号卷宗），如需查阅请携带有效证件至<strong>槐树街7号三楼档案修复室</strong>申请。在线查阅编号01-04及06档案可直接访问。
+  </div>
+
+  <!-- 下部双栏 -->
+  <div class="bottom-row">
+    <!-- 左：工作动态 -->
+    <div class="bottom-left">
+      <div class="section-hd">工作动态</div>
+      <div class="sub-tabs" id="work-tabs">
+        <button class="sub-tab on" data-wtab="w1">档案保管</button>
+        <button class="sub-tab" data-wtab="w2">档案修复</button>
+        <button class="sub-tab" data-wtab="w3">数字化建设</button>
+        <button class="sub-tab" data-wtab="w4">档案征集</button>
+      </div>
+      <div class="sub-list show" id="w1">
+        <div class="news-item"><span class="n-title">中央和国家机关档案工作第十一协作组在慈恩镇开展集体学习活动</span><span class="n-date">2026-08-01</span></div>
+        <div class="news-item"><span class="n-title">慈恩镇档案库房新增三组密集架，馆藏容量提升30%</span><span class="n-date">2026-07-22</span></div>
+        <div class="news-item"><span class="n-title">省档案局对我镇档案保管工作进行专项督查</span><span class="n-date">2026-07-08</span></div>
+        <div class="news-item"><span class="n-title">档案保管科完成2025年度馆藏盘点工作</span><span class="n-date">2026-06-15</span></div>
+        <div class="news-item"><span class="n-title">慈恩镇档案管理办法（修订版）正式施行</span><span class="n-date">2025-12-01</span></div>
+      </div>
+      <div class="sub-list" id="w2">
+        <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 编号05档案修复项目：2009年度卷宗数据恢复工作取得阶段性进展</span><span class="n-date">2026-08-07</span></div>
+        <div class="news-item"><span class="n-title">档案修复室引进新型纸浆补洞机，提升修复效率</span><span class="n-date">2026-07-30</span></div>
+        <div class="news-item"><span class="n-title">2009年度老旧卷宗数字化修复项目启动</span><span class="n-date">2026-05-12</span></div>
+        <div class="news-item"><span class="n-title">慈恩镇三孔桥水文档案抢救性修复完成</span><span class="n-date">2026-04-20</span></div>
+        <div class="news-item"><span class="n-title">举办档案修复技术培训班（第三期）</span><span class="n-date">2026-03-15</span></div>
+      </div>
+      <div class="sub-list" id="w3">
+        <div class="news-item"><span class="n-title">第五批馆藏档案数字化扫描工程完成60%</span><span class="n-date">2026-08-04</span></div>
+        <div class="news-item"><span class="n-title">档案数据库升级至V3.0版本，检索响应速度提升</span><span class="n-date">2026-07-19</span></div>
+        <div class="news-item"><span class="n-title">在线查阅平台新增户籍档案检索功能</span><span class="n-date">2026-06-28</span></div>
+        <div class="news-item"><span class="n-title">信息技术科完成馆藏档案元数据标准化工作</span><span class="n-date">2026-06-01</span></div>
+        <div class="news-item"><span class="n-title">网络信息安全等级保护测评通过</span><span class="n-date">2026-05-18</span></div>
+      </div>
+      <div class="sub-list" id="w4">
+        <div class="news-item"><span class="n-title">慈恩镇地方志编纂志愿者招募通知</span><span class="n-date">2026-07-05</span></div>
+        <div class="news-item"><span class="n-title">面向社会征集慈恩镇老照片及历史文献</span><span class="n-date">2026-06-12</span></div>
+        <div class="news-item"><span class="n-title">接受市民捐赠民国时期慈恩镇地契一批</span><span class="n-date">2026-04-28</span></div>
+        <div class="news-item"><span class="n-title">档案接收征集科赴杭州征集相关历史档案</span><span class="n-date">2026-03-08</span></div>
+      </div>
+    </div>
+
+    <!-- 右：馆藏档案 -->
+    <div class="bottom-right">
+      <div class="section-hd">重点馆藏</div>
+      <div class="sub-list">
+        <div class="news-item"><span class="n-title">慈恩镇户籍档案（1952-1980）</span><span class="n-date">43卷</span></div>
+        <div class="news-item"><span class="n-title">土地批文与地籍资料（1983-2001）</span><span class="n-date">28卷</span></div>
+        <div class="news-item"><span class="n-title">教会活动备案记录（1965-1998）</span><span class="n-date">17卷</span></div>
+        <div class="news-item"><span class="n-title">民政救助与优抚档案（1970-2008）</span><span class="n-date">35卷</span></div>
+        <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 特大案件卷宗（2008-2009）</span><span class="n-date">待修复</span></div>
+        <div class="news-item"><span class="n-title">水利工程建设档案（1985-2015）</span><span class="n-date">22卷</span></div>
+        <div class="news-item"><span class="n-title" style="font-family:'Courier New',monospace;color:#999;cursor:pointer" onclick="tryOpenAdmin()" title="数据异常">����� 槐树街调查记录 ���</span><span class="n-date" style="color:#c00">数�据异&#x5e38;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <p>主办单位：<span class="ft-red">慈恩镇人民政府</span> · 承办单位：慈恩镇档案管理办公室</p>
+    <p>地址：慈恩镇槐树街7号 &nbsp; 电话：0571-XXXXXXX &nbsp; 邮箱：archive@cizhen.gov.cn</p>
+    <p>浙ICP备XXXXXXXX号 &nbsp; 政府网站标识码：XXXXXXXX &nbsp; 网站地图</p>
+    <p style="color:#999;font-size:10px;letter-spacing:1px">本网站内容为虚构创作，慈恩镇为虚构地名，与任何真实机构无关</p>
+  </div>
+
+</div><!-- /首页 -->
+
+<!-- ===== 机构概况页 ===== -->
+<div class="page-panel" id="page-org">
+  <h2>机构概况</h2>
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">机构简介</h3>
+  <p>慈恩镇档案管理办公室成立于1952年，是慈恩镇人民政府直属事业单位，负责全镇各类档案的收集、整理、保管、利用及数字化工作。现有馆藏档案约12万卷（件），涵盖户籍、土地、民政、水利、教育等多个门类。近年来持续推进档案信息化建设，已完成1980年前馆藏档案的数字化扫描工作，并开通在线查阅平台。</p>
+
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">领导信息</h3>
+  <table>
+    <tr><th width="80">姓名</th><th width="120">职务</th><th>分管工作</th></tr>
+    <tr><td>陈守正</td><td>主任</td><td>主持全面工作</td></tr>
+    <tr><td>刘慧兰</td><td>副主任</td><td>分管档案保管与修复</td></tr>
+    <tr><td>周建民</td><td>副主任</td><td>分管信息化与公共服务</td></tr>
+  </table>
+
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">内设机构</h3>
+  <table>
+    <tr><th width="140">部门</th><th>主要职责</th><th width="90">内部编号</th></tr>
+    <tr><td>档案接收征集科</td><td>负责档案接收、征集及社会捐赠档案的鉴定入馆</td><td>js001</td></tr>
+    <tr><td>档案保管科</td><td>负责馆藏档案的分类编目、排架管理及温湿度监控</td><td>bg001</td></tr>
+    <tr style="background:#2a1515;font-weight:bold"><td>档案修复室</td><td>负责破损、霉变档案的修复与抢救工作</td><td style="color:#ff6b6b">xf001</td></tr>
+    <tr><td>档案利用服务科</td><td>负责档案查阅接待、咨询服务及在线平台运维</td><td>ly001</td></tr>
+    <tr><td>信息技术科</td><td>负责档案数字化、数据库建设及网站维护</td><td>xx001</td></tr>
+  </table>
+
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">联系方式</h3>
+  <p>办公地址：慈恩镇槐树街7号<br>查阅服务时间：周一至周五 8:30-12:00 14:00-17:30<br>联系电话：0571-XXXXXXX<br>电子邮箱：archive@cizhen.gov.cn<br>档案修复室位于三楼西侧，来访请提前预约。</p>
+</div>
+
+<!-- ===== 档案查询页 ===== -->
+<div class="page-panel" id="page-search">
+  <h2>在线档案查询</h2>
+  <div style="display:flex;gap:10px;margin-bottom:14px">
+    <input type="text" id="archive-search" placeholder="输入档案编号、关键词或年份…" style="flex:1;height:38px;border:2px solid #e8c8c8;border-radius:4px;padding:0 12px;font-size:13px;outline:none">
+    <button id="archive-search-btn" style="padding:0 24px;height:38px;background:#8B0000;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px">检索</button>
+  </div>
+  <div style="font-size:12px;color:#999;margin-bottom:10px" id="search-hint">支持按编号（如 03）、关键词（如 户籍）、年份（如 2009）检索。部分档案因数据损坏暂不支持在线查阅。</div>
+  <div id="search-result"></div>
+
+  <h3 style="font-size:15px;color:#333;margin:16px 0 8px">查阅指南</h3>
+  <p><strong>步骤一：</strong>在检索框输入档案编号或关键词。<br>
+  <strong>步骤二：</strong>查看检索结果，点击目标档案条目。<br>
+  <strong>步骤三：</strong>如档案可在线查阅，直接浏览；如提示"数据损坏"，请携带有效证件至三楼修复室申请查阅。<br>
+  <strong>注意：</strong>编号05号档案因数字化过程中数据损坏，暂不支持在线查阅。该档案涉及2009年相关卷宗。</p>
+</div>
+
+<!-- ===== 新闻动态页 ===== -->
+<div class="page-panel" id="page-news">
+  <h2>新闻动态</h2>
+  <div class="news-item"><span class="n-title">国家档案局调研组赴慈恩镇指导工作</span><span class="n-date">2026-08-03</span></div>
+  <div class="news-item"><span class="n-title">慈恩镇档案管理办公室召开2026年度工作会议</span><span class="n-date">2026-07-28</span></div>
+  <div class="news-item"><span class="n-title">浙江省档案局印发《关于进一步加强历史档案保护的通知》</span><span class="n-date">2026-07-20</span></div>
+  <div class="news-item"><span class="n-title">慈恩镇启动第五批馆藏档案数字化扫描工程</span><span class="n-date">2026-07-15</span></div>
+  <div class="news-item"><span class="n-title">我办荣获2025年度全省档案工作先进集体</span><span class="n-date">2026-06-30</span></div>
+</div>
+
+<!-- ===== 工作动态页 ===== -->
+<div class="page-panel" id="page-work">
+  <h2>工作动态</h2>
+  <div class="news-item"><span class="n-title">中央和国家机关档案工作第十一协作组在慈恩镇开展集体学习</span><span class="n-date">2026-08-01</span></div>
+  <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 编号05档案修复项目取得阶段性进展</span><span class="n-date">2026-08-07</span></div>
+  <div class="news-item"><span class="n-title">第五批馆藏档案数字化扫描工程完成60%</span><span class="n-date">2026-08-04</span></div>
+  <div class="news-item"><span class="n-title">档案修复室引进新型纸浆补洞机</span><span class="n-date">2026-07-30</span></div>
+  <div class="news-item"><span class="n-title">档案库房新增三组密集架</span><span class="n-date">2026-07-22</span></div>
+</div>
+
+<!-- ===== 法规标准库页 ===== -->
+<div class="page-panel" id="page-law">
+  <h2>法规标准库</h2>
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">法律法规</h3>
+  <div class="news-item"><span class="n-title">《中华人民共和国档案法》（2020修订）</span></div>
+  <div class="news-item"><span class="n-title">《中华人民共和国档案法实施条例》</span></div>
+  <div class="news-item"><span class="n-title">《中华人民共和国保守国家秘密法》</span></div>
+  <div class="news-item"><span class="n-title">《档案解密与公开暂行办法》（2018修订）</span></div>
+  <div class="news-item"><span class="n-title">《浙江省档案管理条例》</span></div>
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">业务标准</h3>
+  <div class="news-item"><span class="n-title">DA/T 1-2000 档案工作基本术语</span></div>
+  <div class="news-item"><span class="n-title">DA/T 31-2017 纸质档案数字化技术规范</span></div>
+  <div class="news-item"><span class="n-title">GB/T 18894-2016 电子文件归档与电子档案管理规范</span></div>
+</div>
+
+<!-- ===== 专题热点页 ===== -->
+<div class="page-panel" id="page-topic">
+  <h2>专题热点</h2>
+  <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 2009年慈恩镇特大案件档案修复专题</span><span class="n-date">持续更新</span></div>
+  <div class="news-item"><span class="n-title">慈恩镇馆藏档案文献遗产申报专题</span><span class="n-date">2026-07</span></div>
+  <div class="news-item"><span class="n-title">"十五五"档案事业发展规划</span><span class="n-date">2026-06</span></div>
+  <div class="news-item"><span class="n-title">档案数字化建设成果展示</span><span class="n-date">2026-05</span></div>
+</div>
+
+<!-- ===== 互动交流页 ===== -->
+<div class="page-panel" id="page-contact">
+  <h2>互动交流</h2>
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">常见问题</h3>
+  <div class="news-item"><span class="n-title">如何查阅馆藏档案？——请持本人身份证件至槐树街7号</span></div>
+  <div class="news-item"><span class="n-title">哪些档案可以在线查阅？——编号01-04及06可通过网站直接访问</span></div>
+  <div class="news-item"><span class="n-title">档案数据损坏怎么办？——请携带介绍信至三楼档案修复室申请</span></div>
+  <div class="news-item"><span class="n-title">如何向档案馆捐赠历史资料？——请联系档案接收征集科</span></div>
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">联系方式</h3>
+  <p>办公地址：慈恩镇槐树街7号<br>咨询电话：0571-XXXXXXX<br>电子邮箱：archive@cizhen.gov.cn<br>工作时间：周一至周五 8:30-12:00 14:00-17:30</p>
+</div>
+
+<!-- ===== 密码门 ===== -->
+<div class="modal-mask" id="gate-modal">
+  <div class="gate-card">
+    <div class="gate-title">档案修复室 · 卷宗调阅授权</div>
+    <div class="gate-desc">编号05（2008-2009特大案件卷宗）因数字化过程中文件损坏，需输入修复室授权密码方可查阅。<br>提示：请输入<b>检索人姓名拼音</b>。<br>如需协助，请携带有效证件至槐树街7号三楼档案修复室。</div>
+    <input type="text" class="gate-input" id="gate-input" placeholder="修复室授权密码" autocomplete="off">
+    <div class="gate-err hidden" id="gate-err">授权密码错误。如需协助请联系三楼档案修复室。</div>
+    <div class="gate-actions">
+      <button class="gate-btn cancel" onclick="closeGate()">取 消</button>
+      <button class="gate-btn" onclick="checkGate()">确 认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 管理员登录门 ===== -->
+<div class="modal-mask" id="admin-modal">
+  <div class="gate-card">
+    <div class="gate-title">内部档案管理系统 · 管理员认证</div>
+    <div class="gate-desc">该系统仅限内部管理人员使用。请输入管理员账号及密码。</div>
+    <input type="text" class="gate-input" id="admin-user" placeholder="管理员账号" autocomplete="off" style="margin-bottom:8px">
+    <input type="password" class="gate-input" id="admin-pass" placeholder="管理密码" autocomplete="off">
+    <div style="color:#666;font-size:11px;margin-top:6px">提示：账号格式见机构概况·内设机构；密码为该系列案件的归档年份（4位数字）</div>
+    <div class="gate-err hidden" id="admin-err">账号或密码错误，请重试。</div>
+    <div class="gate-actions">
+      <button class="gate-btn cancel" onclick="closeAdmin()">取 消</button>
+      <button class="gate-btn" onclick="checkAdmin()">登 录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 地下档案室门禁（L3） ===== -->
+<div class="modal-mask" id="gate3-modal">
+  <div class="gate-card">
+    <div class="gate-title">教会地下档案室 · 门禁密码</div>
+    <div class="gate-desc">编号07（教会地下档案室备案记录 1965-2009）属于限制调阅档案。<br>根据教会人事档案，最后一位掌管地下档案室钥匙的王执事于2009年去世，终年67岁。<br>请输入王执事设定的4位数字门禁密码。</div>
+    <input type="text" class="gate-input" id="gate3-input" placeholder="4位数字密码" autocomplete="off" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+    <div class="gate-err hidden" id="gate3-err">门禁密码错误。请核对王执事生平信息后重试。</div>
+    <div class="gate-actions">
+      <button class="gate-btn cancel" onclick="closeGate3()">取 消</button>
+      <button class="gate-btn" onclick="checkGate3()">确 认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 全屏卷宗：林远案 ===== -->
+<div class="dossier-overlay" id="dossier">
+  <div class="dossier-topbar">
+    <span>慈恩镇档案管理办公室 · 内部卷宗调阅系统</span>
+    <button class="dossier-close" onclick="closeDossier()">关闭卷宗</button>
+  </div>
+  <div style="position:relative">
+    <div class="dossier-stamp">内部参考 · 限制调阅</div>
+    <div class="dossier-body">
+      <div class="dossier-head">
+        <h1>案件卷宗 · CE-2009-005</h1>
+        <div class="dossier-meta">卷宗来源：县公安局刑侦大队移交 | 归档日期：2009.06.15 | 保密级别：内部</div>
+      </div>
+      <table class="dossier-table">
+        <tr><th>姓名</th><td>林远</td></tr>
+        <tr><th>性别</th><td>男</td></tr>
+        <tr><th>出生年份</th><td>1984</td></tr>
+        <tr><th>住址</th><td>慈恩镇槐树街73号</td></tr>
+        <tr><th>失踪时间</th><td>2009年3月17日，约21:00</td></tr>
+        <tr><th>最后目击地点</th><td>槐树街7号（教会建筑）北侧巷口</td></tr>
+        <tr><th>报案人</th><td>林远之母（已故）</td></tr>
+        <tr><th>案件状态</th><td>未结 · 卷宗封存</td></tr>
+      </table>
+
+      <div class="dossier-section">
+        <h3>关联卷宗</h3>
+        <ul class="dossier-link-list">
+          <li>CE-2009-001 &nbsp; 槐树街失踪案 · 卷宗一 &nbsp; <span style="color:#666">已归档</span></li>
+          <li>CE-2009-002 &nbsp; 槐树街失踪案 · 卷宗二 &nbsp; <span style="color:#666">已归档</span></li>
+          <li>CE-2009-003 &nbsp; 槐树街失踪案 · 卷宗三 &nbsp; <span style="color:#666">已归档</span></li>
+          <li>CE-2009-004 &nbsp; 槐树街失踪案 · 卷宗四 &nbsp; <span style="color:#666">已归档</span></li>
+          <li class="locked">CE-2009-006 &nbsp; 槐树街失踪案 · 卷宗六 &nbsp; 已加密 · 需指定密钥</li>
+        </ul>
+      </div>
+
+      <div class="dossier-footer-hint">
+        <span style="color:#8B0000">█ 系统提示</span><br>
+        您当前仅拥有卷宗摘要查阅权限。<br>
+        完整卷宗及CE-2009-001至006全部关联档案需<strong>管理员权限</strong>方可调阅。<br>
+        如需更高权限，请与三楼修复室联系。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 全屏内部档案调阅系统：管理员权限 ===== -->
+<div id="dossier2" class="dossier-overlay">
+  <div class="dossier-container">
+    <div class="dossier-header">
+      <span class="dossier-badge2">管理员认证</span>
+      <h1>内部档案调阅系统</h1>
+      <p>操作员：xf001 · 档案修复室 | 当前调阅：CE-2009-005 · 林远失踪案</p>
+    </div>
+    <button class="dossier-close" onclick="closeDossier2()">退出系统</button>
+    <div class="dossier-body">
+      <div class="dossier-section">
+        <h2>案件基本信息</h2>
+        <table class="dossier-table">
+          <tr><td>案件编号</td><td>CE-2009-005</td></tr>
+          <tr><td>姓名</td><td>林远</td></tr>
+          <tr><td>性别</td><td>男</td></tr>
+          <tr><td>出生年份</td><td>1984年</td></tr>
+          <tr><td>户籍地址</td><td>慈恩镇槐树街73号</td></tr>
+          <tr><td>失踪时间</td><td>2009年3月17日 晚19:40</td></tr>
+          <tr><td>最后目击地点</td><td>慈恩镇槐树街7号（教会）门前</td></tr>
+          <tr><td>报案人</td><td>陈某（时称档案办主任）</td></tr>
+          <tr><td>案件状态</td><td style="color:#c41e3a;">████ 最高机密</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-section">
+        <h2>失踪前24小时轨迹</h2>
+        <table class="dossier-table">
+          <tr><td>3月16日 21:00</td><td>林远与王某（教会执事）在教会地下室会面，持续约2小时</td></tr>
+          <tr><td>3月16日 23:30</td><td>邻居称林远返家时神色异常，手持一本旧档案夹</td></tr>
+          <tr><td>3月17日 08:15</td><td>林远前往镇档案室，调阅卷宗CE-1984-003（内容已被抽走）</td></tr>
+          <tr><td>3月17日 14:00</td><td>林远电话告知朋友"我发现了一些东西，晚上跟你说"</td></tr>
+          <tr><td>3月17日 19:40</td><td>多名目击者证实林远独自走进槐树街7号教会后门</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-section">
+        <h2>现场勘查摘要</h2>
+        <p class="dossier-text">槐树街7号教会一楼及周边区域于3月18日进行勘查。教会大堂无明显异常。地下档案室入口隐蔽，勘查时未予开启（教会以"宗教场所内部管理区域"为由拒绝）。林远宿舍内发现手写笔记残页，字迹潦草，仅能辨识"地下档案室""六份""██年"等字样。笔记已被证物科封存。</p>
+      </div>
+
+      <div class="dossier-section">
+        <h2>关联人员</h2>
+        <table class="dossier-table">
+          <tr><td>王某</td><td>教会执事 · 已于2009年去世（终年67岁）</td><td style="color:#c41e3a;">临终供述：<br>"地下室还有一份"</td></tr>
+          <tr><td>陈某</td><td>原档案办主任 · 2010年调离慈恩镇</td><td>去向不明</td></tr>
+          <tr><td>陈守正</td><td>现任档案办主任 · 陈某之子</td><td>在任</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-section">
+        <h2>关联卷宗索引</h2>
+        <table class="dossier-table">
+          <tr><td>CE-2009-001</td><td>槐树街7号教会 · 建筑图纸备案</td><td style="color:#888;">已加密</td></tr>
+          <tr><td>CE-2009-002</td><td>慈恩镇1942年人口变动记录</td><td style="color:#888;">已加密</td></tr>
+          <tr><td>CE-2009-003</td><td>镇档案室1984年调阅记录</td><td style="color:#888;">已加密</td></tr>
+          <tr><td>CE-2009-004</td><td>教会地下室结构图</td><td style="color:#888;">已加密</td></tr>
+          <tr><td>CE-2009-005</td><td>林远失踪案卷宗</td><td style="color:#0a0;">当前调阅</td></tr>
+          <tr><td>CE-2009-006</td><td>███</td><td style="color:#c41e3a;">绝密 · 需更高级别授权</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-footer">
+        <p>系统提示：第三条关联卷宗CE-2009-003「1984年调阅记录」中提到，档案室地下室入口登记在「<span class="dossier-clue">教会·地下档案室</span>」条目下。请返回档案查询系统，使用王某临终密码查看。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 全屏卷宗：教会地下档案室（L3） ===== -->
+<div class="dossier-overlay" id="dossier3">
+  <div class="dossier-container">
+    <div class="dossier-header">
+      <span class="dossier-badge2">教会档案 · 限制调阅</span>
+      <h1>地下档案室备案记录</h1>
+      <p>档案编号：07 · 时间跨度 1965-2009 | 最后更新：王执事 · 2009年7月</p>
+    </div>
+    <button class="dossier-close" onclick="closeDossier3()">退出系统</button>
+    <div class="dossier-body">
+      <div class="dossier-section">
+        <h2>地下档案室 · 建筑结构备案</h2>
+        <table class="dossier-table">
+          <tr><td>建筑位置</td><td>慈恩镇槐树街7号教会正殿后方，地下约4.5米</td></tr>
+          <tr><td>入口</td><td>教会圣器室北墙暗门，向下旋转楼梯17级</td></tr>
+          <tr><td>面积</td><td>约38平方米</td></tr>
+          <tr><td>建造年份</td><td>约1942年（据教会旧志）</td></tr>
+          <tr><td>用途</td><td>原为战时避难所，1965年后改作教会内部档案存放</td></tr>
+          <tr><td>最后登记维修</td><td>2008年12月 · 王执事</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-section">
+        <h2>内部对话摘录（2009年7月 · 王执事与陈某）</h2>
+        <p class="dossier-text" style="color:#c41e3a;font-weight:bold">以下内容选自教会内部监听设备录音抄本，由监听单位于2009年移交档案室归档。王执事于对话后两周去世。</p>
+        <div style="background:#1a1a1a;border:1px solid #3a1a1a;padding:16px;margin-top:12px;font-family:'SimSun','宋体',serif;line-height:1.8;color:#ccc;">
+          <p><b style="color:#999;">[2009年7月3日 22:14 教会圣器室]</b></p>
+          <p><b style="color:#8B0000;">陈某：</b>王叔，这么晚还打扰您。镇上最近风声紧，我是想跟您说——您知道的那件事，还是把东西交给我保管比较好。</p>
+          <p><b style="color:#8B0000;">王执事：</b>交给你？交给你们档案室？呵，你们父子俩打什么算盘我心里清楚。地下室的东西是谁放进去的，你自己不知道吗？</p>
+          <p><b style="color:#8B0000;">陈某：</b>王叔，您别动气。我只想说，这些东西留在教会不安全。万一有人查到……</p>
+          <p><b style="color:#8B0000;">王执事：</b>不安全？谁查？那个姓林的小伙子已经不见了，下一个是不是该轮到我了？我活了六十七年，不怕这个。</p>
+          <p><b style="color:#8B0000;">陈某：</b>（沉默片刻）王叔，您误会了。我是来帮您的。</p>
+          <p><b style="color:#8B0000;">王执事：</b>帮？好，那我告诉你——地下室里每一份东西，我都备了份。原件你可以拿走，但备份我留在了别的地方。你们要做的事，天在看。</p>
+          <p><b style="color:#8B0000;">陈某：</b>（叹气）王叔，您知道这意味着什么吗？</p>
+          <p><b style="color:#8B0000;">王执事：</b>意味着我这把老骨头够本了。你要拿就拿走吧，我不拦你。但记住——密码是你父亲设的，你心里有数。</p>
+          <p><b style="color:#8B0000;">陈某：</b>（起身）……下个月我会把原件锁进我办公室的保险柜。密码我记在了笔记本里，红色那本。至于王叔，保重。</p>
+          <p style="color:#666;margin-top:8px;">[录音结束。王执事于2009年7月19日因"突发心脏病"去世。陈某于2010年调离慈恩镇。]</p>
+        </div>
+      </div>
+
+      <div class="dossier-section">
+        <h2>地下档案室 · 存档清单（部分解密）</h2>
+        <table class="dossier-table">
+          <tr><td>1942-001</td><td>教会建造施工图原件</td><td style="color:#888;">已取出</td></tr>
+          <tr><td>1959-007</td><td>慈恩镇户籍变更记录（含陈氏家族迁入登记）</td><td style="color:#888;">已取出</td></tr>
+          <tr><td>1984-003</td><td>档案室调阅日志（1984年7月）</td><td style="color:#888;">已取出</td></tr>
+          <tr><td>2009-补-001</td><td>林远调查笔记残页（复印件）</td><td style="color:#0a0;">在档</td></tr>
+          <tr><td>2009-补-002</td><td>槐树街7号平面图（手绘标注）</td><td style="color:#0a0;">在档</td></tr>
+        </table>
+      </div>
+
+      <div class="dossier-footer">
+        <p>系统提示：对话记录中提到「<span class="dossier-clue">原件锁在保险柜，密码记在红色笔记本</span>」。陈某已调离，但其子陈守正仍在档案办任职。请尝试在档案管理系统内查找与陈守正相关的材料。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================
+ * 音频系统（Web Audio 程序化合成，无外部文件）
+ * ===================================================== */
+var AudioMgr = {
+  ctx: null,
+  ambientNodes: null,
+  enabled: true,
+  init: function() {
+    if (this.ctx) return;
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.enabled = localStorage.getItem('cz_audio_on') !== '0';
+    } catch (e) { this.enabled = false; }
+  },
+  resume: function() {
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  toggle: function() {
+    this.resume();
+    this.enabled = !this.enabled;
+    try { localStorage.setItem('cz_audio_on', this.enabled ? '1' : '0'); } catch (e) {}
+    // 官网保持静默（环境音已移除）；开关只控制音效与小曲
+    if (!this.enabled) { this.stopAmbient(); this.stopMelody(); }
+    this.updateIcon();
+    return this.enabled;
+  },
+  updateIcon: function() {
+    var b = document.getElementById('btn-bgm');
+    if (b) b.textContent = this.enabled ? '🔊 背景音乐：开' : '🔇 背景音乐：关';
+  },
+  /* 官网环境音：极轻的"老办公室"低鸣（55Hz+拍频+呼吸感） */
+  startAmbient: function() {
+    if (!this.enabled || !this.ctx || this.ambientNodes) return;
+    var ctx = this.ctx;
+    var master = ctx.createGain();
+    master.gain.value = 0.028; // 极轻
+    master.connect(ctx.destination);
+    var o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 55;
+    var o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = 55.4;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 100;
+    o1.connect(lp); o2.connect(lp); lp.connect(master);
+    var lfo = ctx.createOscillator(); lfo.frequency.value = 0.06;
+    var lfoGain = ctx.createGain(); lfoGain.gain.value = 0.012;
+    lfo.connect(lfoGain); lfoGain.connect(master.gain);
+    o1.start(); o2.start(); lfo.start();
+    this.ambientNodes = { o1: o1, o2: o2, lfo: lfo, master: master };
+    // 隐约心跳（每3秒一次，很轻）
+    var self = this;
+    this._hb = setInterval(function() { self.heartbeat(0.15); }, 3000);
+  },
+  stopAmbient: function() {
+    if (this.ambientNodes) {
+      try {
+        this.ambientNodes.o1.stop(); this.ambientNodes.o2.stop(); this.ambientNodes.lfo.stop();
+        this.ambientNodes.master.disconnect();
+      } catch (e) {}
+      this.ambientNodes = null;
+    }
+    if (this._hb) { clearInterval(this._hb); this._hb = null; }
+  },
+  /* 心跳 */
+  heartbeat: function(vol) {
+    if (!this.enabled || !this.ctx) return;
+    var ctx = this.ctx, v = vol || 0.4;
+    var thump = function(t) {
+      var o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(58, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.12);
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(v, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.2);
+    };
+    thump(ctx.currentTime); thump(ctx.currentTime + 0.22);
+  },
+  /* 警示音（密码错误） */
+  warn: function() {
+    if (!this.enabled || !this.ctx) return;
+    var ctx = this.ctx;
+    var o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 98;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.55);
+  },
+  /* 《痴迷》式"说话吉他"（贴近1964《Forever》原曲：呼唤式旋律+talk box元音+延迟回声+木吉他琶音） */
+  melody: function() {
+    if (!this.enabled || !this.ctx || this._melodyTimer) return;
+    var ctx = this.ctx;
+    var master = ctx.createGain();
+    master.gain.value = 0.16;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200;
+    master.connect(lp); lp.connect(ctx.destination);
+    // 原曲式延迟回声（0.42s，talk box的迷幻尾音）
+    var delay = ctx.createDelay(); delay.delayTime.value = 0.42;
+    var fb = ctx.createGain(); fb.gain.value = 0.32;
+    var wet = ctx.createGain(); wet.gain.value = 0.22;
+    delay.connect(fb); fb.connect(delay); delay.connect(wet); wet.connect(master);
+    // 乡村抒情进行：C - Am - F - G
+    var chords = [
+      [130.81, 261.63, 329.63], [110.00, 261.63, 329.63],
+      [87.31, 174.61, 220.00], [98.00, 196.00, 246.94]
+    ];
+    // 呼唤式旋律："Forever"般长音保持（1.9s） + 短音回落
+    var melodyNotes = [
+      { f: 392.00, d: 1.9 }, { f: 493.88, d: 0.7 },   // "For-e"
+      { f: 523.25, d: 2.6 }, { f: 493.88, d: 0.8 },  // "ver..."（高音呼唤，长保持）
+      { f: 440.00, d: 1.9 }, { f: 392.00, d: 0.7 },   // 回落
+      { f: 329.63, d: 1.9 }, { f: 293.66, d: 1.4 }   // 收尾下行
+    ];
+    // 木吉他琶音分解（每小节，三角波短音）
+    var arpPattern = [
+      [261.63, 329.63, 392.00, 329.63], [261.63, 329.63, 440.00, 329.63],
+      [220.00, 261.63, 329.63, 261.63], [196.00, 246.94, 293.66, 246.94]
+    ];
+    var barDur = 3.6, loopDur = 4 * barDur;
+    var self = this;
+    function schedule(loopStart) {
+      // 木吉他琶音（每小节4个分解音）
+      for (var b = 0; b < 4; b++) {
+        var arp = arpPattern[b];
+        for (var ai = 0; ai < 4; ai++) {
+          var at = loopStart + b * barDur + ai * (barDur / 4);
+          var ao = ctx.createOscillator(); ao.type = 'triangle'; ao.frequency.value = arp[ai];
+          var ag = ctx.createGain();
+          ag.gain.setValueAtTime(0.0001, at);
+          ag.gain.linearRampToValueAtTime(0.045, at + 0.015);
+          ag.gain.exponentialRampToValueAtTime(0.0001, at + 0.5);
+          ao.connect(ag); ag.connect(master);
+          ao.start(at); ao.stop(at + 0.55);
+        }
+        // 温柔贝斯（每小节根音，低八度）
+        var bo = ctx.createOscillator(); bo.type = 'sine'; bo.frequency.value = chords[b][0] / 2;
+        var bg = ctx.createGain();
+        bg.gain.setValueAtTime(0.0001, loopStart + b * barDur);
+        bg.gain.linearRampToValueAtTime(0.06, loopStart + b * barDur + 0.05);
+        bg.gain.linearRampToValueAtTime(0.0001, loopStart + b * barDur + barDur * 0.95);
+        bo.connect(bg); bg.connect(master);
+        bo.start(loopStart + b * barDur); bo.stop(loopStart + (b + 1) * barDur);
+      }
+      // "说话吉他"主旋律：滑音 + 5段元音共振峰（模拟"Fo-rev-er"人声）+ 延迟回声
+      var t = loopStart + 0.25;
+      melodyNotes.forEach(function(n) {
+        var o = ctx.createOscillator(); o.type = 'triangle';
+        var glideFrom = n.f * 0.92;
+        o.frequency.setValueAtTime(glideFrom, t);
+        o.frequency.exponentialRampToValueAtTime(n.f, t + 0.12);
+        var vib = ctx.createOscillator(); vib.frequency.value = 4.6;
+        var vibG = ctx.createGain(); vibG.gain.value = 5;
+        vib.connect(vibG); vibG.connect(o.frequency);
+        // 5段元音轮廓：o → e → r → e → r（更接近人声说话感）
+        var formant = ctx.createBiquadFilter(); formant.type = 'bandpass'; formant.Q.value = 8;
+        var steps = [
+          [0.00, 620], [0.20, 480], [0.42, 900], [0.65, 700], [0.85, 480], [1.00, 400]
+        ];
+        formant.frequency.setValueAtTime(620, t);
+        steps.forEach(function(s) {
+          formant.frequency.exponentialRampToValueAtTime(s[1], t + n.d * s[0]);
+        });
+        var g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.12, t + 0.05);
+        g.gain.linearRampToValueAtTime(0.0001, t + n.d * 0.97);
+        o.connect(formant); formant.connect(g);
+        g.connect(master); g.connect(delay); // 主路+回声路
+        vib.start(t); vib.stop(t + n.d);
+        o.start(t); o.stop(t + n.d + 0.1);
+        t += n.d;
+      });
+    }
+    schedule(ctx.currentTime + 0.25);
+    this._melodyTimer = setInterval(function() {
+      if (self.enabled && self.ctx) schedule(ctx.currentTime + 0.05);
+    }, loopDur * 1000);
+  },
+  stopMelody: function() {
+    if (this._melodyTimer) { clearInterval(this._melodyTimer); this._melodyTimer = null; }
+  },
+  /* 解锁成功：教堂钟声 */
+  bell: function() {
+    if (!this.enabled || !this.ctx) return;
+    var ctx = this.ctx;
+    [0, 0.7, 1.4].forEach(function(dt, i) {
+      var o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.value = 196 - i * 8;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, ctx.currentTime + dt);
+      g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + dt + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dt + 2.2);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(ctx.currentTime + dt); o.stop(ctx.currentTime + dt + 2.3);
+    });
+  }
+};
+AudioMgr.init();
+window.addEventListener('click', function once() {
+  AudioMgr.resume();
+  window.removeEventListener('click', once);
+}, { once: true });
+</script>
+<script>
+// ===== 主导航切换 =====
+document.getElementById('main-nav').addEventListener('click', function(e) {
+  var a = e.target.closest('a[data-page]');
+  if (!a) return;
+  e.preventDefault();
+  var page = a.getAttribute('data-page');
+
+  // 更新导航高亮
+  this.querySelectorAll('a').forEach(function(el) { el.classList.remove('on'); });
+  a.classList.add('on');
+
+  // 隐藏所有面板
+  document.querySelectorAll('.page-panel').forEach(function(p) { p.classList.remove('show'); });
+  var homeEl = document.querySelector('.page-home');
+  if (homeEl) homeEl.style.display = 'none';
+
+  if (page === 'home') {
+    if (homeEl) homeEl.style.display = '';
+  } else {
+    var panel = document.getElementById('page-' + page);
+    if (panel) panel.classList.add('show');
+  }
+});
+
+// ===== 首页新闻标签切换 =====
+document.querySelectorAll('.news-tab').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var tabId = this.getAttribute('data-tab');
+    this.parentElement.querySelectorAll('.news-tab').forEach(function(b) { b.classList.remove('on'); });
+    this.classList.add('on');
+    document.querySelectorAll('.news-list').forEach(function(l) { l.classList.remove('show'); });
+    document.getElementById(tabId).classList.add('show');
+  });
+});
+
+// ===== 工作动态子标签切换 =====
+document.getElementById('work-tabs').addEventListener('click', function(e) {
+  var btn = e.target.closest('.sub-tab');
+  if (!btn) return;
+  this.querySelectorAll('.sub-tab').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  document.querySelectorAll('#work-tabs ~ .sub-list').forEach(function(l) { l.classList.remove('show'); });
+  document.getElementById(btn.getAttribute('data-wtab')).classList.add('show');
+});
+
+// ===== 新闻正文展开 =====
+function toggleNews(el) {
+  var body = el.nextElementSibling;
+  if (body && body.classList.contains('news-body')) {
+    body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// ===== 背景音乐开关 =====
+function toggleBgm() {
+  var on = AudioMgr.toggle();
+  return on;
+}
+AudioMgr.updateIcon();
+
+// ===== 密码门 =====
+function openGate() {
+  document.getElementById('gate-modal').classList.add('show');
+  document.getElementById('gate-input').value = '';
+  document.getElementById('gate-err').classList.add('hidden');
+  setTimeout(function() { document.getElementById('gate-input').focus(); }, 100);
+}
+function closeGate() {
+  document.getElementById('gate-modal').classList.remove('show');
+}
+function checkGate() {
+  if (document.getElementById('gate-input').value === 'linyuan') {
+    document.getElementById('gate-modal').classList.remove('show');
+    AudioMgr.resume(); AudioMgr.melody();
+    document.getElementById('dossier').classList.add('show');
+  } else {
+    document.getElementById('gate-err').classList.remove('hidden');
+    AudioMgr.resume(); AudioMgr.warn();
+  }
+}
+function closeDossier() {
+  document.getElementById('dossier').classList.remove('show');
+}
+function closeDossier2() {
+  document.getElementById('dossier2').classList.remove('show');
+}
+document.getElementById('gate-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkGate();
+});
+document.getElementById('gate-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeGate();
+});
+
+// ===== 管理员登录门（顺序锁：需先在档案查询中检索到该档案） =====
+function tryOpenAdmin() {
+  if (sessionStorage.getItem('cz_admin_unlock') === '1') {
+    openAdmin();
+  } else {
+    alert('数据异常。请先在「档案查询」中检索该档案。');
+  }
+}
+function openAdmin() {
+  document.getElementById('admin-modal').classList.add('show');
+  document.getElementById('admin-err').classList.add('hidden');
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+}
+function closeAdmin() {
+  document.getElementById('admin-modal').classList.remove('show');
+}
+function checkAdmin() {
+  var u = document.getElementById('admin-user').value.trim();
+  var p = document.getElementById('admin-pass').value.trim();
+  if (u === 'xf001' && p === '2009') {
+    document.getElementById('admin-modal').classList.remove('show');
+    AudioMgr.resume(); AudioMgr.melody();
+    window.l2Unlocked = true;
+    // 动态添加 L3 档案条目
+    window._catalog['07'] = { title:'教会地下档案室备案记录（1965-2009）', status:'限制调阅，需门禁密码', desc:'收录慈恩镇槐树街7号教会地下档案室结构备案、人员出入登记及1965-2009年间内部活动记录。部分内容涉密。' };
+    document.getElementById('dossier2').classList.add('show');
+  } else {
+    document.getElementById('admin-err').classList.remove('hidden');
+    AudioMgr.resume(); AudioMgr.warn();
+  }
+}
+document.getElementById('admin-user').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('admin-pass').focus();
+});
+document.getElementById('admin-pass').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkAdmin();
+});
+document.getElementById('admin-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdmin();
+});
+
+// ===== 地下档案室门禁（L3） =====
+function openGate3() {
+  document.getElementById('gate3-modal').classList.add('show');
+  document.getElementById('gate3-input').value = '';
+  document.getElementById('gate3-err').classList.add('hidden');
+  AudioMgr.resume(); AudioMgr.warn();
+  setTimeout(function() { document.getElementById('gate3-input').focus(); }, 300);
+}
+function closeGate3() {
+  document.getElementById('gate3-modal').classList.remove('show');
+}
+function checkGate3() {
+  if (document.getElementById('gate3-input').value.trim() === '1942') {
+    document.getElementById('gate3-modal').classList.remove('show');
+    AudioMgr.resume(); AudioMgr.melody();
+    document.getElementById('dossier3').classList.add('show');
+  } else {
+    document.getElementById('gate3-err').classList.remove('hidden');
+    AudioMgr.resume(); AudioMgr.warn();
+  }
+}
+function closeDossier3() {
+  document.getElementById('dossier3').classList.remove('show');
+}
+document.getElementById('gate3-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkGate3();
+});
+document.getElementById('gate3-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeGate3();
+});
+
+// ===== 档案查询检索 =====
+(function() {
+  var catalog = window._catalog = {
+    '01': { title:'慈恩镇户籍档案（1952-1980）', status:'可在线查阅', desc:'收录慈恩镇1952年至1980年间户籍登记信息，共43卷。' },
+    '02': { title:'土地批文与地籍资料（1983-2001）', status:'可在线查阅', desc:'收录土地审批文件、地籍调查表及宗地图等，共28卷。' },
+    '03': { title:'教会活动备案记录（1965-1998）', status:'可在线查阅', desc:'收录慈恩镇辖区内教会活动、建筑修缮及人员变更备案材料。' },
+    '04': { title:'民政救助与优抚档案（1970-2008）', status:'可在线查阅', desc:'收录优抚对象登记、低保申请、灾害救助等档案。' },
+    '05': { title:'慈恩镇特大案件卷宗（2008-2009）', status:'数据损坏，暂不可查阅', desc:'涉及2009年槐树街相关事件的调查记录。因数字化过程中文件损坏，无法在线提供服务。' },
+    '06': { title:'慈恩镇水利工程建设档案（1985-2015）', status:'可在线查阅', desc:'收录河道治理、堤防建设及防汛工程档案。' }
+  };
+  var input = document.getElementById('archive-search');
+  var btn = document.getElementById('archive-search-btn');
+  var result = document.getElementById('search-result');
+  function doSearch() {
+    var q = (input.value || '').trim().toLowerCase();
+    if (!q) return;
+    // 特殊检索：被抹去的人
+    if (q === '林远' || q === 'linyuan') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      return;
+    }
+    // 特殊检索：槐树街调查记录（解锁馆藏目录的管理员入口）
+    if (q === '槐树街' || q === '调查记录') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">找到 1 条相关档案：<b>槐树街调查记录</b><br><span style="color:#8B0000">（数据异常，暂不可在线查阅）</span><br><span style="color:#999;font-size:12px">请前往馆藏目录尝试访问该条目。</span></div>';
+      sessionStorage.setItem('cz_admin_unlock', '1');
+      return;
+    }
+    var found = [];
+    for (var k in catalog) {
+      var item = catalog[k];
+      if (k === q || item.title.toLowerCase().indexOf(q) !== -1 || item.desc.toLowerCase().indexOf(q) !== -1) {
+        found.push({ no: k, title: item.title, status: item.status, desc: item.desc });
+      }
+    }
+    result.style.display = '';
+    if (found.length === 0) {
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#999;font-size:13px">未找到匹配的档案条目</div>';
+    } else {
+      var html = '';
+      found.forEach(function(f) {
+        var broken = f.status.indexOf('损坏') !== -1;
+        var restricted = f.status.indexOf('限制调阅') !== -1;
+        var onclick = restricted ? ' onclick="openGate3()"' : (broken ? ' onclick="openGate()"' : '');
+        var cls = restricted ? ' broken' : (broken ? ' broken' : '');
+        var cursor = (restricted || broken) ? 'pointer' : 'default';
+        html += '<div class="search-result-item' + cls + '" style="cursor:' + cursor + '"' + onclick + '>' +
+          '<span class="sr-no">编号 ' + f.no + '</span> · <span class="sr-title">' + f.title + '</span>' +
+          '<div class="sr-status" style="color:' + ((restricted || broken) ? '#999' : '#888') + '">状态：' + f.status + ' | ' + f.desc + '</div></div>';
+      });
+      result.innerHTML = html;
+    }
+  }
+  if (btn && input) {
+    btn.addEventListener('click', doSearch);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
+  }
+
+  // 顶部搜索也联动
+  var topInput = document.getElementById('top-search');
+  var topBtn = document.getElementById('top-search-btn');
+  if (topBtn && topInput) {
+    topBtn.addEventListener('click', function() {
+      // 切换到档案查询页
+      document.querySelectorAll('.page-panel').forEach(function(p) { p.classList.remove('show'); });
+      var homeEl = document.querySelector('.page-home');
+      if (homeEl) homeEl.style.display = 'none';
+      document.getElementById('main-nav').querySelectorAll('a').forEach(function(el) { el.classList.remove('on'); });
+      document.getElementById('main-nav').querySelector('a[data-page="search"]').classList.add('on');
+      var panel = document.getElementById('page-search');
+      if (panel) {
+        panel.classList.add('show');
+        document.getElementById('archive-search').value = topInput.value;
+        panel.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+    topInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') topBtn.click();
+    });
+  }
+})();
+</script>
+</body>
+</html>
