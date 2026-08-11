@@ -489,11 +489,12 @@ function checkUnlock(){
       document.getElementById('clock').classList.add('synced');
       document.getElementById('win-msg').classList.remove('locked-hist');
       adminToast();
+      fireMsg('admin_ok');
       // 任务闭环：值班员回执（仅解锁瞬间一次）
       var tc = document.getElementById('task-card');
       if (tc) { tc.textContent = '✅ 任务完成：补录档案已整理，记录已存档。'; tc.classList.add('done'); }
       playDing();
-      fireIncoming('03:12', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
+      fireIncoming('auto', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
   }
 }
 setInterval(checkUnlock, 1000);
@@ -502,12 +503,17 @@ setInterval(checkUnlock, 1000);
 var liveCount = 0;
 var msgSeq = 0;
 var MSG_TEXTS = {
-  site_loaded:   '检测到新的网络连接。今日访问记录：1 次。',
-  search_linyuan:'该检索词无结果。您是不是记错了？',
-  search_huaishu:'槐树街 7 号。地址已确认。',
-  gate_fail:     '密码错误。档案将永久封存。还有 2 次机会。',
-  gate_ok:       '身份确认：检索人「林远」。档案已解封。',
-  admin_ok:      '权限已授予。欢迎回来。'
+  site_loaded:        '检测到新的网络连接。今日访问记录：1 次。',
+  search_linyuan:     '该检索词无结果。您是不是记错了？',
+  search_huaishu:     '槐树街 7 号。地址已确认。',
+  search_xf001:       '该检索词与内部账号库关联。本次访问已记录。',
+  search_wangzhishi:  '该检索词无结果。检索记录已存档。',
+  search_shizong:     '失踪人口档案 1 件待整理。今日值班安排：你。',
+  search_bulu:        '补录档案编号：05。整理时限：今日。',
+  search_xiufushi:    '三楼档案修复室。当前在修：编号 05 卷宗。',
+  gate_fail:          '密码错误。档案将永久封存。还有 2 次机会。',
+  gate_ok:            '身份确认：检索人「林远」。档案已解封。',
+  admin_ok:           '权限已授予。欢迎回来。'
 };
 
 function seenLog(){
@@ -546,8 +552,9 @@ function fireMsg(key){
   pushMsg('m-sys', '📡', '系统消息 ｜ 实时', ts + ' ｜ 系统 ｜ 实时', ts, text);
 }
 
-/* 值班员主动消息（开场任务 / 解锁回执） */
+/* 值班员主动消息（开场任务 / 解锁回执）；ts 传 'auto' 自动排到最新系统消息之后 */
 function fireIncoming(ts, text){
+  if (ts === 'auto') ts = '03:' + String(3 + msgSeq + 1);
   pushMsg('m-person', '📩', '档案科 · 值班员 ｜ 实时', ts + ' ｜ 档案科 · 值班员', ts, text);
 }
 
@@ -555,11 +562,15 @@ function fireIncoming(ts, text){
 var evtProcessed = {};
 function pollEvents(){
   var map = {
-    cz_evt_search_linyuan: 'search_linyuan',
-    cz_evt_search_huaishu: 'search_huaishu',
-    cz_evt_gate_fail:      'gate_fail',
-    cz_evt_gate_ok:        'gate_ok',
-    cz_admin_ok:           'admin_ok'
+    cz_evt_search_linyuan:    'search_linyuan',
+    cz_evt_search_huaishu:    'search_huaishu',
+    cz_evt_search_xf001:      'search_xf001',
+    cz_evt_search_wangzhishi: 'search_wangzhishi',
+    cz_evt_search_shizong:    'search_shizong',
+    cz_evt_search_bulu:       'search_bulu',
+    cz_evt_search_xiufushi:   'search_xiufushi',
+    cz_evt_gate_fail:         'gate_fail',
+    cz_evt_gate_ok:           'gate_ok'
   };
   for (var k in map) {
     var v = null;

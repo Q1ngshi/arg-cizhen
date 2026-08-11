@@ -238,7 +238,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
           <div class="news-item"><span class="n-title">慈恩镇户籍档案（1952-1980）增设在线检索入口</span><span class="n-date">2026-08-06</span></div>
           <div class="news-item"><span class="n-title">土地批文与地籍资料（1983-2001）完成数字化扫描</span><span class="n-date">2026-07-25</span></div>
           <div class="news-item" onclick="toggleNews(this)"><span class="n-title">关于完成2009年度失踪人口档案补录工作的通知 ▸</span><span class="n-date">2026-06-30</span></div>
-          <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">我办于2026年6月完成2009年度失踪人口档案补录工作，共补录相关档案1件（编号：05）。该档案此前因故未纳入馆藏目录，现已整理归档。因涉及个人隐私，档案内容仅限内部查阅。</span></div>
+          <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">我办于2026年6月完成2009年度失踪人口档案补录工作，共补录相关档案1件（编号：05）。该档案此前因故未纳入馆藏目录，现已整理归档。补录登记人：档案修复室（xf001）。因涉及个人隐私，档案内容仅限内部查阅。</span></div>
           <div class="news-item"><span class="n-title">民政救助与优抚档案（1970-2008）扩容索引库</span><span class="n-date">2026-07-10</span></div>
           <div class="news-item"><span class="n-title">慈恩镇河流治理与水文观测记录开放查阅</span><span class="n-date">2026-06-18</span></div>
           <div class="news-item"><span class="n-title">教会活动备案记录（1965-1998）整理完毕</span><span class="n-date">2026-05-25</span></div>
@@ -474,6 +474,11 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
       <div class="dossier-head">
         <h1>案件卷宗 · CE-2009-005</h1>
         <div class="dossier-meta">卷宗来源：县公安局刑侦大队移交 | 归档日期：2009.06.15 | 保密级别：内部</div>
+      </div>
+      <div class="dossier-footer-hint" style="border-left-color:#c41e3a;margin-top:0">
+        <span style="color:#c41e3a">█ 数据核验警告</span><br>
+        案卷归档日期：2009.06.15 ｜ 补录日期：2026.06.30 ｜ 登记人：xf001（档案修复室）<br>
+        <span style="color:#e0b64b">核验异常：登记人账号于 2009-03-17 已停用，2026 年补录操作身份无法验证。请尽快联系系统管理员复核。</span>
       </div>
       <table class="dossier-table">
         <tr><th>姓名</th><td>林远</td></tr>
@@ -1038,6 +1043,41 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">找到 1 条相关档案：<b>槐树街调查记录</b><br><span style="color:#8B0000">（数据异常，暂不可在线查阅）</span><br><span style="color:#999;font-size:12px">请前往馆藏目录尝试访问该条目。</span></div>';
       sessionStorage.setItem('cz_admin_unlock', '1');
       try { localStorage.setItem('cz_evt_search_huaishu', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：内部账号（被监视感）
+    if (q === 'xf001' || q === '管理员账号') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">检索词与内部账号库关联。<br><span style="color:#999;font-size:12px">（本次访问已记录）</span></div>';
+      try { localStorage.setItem('cz_evt_search_xf001', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：王执事（公开检索不存在的人）
+    if (q === '王执事' || q === '王某' || q === 'wang') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      try { localStorage.setItem('cz_evt_search_wangzhishi', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：失踪（引导任务）
+    if (q === '失踪' || q === '失踪人口') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">今日补录档案待整理，详见「馆藏动态」。</span></div>';
+      try { localStorage.setItem('cz_evt_search_shizong', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：补录（直接引导到 05）
+    if (q === '补录' || q === '补录档案') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">今日补录：<b>失踪人口档案 1 件（编号 05）</b>，待整理。<br><span style="color:#999;font-size:12px">详见「馆藏动态」。</span></div>';
+      try { localStorage.setItem('cz_evt_search_bulu', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：档案修复室（引导到 05 在修卷宗）
+    if (q === '档案修复室' || q === '修复室') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">三楼档案修复室 · 当前在修档案：<b>编号 05 卷宗</b>。<br><span style="color:#999;font-size:12px">详见「馆藏动态」。</span></div>';
+      try { localStorage.setItem('cz_evt_search_xiufushi', Date.now()); } catch (e) {}
       return;
     }
     var found = [];
