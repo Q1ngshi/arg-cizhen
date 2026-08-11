@@ -903,6 +903,10 @@ function toggleNews(el) {
   var body = el.nextElementSibling;
   if (body && body.classList.contains('news-body')) {
     body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    // 补录通知展开 → 埋点（值班任务 2：核对 05 号档案登记异常）
+    if (body.style.display === 'block' && body.textContent.indexOf('补录') !== -1) {
+      try { localStorage.setItem('cz_evt_check_05', Date.now()); } catch (e) {}
+    }
   }
 }
 
