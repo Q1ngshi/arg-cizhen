@@ -10,6 +10,13 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 
 /* ============ 启动画面 ============ */
 #boot { position:fixed; inset:0; background:#05070d; color:#7fb98a; font-family:Consolas,monospace; z-index:999; padding:60px 80px; font-size:14px; line-height:2; }
+#unlock-veil { position:fixed; inset:0; background:rgba(3,6,12,0.95); z-index:990; display:none; font-family:Consolas,monospace; }
+#unlock-veil.show { display:flex; align-items:center; justify-content:center; cursor:pointer; }
+#uv-lines { font-size:15px; line-height:2.3; letter-spacing:1px; max-width:560px; padding:30px 40px; border:1px solid rgba(127,185,138,0.25); background:rgba(7,12,20,0.8); }
+#uv-lines p { margin:0; opacity:0; transition:opacity .12s; }
+#uv-lines p.on { opacity:1; }
+#uv-lines .warn { color:#e0b64b; }
+#uv-lines .ok { color:#9fe8b0; }
 #boot p { opacity:0; transition:opacity .15s; }
 #boot p.on { opacity:1; }
 #boot .dim { color:#4a6b55; }
@@ -147,6 +154,11 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   <p class="dim">警告：d:\archive 部分目录损坏，已跳过</p>
   <p>登录身份：xf001（档案修复室）</p>
   <p>今天是 2009年3月17日 星期二</p>
+</div>
+
+<!-- 权限解锁动画（管理员验证通过时全屏播放） -->
+<div id="unlock-veil">
+  <div id="uv-lines"></div>
 </div>
 
 <!-- 桌面 -->
@@ -470,6 +482,79 @@ function shutdown(){
 }
 
 /* ============ 解锁联动：轮询官网 iframe 的 l2Unlocked ============ */
+var UV_LINES = [
+  '> 权限验证通过 —— xf001 / 档案修复室',
+  '> 账号状态：历史停用 … 已覆盖',
+  '> 系统时钟同步中 … 2009-03-17 03:00 → 2026-08-11 03:00',
+  '> 已解锁程序：内部档案 / 信息 / 工具',
+  '> 欢迎回来。'
+];
+function showUnlock(done){
+  var veil = document.getElementById('unlock-veil');
+  var box = document.getElementById('uv-lines');
+  box.innerHTML = '';
+  veil.classList.add('show');
+  var clockEl = document.getElementById('clock');
+  var i = 0;
+  var yearRoll = setInterval(function(){   // 时钟年份滚动（veil 渐隐时露出定格结果）
+    var y = 2009 + Math.floor(Math.random() * 18);
+    clockEl.textContent = y + '-' + String(1 + Math.floor(Math.random() * 12)).padStart(2, '0') + '-' + String(1 + Math.floor(Math.random() * 28)).padStart(2, '0') + ' 03:00';
+  }, 90);
+  var finish = function(){
+    clearInterval(t); clearInterval(yearRoll);
+    clockEl.textContent = '2026-08-11 03:00';
+    clockEl.classList.add('synced');
+    veil.onclick = null;
+    veil.classList.remove('show');
+    done && done();
+  };
+  var t = setInterval(function(){
+    if (i < UV_LINES.length) {
+      var p = document.createElement('p');
+      p.textContent = UV_LINES[i];
+      if (i === 1) p.className = 'warn';
+      if (i === UV_LINES.length - 1) p.className = 'ok';
+      box.appendChild(p);
+      requestAnimationFrame(function(){ p.classList.add('on'); });
+      i++;
+    } else {
+      setTimeout(finish, 800);
+      clearInterval(t);
+    }
+  }, 420);
+  veil.onclick = finish;   // 点击跳过动画
+}
+
+/* 解锁旋律（上行琶音 + 低音 + 回声，Web Audio 合成） */
+function playUnlockMelody(){
+  var ctx = audioCtx(); if (!ctx) return;
+  try {
+    var t0 = ctx.currentTime + 0.05;
+    var delay = ctx.createDelay(); delay.delayTime.value = 0.22;
+    var fb = ctx.createGain(); fb.gain.value = 0.25;
+    delay.connect(fb); fb.connect(delay);
+    var wet = ctx.createGain(); wet.gain.value = 0.3;
+    delay.connect(wet); wet.connect(ctx.destination);
+    var bo = ctx.createOscillator(), bg = ctx.createGain();
+    bo.type = 'triangle'; bo.frequency.value = 130.81;   // C3 低音
+    bo.connect(bg); bg.connect(ctx.destination);
+    bg.gain.setValueAtTime(0.0001, t0);
+    bg.gain.exponentialRampToValueAtTime(0.18, t0 + 0.05);
+    bg.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.4);
+    bo.start(t0); bo.stop(t0 + 1.5);
+    [[261.63,0],[329.63,0.16],[392.00,0.32],[523.25,0.48],[659.25,0.64]].forEach(function(n){  // C E G C E
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = n[0];
+      o.connect(g); g.connect(ctx.destination); g.connect(delay);
+      var t = t0 + n[1];
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      o.start(t); o.stop(t + 1.0);
+    });
+  } catch(e){}
+}
+
 function checkUnlock(){
   if (unlocked) return;
   var ok = false;
@@ -478,6 +563,7 @@ function checkUnlock(){
   try { if (localStorage.getItem('cz_admin_ok') === '1') ok = true; } catch (e) {}
   if (ok) {
     unlocked = true;
+    showUnlock(function(){
       document.querySelectorAll('.icon.locked').forEach(function(ic){
         ic.classList.remove('locked');
         var b = ic.querySelector('.lock-badge'); if (b) b.remove();
@@ -485,16 +571,15 @@ function checkUnlock(){
       document.querySelectorAll('#startmenu .sm-item.lock').forEach(function(sm){
         sm.classList.remove('lock'); sm.textContent = sm.textContent.replace('🔒 ','');
       });
-      document.getElementById('clock').textContent = '2026-08-11 03:00';
-      document.getElementById('clock').classList.add('synced');
       document.getElementById('win-msg').classList.remove('locked-hist');
       adminToast();
       fireMsg('admin_ok');
       // 任务闭环：值班员回执（仅解锁瞬间一次）
       var tc = document.getElementById('task-card');
       if (tc) { tc.textContent = '✅ 任务完成：补录档案已整理，记录已存档。'; tc.classList.add('done'); }
-      playDing();
+      playUnlockMelody();
       fireIncoming('auto', '收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
+    });
   }
 }
 setInterval(checkUnlock, 1000);
