@@ -476,7 +476,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 <div class="modal-mask" id="gate3-modal">
   <div class="gate-card">
     <div class="gate-title">教会地下档案室 · 门禁密码</div>
-    <div class="gate-desc">编号07（教会地下档案室备案记录 1965-2009）属于限制调阅档案。<br>根据教会人事档案，最后一位掌管地下档案室钥匙的王执事于2009年去世，终年67岁。<br>请输入王执事设定的4位数字门禁密码。</div>
+    <div class="gate-desc">编号07（教会地下档案室备案记录 1965-2009）属于限制调阅档案。<br>根据教会人事档案，最后一位掌管地下档案室钥匙的王执事于2009年去世，终年67岁。门禁密码为其本人设定，与其本人相关。<br>请输入王执事设定的4位数字门禁密码。</div>
     <input type="text" class="gate-input" id="gate3-input" placeholder="4位数字密码" autocomplete="off" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
     <div class="gate-err hidden" id="gate3-err">门禁密码错误。请核对王执事生平信息后重试。</div>
     <div class="gate-actions">
@@ -1153,6 +1153,13 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">今日补录：<b>失踪人口档案 1 件（编号 05）</b>，待整理。<br><span style="color:#999;font-size:12px">详见「馆藏动态」。</span></div>';
       try { localStorage.setItem('cz_evt_search_bulu', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：1942（07 门禁密码确认锚点——卡点保险丝，系统口吻不直白）
+    if (q === '1942') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>1 条限制调阅档案</b><br><span style="color:#999;font-size:12px">年份 1942 与「教会地下档案室备案记录（编号 07）」存在关联。详情请通过档案目录查询。</span></div>';
+      try { localStorage.setItem('cz_evt_search_1942', Date.now()); } catch (e) {}
       return;
     }
     // 特殊检索：档案修复室（引导到 05 在修卷宗）

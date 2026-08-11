@@ -78,13 +78,22 @@ const BASE = 'http://localhost:8081';
   await page.click('.news-item:not(.news-body):has-text("补录")');
   await waitLog('check05');
 
-  console.log('[A8] 门禁 07：1942');
+  console.log('[A8] 门禁 07：卡点保险丝 1942 → 通过');
   await page.click('#main-nav a[data-page="search"]');
   await page.fill('#archive-search', '07');
   await page.click('#archive-search-btn');
   await page.click('#search-result .search-result-item');
   await page.click('#gate3-modal.show');
   await waitLog('gate3_open');
+  // 卡点路径：看到提示 → 搜 1942 确认 → 再回来输密码
+  await page.click('#gate3-modal .gate-btn.cancel');        // 关弹窗
+  await page.fill('#archive-search', '1942');
+  await page.click('#archive-search-btn');
+  await waitLog('search', '1942');
+  await page.waitForFunction(() => document.getElementById('search-result').textContent.indexOf('编号 07') !== -1, { timeout: 5000 });
+  await page.fill('#archive-search', '07');
+  await page.click('#archive-search-btn');
+  await page.click('#search-result .search-result-item');   // gate3_open 去重，不再记
   await page.fill('#gate3-input', '1942');
   await page.click('#gate3-modal .gate-btn:not(.cancel)');
   await waitLog('gate3_ok');
@@ -145,30 +154,30 @@ const BASE = 'http://localhost:8081';
   let fail = 0;
   const check = (name, ok) => { console.log((ok ? '✓ ' : '✗ ') + name); if (!ok) fail++; };
 
-  /* 1. 官网段顺序严格一致（18 节点，含 search|07） */
+  /* 1. 官网段顺序严格一致（19 节点，含 search|07、卡点保险丝 search|1942） */
   const expectSite = ['site_open', 'search|林远', 'search|05', 'gate_open', 'gate_fail', 'gate_ok',
     'search|槐树街', 'admin_open', 'admin_ok', 'search|图纸', 's_bp', 'dl_bp',
-    'search|陈守正', 's_chen', 'check05', 'search|07', 'gate3_open', 'gate3_ok'];
-  check('官网段 18 节点顺序一致', JSON.stringify(siteSeq) === JSON.stringify(expectSite));
+    'search|陈守正', 's_chen', 'check05', 'search|07', 'gate3_open', 'search|1942', 'gate3_ok'];
+  check('官网段 19 节点顺序一致', JSON.stringify(siteSeq) === JSON.stringify(expectSite));
 
   /* 2. 桌面加载簇（bp_p2/task3/task2 同一 poll 轮，unlock 取决于动画跳过时机，顺序可有竞态）
        唯一确定约束：unlock→task1_done 相邻；簇整体在 gate3_ok 之后、操作节点之前 */
   const cluster = ['bp_p2', 'task3_done', 'task2_done', 'unlock', 'task1_done'];
   const rest = seq.filter(s => cluster.indexOf(s) === -1);
   const tail = ['arch_05', 'arch_06', 'arch_p1', 'arch_p2', 'arch_01', 'bp_001', 'dig', 'restore', 'handover'];
-  check('剔除桌面加载簇后 = 官网18 + 桌面操作9',
+  check('剔除桌面加载簇后 = 官网19 + 桌面操作9',
     JSON.stringify(rest) === JSON.stringify(expectSite.concat(tail)));
   check('unlock 与 task1_done 相邻', seq.indexOf('task1_done') === seq.indexOf('unlock') + 1);
   check('桌面加载簇均在 gate3_ok 之后', cluster.every(s => seq.indexOf(s) > seq.indexOf('gate3_ok')));
   const tailIdx = tail.map(k => seq.indexOf(k));
   const maxClu = Math.max(...cluster.map(s => seq.indexOf(s)));
   check('桌面操作节点均在加载簇之后', tailIdx.every(i => i > maxClu));
-  check('日志总长 = 32 条', log.length === 32);
+  check('日志总长 = 33 条', log.length === 33);
 
   /* 3. 交接班日志节 */
   const section = handoverText.split('—— 附：系统操作日志（本班）——')[1] || '';
   const lines = section.trim().split('\n').filter(Boolean);
-  check('日志节存在且 31 行（含 handover 在内 32 条 - 1）', lines.length === 31);
+  check('日志节存在且 32 行（含 handover 在内 33 条 - 1）', lines.length === 32);
   check('首行 = 01 官网 打开 · 0:00', lines[0] === '01 官网 打开 · 0:00');
   check('行格式 = NN 名称 · 分:秒', lines.every(l => /^\d{2} .+ · \d+:\d{2}$/.test(l)));
   let mono = true, prev = -1;
