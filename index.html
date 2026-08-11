@@ -1088,6 +1088,30 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       try { localStorage.setItem('cz_evt_search_wangzhishi', Date.now()); } catch (e) {}
       return;
     }
+    // 特殊检索：陈守正（现任主任，深渊区钩子）
+    if (q === '陈守正') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>人事档案 1 件</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>陈守正</b> ｜ 主任 ｜ 主持全面工作 ｜ 任职起始：2009年12月<br>' +
+        '主要经历：2009年12月起主持档案办工作；其父陈某（前主任）于2010年调离慈恩镇。<br>' +
+        '<span style="color:#8B0000">移交说明：2010年陈某调离时移交材料一批。其中红色笔记本 1 册未登记编号，未录入电子档案目录，现由本人保管。</span></div></div>';
+      try { localStorage.setItem('cz_evt_search_chenshouzheng', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：陈某（前主任，已调离）
+    if (q === '陈某' || q === 'chenmou') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">该人员已于 <b>2010 年调离慈恩镇</b>。<br><span style="color:#999;font-size:12px">任职期间档案已移交。检索记录已存档。</span></div>';
+      try { localStorage.setItem('cz_evt_search_chenmou', Date.now()); } catch (e) {}
+      return;
+    }
+    // 特殊检索：红色笔记本（系统知道它存在，但未录入）
+    if (q === '笔记本' || q === '红色笔记本') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">相关材料未录入电子档案系统。（检索记录已存档）</span></div>';
+      try { localStorage.setItem('cz_evt_search_biji', Date.now()); } catch (e) {}
+      return;
+    }
     // 特殊检索：失踪（引导任务）
     if (q === '失踪' || q === '失踪人口') {
       result.style.display = '';

@@ -105,6 +105,7 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .arch-detail .v { color:#e8edf5; }
 .arch-detail .red { color:#e06060; }
 .arch-detail .dim { color:#777; }
+.arch-detail .arch-note { margin:4px 0 8px; padding:10px 12px; border:1px solid #3a4a2a; border-left:3px solid #6b8f3a; background:#141a10; color:#cfe0b0; font-family:'SimSun','宋体',serif; font-size:12.5px; line-height:2; }
 .msg-item { border:1px solid #222b40; border-radius:4px; margin-bottom:8px; padding:10px 12px; background:#121827; }
 .msg-item .m-from { font-size:11px; color:#8fa3c0; margin-bottom:2px; font-family:Consolas,monospace; }
 .msg-item .m-body { font-size:12.5px; color:#d5deec; }
@@ -194,6 +195,8 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <div class="arch-item"><span>CE-2009-004 · 人事档案（教会）</span><span class="a-no">损坏</span></div>
         <div class="arch-item" onclick="openArch('05')"><span>CE-2009-005 · 林远失踪案</span><span class="a-no">可查阅</span></div>
         <div class="arch-item" onclick="openArch('06')"><span>CE-2009-006 · 安息祭</span><span class="a-no a-del">✕ 已删除</span></div>
+        <div class="arch-item" onclick="openArch('p1')"><span>2009-补-001 · 林远调查笔记（残页·复印件）</span><span class="a-no">在档</span></div>
+        <div class="arch-item" onclick="openArch('p2')"><span>2009-补-002 · 槐树街7号平面图（手绘标注）</span><span class="a-no">在档</span></div>
       </div>
       <div class="arch-detail" id="arch-01">
         <div><span class="k">卷宗编号：</span><span class="v">CE-2009-001</span></div>
@@ -214,6 +217,31 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <div><span class="k">卷宗编号：</span><span class="v">CE-2009-006</span></div>
         <div><span class="k">状态：</span><span class="v red">该卷宗已被删除。</span></div>
         <div><span class="k">提示：</span><span class="v">可使用【工具 → 文件恢复】尝试找回。</span></div>
+      </div>
+      <div class="arch-detail" id="arch-p1">
+        <div><span class="k">卷宗编号：</span><span class="v">2009-补-001（复印件）</span></div>
+        <div><span class="k">原卷：</span><span class="v">林远调查笔记（2009年2月-3月 · 残页）</span></div>
+        <div><span class="k">调阅说明：</span><span class="v dim">原件存于地下档案室。本页为档案修复室扫描留档，2026年补录。</span></div>
+        <div><span class="k">内容（节选·第1页）：</span></div>
+        <div class="arch-note">
+          1972 年也失踪过一个人。我查了户籍，登记年份被人动过一个数字，改得很规矩。<br>
+          王执事看我的眼神，像是看一个已经登记过的人。<br>
+          3月17日。如果到时候我还没回来，这份笔记请转交档案室。
+        </div>
+        <div><span class="k">备注：</span><span class="v dim">其余页损坏，无法辨认。</span></div>
+      </div>
+      <div class="arch-detail" id="arch-p2">
+        <div><span class="k">卷宗编号：</span><span class="v">2009-补-002（复印件）</span></div>
+        <div><span class="k">原卷：</span><span class="v">槐树街7号平面图（手绘标注）</span></div>
+        <div><span class="k">调阅说明：</span><span class="v dim">图上批注非建筑师笔迹，未列入建筑备案。2026年补录。</span></div>
+        <div><span class="k">批注内容：</span></div>
+        <div class="arch-note">
+          圣器室北墙暗门，可容一人侧身通过<br>
+          旋转楼梯 17 级，地下室深约 4.5 米<br>
+          地下室东墙有夹层，<span class="red">备案图纸上没有</span><br>
+          隔三岔五有人下去 / 东西越放越多 / 灯从来不关
+        </div>
+        <div><span class="k">备注：</span><span class="v dim">批注笔迹与 2009-补-001 一致。</span></div>
       </div>
     </div>
   </div>
@@ -610,6 +638,9 @@ var MSG_TEXTS = {
   search_shizong:     '失踪人口档案 1 件待整理。今日值班安排：你。',
   search_bulu:        '补录档案编号：05。整理时限：今日。',
   search_xiufushi:    '三楼档案修复室。当前在修：编号 05 卷宗。',
+  search_chenshouzheng: '该账号仍在职。其人事档案与 2009 年度材料存在交叉引用。',
+  search_chenmou:     '该账号已注销。其任职档案已移交。',
+  search_biji:        '相关材料未录入电子档案系统。检索记录已存档。',
   gate_fail:          '密码错误。档案将永久封存。还有 2 次机会。',
   gate_ok:            '身份确认：检索人「林远」。档案已解封。',
   admin_ok:           '权限已授予。欢迎回来。',
@@ -675,6 +706,9 @@ function pollEvents(){
     cz_evt_search_shizong:    'search_shizong',
     cz_evt_search_bulu:       'search_bulu',
     cz_evt_search_xiufushi:   'search_xiufushi',
+    cz_evt_search_chenshouzheng: 'search_chenshouzheng',
+    cz_evt_search_chenmou:    'search_chenmou',
+    cz_evt_search_biji:       'search_biji',
     cz_evt_gate_fail:         'gate_fail',
     cz_evt_gate_ok:           'gate_ok',
     cz_evt_gate3_ok:          'gate3_ok'
