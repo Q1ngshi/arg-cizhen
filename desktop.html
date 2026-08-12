@@ -1250,6 +1250,11 @@ function bpApply(){
   if (bpOverlayEl) bpOverlayEl.style.transform = t;
   var lb = document.getElementById('bp-zoom-label');
   if (lb) lb.textContent = Math.round(bpZoom * 100) + '%';
+  // 已发现过铭牌 → 重开图纸时保持揭示态（系统记住玩家进度）
+  if (bpPlateSeen && bpSvgEl.id === 'BP-B') {
+    var pl0 = document.getElementById('bp-plate');
+    if (pl0) pl0.setAttribute('opacity', '1');
+  }
   if (!bpPlateSeen && bpZoom >= 2 && bpSvgEl && bpSvgEl.id === 'BP-B') {
     bpPlateSeen = true;
     var pl = document.getElementById('bp-plate');
