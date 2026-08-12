@@ -971,11 +971,16 @@ function openArch(no){
 }
 
 /* ============ 工具 ============ */
+var tzGlitch = false;   // B1 时间戳错乱消息：首次打开计算器 tab 发一次（内存 flag 防重复）
 function switchTab(btn, name){
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('show'); });
   document.getElementById('pane-'+name).classList.add('show');
+  if (name === 'calc' && !tzGlitch) {
+    tzGlitch = true;
+    pushMsg('m-sys', '📡', '系统', '日志同步完成。当前时间：2009-03-17 25:61。（校准失败）');
+  }
 }
 function runRestore(){
   var bar = document.getElementById('restore-bar'), fill = document.getElementById('restore-fill');
@@ -1029,6 +1034,8 @@ function calc(k){
         d.classList.remove('calc-break'); void d.offsetWidth; d.classList.add('calc-break');
         fireMsg('calc_break');
         logStage('calc_break');
+        // B2 称呼变化：仅在首次破译时发一次（calcBroken 置位后不再进入本分支，天然去重；不埋点）
+        pushMsg('m-sys', '📡', '系统', '已记录口令。访客 05 权限已更新。');
       }
     } catch(e){ d.textContent = '错误'; cExpr=''; }
     return;
@@ -1114,6 +1121,8 @@ function genHandover(){
     if (!localStorage.getItem('cz_evt_handover_done')) {
       localStorage.setItem('cz_evt_handover_done', Date.now());
       fireIncoming('交接记录我收到了，整理得不错。老陈那本红本，第23页之后——他说过等值完班再看。你值完了，去文件恢复再扫一遍。');
+      // B3 冻结回执：cz_evt_handover_done 已保证只走一次（不埋点）
+      pushMsg('m-sys', '📡', '系统', '交接记录已转交下一位值班员。另：本终端自 2009-03-17 03:01 起未收到外部时间同步信号。请检查机房电源。');
     }
   } catch(e){}
 }
@@ -1387,10 +1396,18 @@ document.getElementById('bp-stage').addEventListener('wheel', function(e){
   });
 })();
 
+/* 失败计数档位：读 +1 返回档位数（sessionStorage 刷新保留，成功解锁清除；与官网侧同一模式） */
+function failStep(key) {
+  var n = (parseInt(sessionStorage.getItem(key) || '0', 10) || 0) + 1;
+  try { sessionStorage.setItem(key, String(n)); } catch (e) {}
+  return n;
+}
+
 /* 内部档案 CE-2009-001 门禁收录 */
 function archGate01(){
   var v = document.getElementById('arch01-input').value;
   if (v === '0172') {
+    try { sessionStorage.removeItem('cz_fail_arch01'); } catch(e){}
     try { localStorage.setItem('cz_evt_blueprint_001', Date.now()); } catch(e){}
     logStage('bp_001'); logStage('gate3_ok');
     document.getElementById('arch01-gate').style.display = 'none';
@@ -1398,7 +1415,13 @@ function archGate01(){
     st.textContent = '已收录。可于【工具 → 建筑图】放大查看。';
     st.style.color = '#7fb98a';
   } else {
-    document.getElementById('arch01-err').classList.remove('hidden');
+    // 渐进式失败引导：连续失败 2/3 次追加协助提示（与官网侧同款累积式，系统协助口吻，不嘲讽）
+    var f = failStep('cz_fail_arch01');
+    var err = document.getElementById('arch01-err');
+    err.innerHTML = '口令错误。查看官网地下档案室备案记录；已收录图纸可放大核对柜位铭牌。' +
+      (f >= 2 ? '<br>提示：官网地下档案室备案记录里，柜位一栏有编号。' : '') +
+      (f >= 3 ? '<br>柜位编号：0172。' : '');
+    err.classList.remove('hidden');
   }
 }
 
