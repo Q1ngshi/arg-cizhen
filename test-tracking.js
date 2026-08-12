@@ -1,4 +1,5 @@
-/* 游玩轨迹埋点全流程测试：官网 → 桌面 → 交接班，断言 cz_stage_log 与日志节格式 */
+/* 游玩轨迹埋点全流程测试：官网 → 桌面 → 交接班，断言 cz_stage_log 与日志节格式
+   覆盖四门四手段：linyuan（教学）/ 2009 管理员（日期提取）/ 1942 门禁07（计算器破译）/ 0172 档案门（图纸观察） */
 const { chromium } = require('playwright');
 const BASE = 'http://localhost:8081';
 (async () => {
@@ -17,7 +18,7 @@ const BASE = 'http://localhost:8081';
 
   const pairs = arr => arr.map(it => it.e === undefined ? it.k : it.k + '|' + it.e);
 
-  /* ================= Phase A：官网 ================= */
+  /* ================= Phase A：官网（19 节点，含 search|07、卡点保险丝 search|1942） ================= */
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
   await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
   await page.reload({ waitUntil: 'networkidle' });
@@ -45,7 +46,7 @@ const BASE = 'http://localhost:8081';
   await waitLog('gate_ok');
   await page.click('#dossier.show .dossier-close');          // 关闭卷宗
 
-  console.log('[A4] 检索 槐树街 → 回首页 → 管理员门');
+  console.log('[A4] 检索 槐树街 → 回首页 → 管理员门（2009：卷宗落款年份）');
   await page.fill('#archive-search', '槐树街');
   await page.click('#archive-search-btn');
   await waitLog('search', '槐树街');
@@ -78,7 +79,7 @@ const BASE = 'http://localhost:8081';
   await page.click('.news-item:not(.news-body):has-text("补录")');
   await waitLog('check05');
 
-  console.log('[A8] 门禁 07：卡点保险丝 1942 → 通过');
+  console.log('[A8] 门禁 07：卡点保险丝 1942 → 通过（dossier3 存档清单含 0172 印证）');
   await page.click('#main-nav a[data-page="search"]');
   await page.fill('#archive-search', '07');
   await page.click('#archive-search-btn');
@@ -118,15 +119,29 @@ const BASE = 'http://localhost:8081';
   await waitLog('arch_05'); await waitLog('arch_06'); await waitLog('arch_p1'); await waitLog('arch_p2');
   await page.click('.arch-item:has-text("CE-2009-001")');
   await waitLog('arch_01');
-  await page.fill('#arch01-input', '1942');
+
+  console.log('[B3] 档案门：0172（dossier3 存档清单）→ 收录');
+  await page.dblclick('.icon[data-win="archive"]');
+  await page.click('.arch-item:has-text("CE-2009-001")');
+  await page.fill('#arch01-input', '0172');
   await page.click('#arch01-gate button');
   await waitLog('bp_001');
 
-  console.log('[B3] 建筑图：挖掘储物间 ×3');
+  console.log('[B4] 建筑图：放大看柜位铭牌 → 挖掘储物间 ×3');
   await page.dblclick('.icon[data-win="tools"]');
   await page.click('#win-tools .tab-btn:has-text("建筑图")');
   await page.locator(".bp-card[onclick*=\"openBPZoom('001')\"]").click();
   await page.waitForSelector('#bp-zoom.show');
+  await page.click('#bp-zoom .bp-bar button:has-text("＋")');   // 1.25×/次，×4 = 244% ≥ 200% 触发 bp_plate
+  await page.click('#bp-zoom .bp-bar button:has-text("＋")');
+  await page.click('#bp-zoom .bp-bar button:has-text("＋")');
+  await page.click('#bp-zoom .bp-bar button:has-text("＋")');
+  await waitLog('bp_plate');
+  // 缩小 ×4 回到初始视图（“1:1”仅重置缩放不清平移，挖掘点会留在视野外）
+  await page.click('#bp-zoom .bp-bar button:has-text("−")');
+  await page.click('#bp-zoom .bp-bar button:has-text("−")');
+  await page.click('#bp-zoom .bp-bar button:has-text("−")');
+  await page.click('#bp-zoom .bp-bar button:has-text("−")');
   for (let i = 0; i < 3; i++) {
     await page.click('#bp-zoom .bp-dig');
     await page.waitForTimeout(400);
@@ -135,12 +150,19 @@ const BASE = 'http://localhost:8081';
   await waitLog('dig');
   await page.click('#bp-zoom-close');
 
-  console.log('[B4] 文件恢复');
+  console.log('[B5] 计算器破译：2009−67=1942');
+  await page.click('#win-tools .tab-btn:has-text("计算器")');
+  for (const t of ['2', '0', '0', '9', '−', '6', '7', '=']) {
+    await page.click(`.calc .k:has-text("${t}")`);
+  }
+  await waitLog('calc_break');
+
+  console.log('[B6] 文件恢复');
   await page.click('#win-tools .tab-btn:has-text("文件恢复")');
   await page.click('#btn-restore');
   await waitLog('restore', undefined, 20000);
 
-  console.log('[B5] 交接班 → 系统操作日志节');
+  console.log('[B7] 交接班 → 系统操作日志节');
   await page.click('#win-tools .tab-btn:has-text("交接班")');
   await page.click('#btn-handover');
   await waitLog('handover');
@@ -148,7 +170,7 @@ const BASE = 'http://localhost:8081';
   const handoverText = await page.locator('#handover').textContent();
   const copyVisible = await page.locator('#btn-handover-copy').isVisible();
 
-  console.log('[B6] 交接后重扫 → 红本第23页之后');
+  console.log('[B8] 交接后重扫 → 红本第23页之后');
   await page.click('#win-tools .tab-btn:has-text("文件恢复")');
   await page.click('#btn-restore');
   await waitLog('restore3', undefined, 20000);
@@ -170,20 +192,20 @@ const BASE = 'http://localhost:8081';
        唯一确定约束：unlock→task1_done 相邻；簇整体在 gate3_ok 之后、操作节点之前 */
   const cluster = ['bp_p2', 'task3_done', 'task2_done', 'unlock', 'task1_done'];
   const rest = seq.filter(s => cluster.indexOf(s) === -1);
-  const tail = ['arch_05', 'arch_06', 'arch_p1', 'arch_p2', 'arch_01', 'bp_001', 'dig', 'restore', 'handover', 'restore3'];
-  check('剔除桌面加载簇后 = 官网19 + 桌面操作10',
+  const tail = ['arch_05', 'arch_06', 'arch_p1', 'arch_p2', 'arch_01', 'bp_001', 'bp_plate', 'dig', 'calc_break', 'restore', 'handover', 'restore3'];
+  check('剔除桌面加载簇后 = 官网19 + 桌面操作12',
     JSON.stringify(rest) === JSON.stringify(expectSite.concat(tail)));
   check('unlock 与 task1_done 相邻', seq.indexOf('task1_done') === seq.indexOf('unlock') + 1);
   check('桌面加载簇均在 gate3_ok 之后', cluster.every(s => seq.indexOf(s) > seq.indexOf('gate3_ok')));
   const tailIdx = tail.map(k => seq.indexOf(k));
   const maxClu = Math.max(...cluster.map(s => seq.indexOf(s)));
   check('桌面操作节点均在加载簇之后', tailIdx.every(i => i > maxClu));
-  check('日志总长 = 34 条', log.length === 34);
+  check('日志总长 = 36 条', log.length === 36);
 
   /* 3. 交接班日志节 */
   const section = handoverText.split('—— 附：系统操作日志（本班）——')[1] || '';
   const lines = section.trim().split('\n').filter(Boolean);
-  check('日志节 32 行（交接班快照时 restore3 尚未发生：33 条 - 1）', lines.length === 32);
+  check('日志节 34 行（交接班快照时 restore3 尚未发生：handover 前共 34 条）', lines.length === 34);
   check('首行 = 01 官网 打开 · 0:00', lines[0] === '01 官网 打开 · 0:00');
   check('行格式 = NN 名称 · 分:秒', lines.every(l => /^\d{2} .+ · \d+:\d{2}$/.test(l)));
   let mono = true, prev = -1;
