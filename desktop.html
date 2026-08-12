@@ -902,13 +902,14 @@ function pollEvents(){
     cz_evt_gate3_ok:          'gate3_ok'
   };
   /* 官网 07 门禁第一次打开 → 值班员引导破译（不埋点，值班员消息已入信息窗口） */
-  if (!evtProcessed['cz_evt_gate3_open']) {
-    var g3o = 0;
-    try { g3o = parseInt(localStorage.getItem('cz_evt_gate3_open') || '0', 10); } catch(e){}
-    if (g3o) {
+  var g3o = 0;
+  try { g3o = parseInt(localStorage.getItem('cz_evt_gate3_open') || '0', 10); } catch(e){}
+  if (g3o) {
+    if (!evtProcessed['cz_evt_gate3_open']) {
       evtProcessed['cz_evt_gate3_open'] = 1;
       fireIncoming('老王那扇门，密码是数字。他 2009 年走的，活了 67 年——你算算。');
     }
+    try { localStorage.removeItem('cz_evt_gate3_open'); } catch(e){}   // 键在=未消费、键无=已消费：防刷新重复引导
   }
   for (var k in map) {
     var v = null;
