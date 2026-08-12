@@ -1026,6 +1026,7 @@ document.getElementById('admin-modal').addEventListener('click', function(e) {
 // ===== 地下档案室门禁（L3） =====
 function openGate3() {
   logStage('gate3_open');
+  try { localStorage.setItem('cz_evt_gate3_open', Date.now()); } catch (e) {}
   document.getElementById('gate3-modal').classList.add('show');
   document.getElementById('gate3-input').value = '';
   document.getElementById('gate3-err').classList.add('hidden');

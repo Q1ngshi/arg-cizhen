@@ -198,6 +198,8 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 .calc .k:hover { background:#2c3a58; }
 .calc .k.op { background:#27405c; }
 .calc .disp { grid-column:1/-1; background:#0d1220; color:#9fe0b9; padding:8px 10px; text-align:right; font-family:Consolas,monospace; font-size:16px; border-radius:4px; }
+.calc .disp.calc-break { animation: calcBreakGlow .9s ease-out 2; }
+@keyframes calcBreakGlow { 0%{box-shadow:0 0 0 rgba(64,192,255,0)} 30%{box-shadow:0 0 26px rgba(64,192,255,.6)} 100%{box-shadow:0 0 0 rgba(64,192,255,0)} }
 
 /* ============ 手机适配 ============ */
 @media (max-width:700px) {
@@ -775,7 +777,8 @@ var MSG_TEXTS = {
   gate3_ok:           '门禁密码验证通过。地下档案室备案记录（07）已加载。',
   restore_done:       '文件恢复完成。发现 2 个文件：CE-2009-006（37%）、未编号抄本（43%）。',
   restore3_done:      '文件恢复完成。又发现 1 件文件：未编号抄本（第23页之后 · 节选）。',
-  bp_dig_done:        '墙体检验完成。夹壁中发现纸张类物证，已登记入档。'
+  bp_dig_done:        '墙体检验完成。夹壁中发现纸张类物证，已登记入档。',
+  calc_break:          '口令 1942 已被记录，可用于门禁。'
 };
 
 function seenLog(){
@@ -898,6 +901,15 @@ function pollEvents(){
     cz_evt_gate_ok:           'gate_ok',
     cz_evt_gate3_ok:          'gate3_ok'
   };
+  /* 官网 07 门禁第一次打开 → 值班员引导破译（不埋点，值班员消息已入信息窗口） */
+  if (!evtProcessed['cz_evt_gate3_open']) {
+    var g3o = 0;
+    try { g3o = parseInt(localStorage.getItem('cz_evt_gate3_open') || '0', 10); } catch(e){}
+    if (g3o) {
+      evtProcessed['cz_evt_gate3_open'] = 1;
+      fireIncoming('老王那扇门，密码是数字。他 2009 年走的，活了 67 年——你算算。');
+    }
+  }
   for (var k in map) {
     var v = null;
     try { v = parseInt(localStorage.getItem(k) || '0', 10); } catch(e){}
@@ -1000,14 +1012,22 @@ function runRestore(){
 
 /* 计算器 */
 var cExpr = '';
+var calcBroken = false;
 function calc(k){
   var d = document.getElementById('cdisp');
   if (k === 'C') { cExpr = ''; d.textContent = '0'; return; }
   if (k === '=') {
     try {
       var r = Function('return (' + cExpr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-') + ')')();
-      d.textContent = Math.round(r*1e8)/1e8;
-      cExpr = String(d.textContent);
+      var rr = Math.round(r*1e8)/1e8;
+      d.textContent = rr;
+      cExpr = String(rr);
+      if (rr === 1942 && !calcBroken) {
+        calcBroken = true;
+        d.classList.remove('calc-break'); void d.offsetWidth; d.classList.add('calc-break');
+        fireMsg('calc_break');
+        logStage('calc_break');
+      }
     } catch(e){ d.textContent = '错误'; cExpr=''; }
     return;
   }
