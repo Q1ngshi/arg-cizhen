@@ -1,0 +1,13 @@
+{
+  "name": "arg-cizhen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "慈恩镇 ARG 悬疑侦探游戏（官网 + 终端双层）",
+  "scripts": {
+    "start": "node serve.js",
+    "test": "node test-tracking.js && node verify-chat.js"
+  },
+  "devDependencies": {
+    "playwright": "1.57.0"
+  }
+}
