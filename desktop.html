@@ -160,6 +160,26 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 #win-msg.locked-hist .msg-item[data-hist] { display:none; }
 .hist-hint { display:none; padding:8px 12px; margin:0 0 10px; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; }
 #win-msg.locked-hist .hist-hint { display:block; }
+/* 联系人会话（手机通讯录样式）：左列表 + 右会话详情 */
+#win-msg .w-body { display:flex; padding:0; }
+#chat-list { width:168px; border-right:1px solid #202a40; overflow-y:auto; align-self:flex-start; position:sticky; top:0; flex-shrink:0; }
+.chat-item { display:flex; align-items:center; gap:8px; padding:10px 8px; cursor:pointer; border-bottom:1px solid #141c2c; }
+.chat-item:hover { background:#131a26; }
+.chat-item.active { background:#1c2740; }
+.chat-item .c-avatar { width:32px; height:32px; border-radius:8px; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.chat-item .c-mid { flex:1; min-width:0; }
+.chat-item .c-name { font-size:12px; color:#d5deec; }
+.chat-item .c-prev { font-size:10.5px; color:#6b7a95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-item .c-right { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+.chat-item .c-time { font-size:10px; color:#6b7a95; font-family:Consolas,monospace; }
+.c-badge { min-width:16px; height:16px; border-radius:8px; background:#c03a2b; color:#fff; font-size:10px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; }
+.c-badge.hidden { display:none; }
+#chat-view { flex:1; min-width:0; padding:14px; }
+#chat-head { display:flex; align-items:center; gap:8px; padding:0 0 10px; border-bottom:1px solid #202a40; margin-bottom:10px; font-size:13px; color:#d5deec; }
+#chat-head .c-avatar { width:24px; height:24px; font-size:12px; }
+@media (max-width:700px) {
+  #chat-list { width:120px; }
+}
 .tabs { display:flex; gap:4px; margin-bottom:10px; }
 .tab-btn { padding:5px 14px; font-size:12px; color:#8fa3c0; border:1px solid #2a3348; border-radius:4px; cursor:pointer; background:transparent; }
 .tab-btn.active { background:#2c3a58; color:#fff; border-color:#4a5f8c; }
@@ -314,19 +334,39 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <button class="t-btn" onclick="minWin('msg')">—</button>
       <button class="t-btn t-close" onclick="closeWin('msg')">✕</button></div>
     <div class="w-body">
-      <div class="task-card" id="task-card">
-        <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开浏览器 → 过一遍官网档案 → 回来汇报</div>
-        <div id="task-2" style="display:none">📋 任务 2/3：核对 05 号档案登记异常（馆藏动态 → 补录通知）</div>
-        <div id="task-3" style="display:none">📋 任务 3/3：07 号档案需门禁密码（调阅限制）</div>
+      <div id="chat-list">
+        <div class="chat-item active" data-chat="person" onclick="openChat('person')">
+          <span class="c-avatar">📩</span>
+          <div class="c-mid"><div class="c-name">值班员 · 档案科</div><div class="c-prev" id="prev-person">新来的？我是档案科值班员…</div></div>
+          <div class="c-right"><div class="c-time" id="t-person">03:01</div><span class="c-badge hidden" id="cb-person">0</span></div>
+        </div>
+        <div class="chat-item" data-chat="wang" onclick="openChat('wang')">
+          <span class="c-avatar">🗝️</span>
+          <div class="c-mid"><div class="c-name">王执事</div><div class="c-prev" id="prev-wang">明天的事，你我都别露面。</div></div>
+          <div class="c-right"><div class="c-time" id="t-wang">23:54</div><span class="c-badge hidden" id="cb-wang">0</span></div>
+        </div>
+        <div class="chat-item" data-chat="sys" onclick="openChat('sys')">
+          <span class="c-avatar">📡</span>
+          <div class="c-mid"><div class="c-name">系统</div><div class="c-prev" id="prev-sys">消息发送失败：接收人账号已注销。</div></div>
+          <div class="c-right"><div class="c-time" id="t-sys">03:02</div><span class="c-badge hidden" id="cb-sys">0</span></div>
+        </div>
       </div>
-      <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
-      <div id="msg-list">
-        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-10 09:14</span></div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
-        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-15 21:03</span></div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
-        <div class="msg-item m-wang" data-hist="1"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-16 23:54</span></div><div class="m-body">明天的事，你我都别露面。</div></div>
-        <div class="msg-item m-sys" data-hist="1"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
-        <div class="msg-item m-person" data-hist="1"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。</div></div>
-        <div class="msg-item m-sys" data-hist="1"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+      <div id="chat-view">
+        <div id="chat-head"><span class="c-avatar">📩</span><span id="chat-head-name">值班员 · 档案科</span></div>
+        <div class="task-card" id="task-card">
+          <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开浏览器 → 过一遍官网档案 → 回来汇报</div>
+          <div id="task-2" style="display:none">📋 任务 2/3：核对 05 号档案登记异常（馆藏动态 → 补录通知）</div>
+          <div id="task-3" style="display:none">📋 任务 3/3：07 号档案需门禁密码（调阅限制）</div>
+        </div>
+        <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
+        <div id="msg-list">
+          <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-10 09:14</span></div><div class="m-body">那两本册子我收好了。你那边的东西，单独放。</div></div>
+          <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-15 21:03</span></div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
+          <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-16 23:54</span></div><div class="m-body">明天的事，你我都别露面。</div></div>
+          <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
+          <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。</div></div>
+          <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -479,13 +519,18 @@ var unlocked = false;
 
 function openWin(id){
   if (id !== 'browser' && id !== 'msg' && !unlocked) { lockedToast(); return; }
-  if (id === 'msg') { liveCount = 0; document.getElementById('icon-msg-badge').classList.remove('show'); refreshTasks(); }
+  if (id === 'msg') {
+    msgWinOpen = true; liveCount = 0;
+    document.getElementById('icon-msg-badge').classList.remove('show');
+    clearUnread();
+  }
   var w = document.getElementById('win-'+id);
   if (!w.classList.contains('open')) {
     cascade = (cascade + 1) % 5;
     var cl = 120 + cascade*28, ct = 60 + cascade*22;
     w.style.left = cl+'px'; w.style.top = ct+'px';
     if (id === 'browser') { w.style.width = '760px'; w.style.height = '560px'; }
+    else if (id === 'msg') { w.style.width = '560px'; w.style.height = 'auto'; }
     else { w.style.width = '460px'; w.style.height = 'auto'; }
     w.classList.add('open');
   }
@@ -498,10 +543,12 @@ function focusWin(id){
   refreshTasks();
 }
 function closeWin(id){
+  if (id === 'msg') msgWinOpen = false;
   document.getElementById('win-'+id).classList.remove('open','maxed');
   refreshTasks();
 }
 function minWin(id){
+  if (id === 'msg') msgWinOpen = false;
   var w = document.getElementById('win-'+id);
   w.classList.remove('open','maxed');
   refreshTasks();
@@ -736,7 +783,48 @@ function seenLog(){
 }
 function saveSeen(s){ try { sessionStorage.setItem('cz_evt_seen', JSON.stringify(s)); } catch(e){} }
 
-/* 公共：弹气泡 + 写入消息窗口（手机聊天样式：身份 + 时间，正序追加）+ 未读红点 */
+/* ============ 联系人会话（手机通讯录样式） ============ */
+var activeChat = 'person';
+var msgWinOpen = false;
+var CHAT_OF_CLS = { 'm-wang': 'wang', 'm-person': 'person', 'm-sys': 'sys' };
+var chats = {
+  person: { cls: 'm-person', ico: '📩', name: '值班员 · 档案科', unread: 0 },
+  wang:   { cls: 'm-wang',   ico: '🗝️', name: '王执事',          unread: 0 },
+  sys:    { cls: 'm-sys',    ico: '📡', name: '系统',             unread: 0 }
+};
+function renderBadges(){
+  for (var k in chats) {
+    var b = document.getElementById('cb-' + k);
+    if (!b) continue;
+    var n = chats[k].unread;
+    b.textContent = n;
+    b.classList.toggle('hidden', n === 0);
+  }
+}
+function clearUnread(){
+  for (var k in chats) chats[k].unread = 0;
+  renderBadges();
+}
+/* 切换会话：过滤消息、清未读、更新头部与任务卡 */
+function openChat(key){
+  activeChat = key;
+  document.querySelectorAll('#chat-list .chat-item').forEach(function(it){
+    it.classList.toggle('active', it.getAttribute('data-chat') === key);
+  });
+  chats[key].unread = 0; renderBadges();
+  var hd = document.getElementById('chat-head');
+  hd.querySelector('.c-avatar').textContent = chats[key].ico;
+  document.getElementById('chat-head-name').textContent = chats[key].name;
+  document.querySelectorAll('#msg-list .msg-item').forEach(function(m){
+    m.style.display = m.getAttribute('data-chat') === key ? '' : 'none';
+  });
+  var tc = document.getElementById('task-card');
+  if (tc) tc.style.display = (key === 'person') ? '' : 'none';
+  var wb = document.getElementById('win-msg').querySelector('.w-body');
+  if (wb) wb.scrollTop = wb.scrollHeight;
+}
+
+/* 公共：弹气泡 + 写入会话（手机聊天样式：身份 + 时间，正序追加）+ 未读红点 */
 function pushMsg(cls, ico, name, text){
   msgSeq++;
   var ts = (unlocked ? '2026-08-11' : '2009-03-17') + ' 03:' + String(3 + msgSeq).padStart(2, '0');
@@ -746,11 +834,19 @@ function pushMsg(cls, ico, name, text){
   document.getElementById('notify-body').textContent = text;
   nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
   clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
-  var box = document.getElementById('msg-list');
+  var key = CHAT_OF_CLS[cls] || 'sys';
   var div = document.createElement('div');
   div.className = 'msg-item ' + cls;
+  div.setAttribute('data-chat', key);
   div.innerHTML = '<div class="m-head"><span class="m-avatar">' + ico + '</span><span class="m-name">' + name + '</span><span class="m-time">' + ts + '</span></div><div class="m-body">' + text + '</div>';
-  box.appendChild(div);
+  if (key !== activeChat) div.style.display = 'none';
+  document.getElementById('msg-list').appendChild(div);
+  /* 会话列表：最后消息预览 + 时间 + 未读 */
+  var plain = text.replace(/<[^>]*>/g, '').replace(/\n/g, ' ');
+  var pv = document.getElementById('prev-' + key), tt = document.getElementById('t-' + key);
+  if (pv) pv.textContent = plain.length > 22 ? plain.slice(0, 22) + '…' : plain;
+  if (tt) tt.textContent = ts.slice(11, 16);
+  if (!(msgWinOpen && key === activeChat)) { chats[key].unread++; renderBadges(); }
   var wb = document.getElementById('win-msg').querySelector('.w-body');
   if (wb) wb.scrollTop = wb.scrollHeight;
   liveCount++;
@@ -1270,6 +1366,9 @@ setInterval(function(){
   try { localStorage.setItem('cz_note', document.getElementById('notepad').value); } catch(e){}
 }, 1500);
 try { var saved = localStorage.getItem('cz_note'); if (saved) document.getElementById('notepad').value = saved; } catch(e){}
+
+/* 信息窗口：初始打开值班员会话（消息按联系人过滤） */
+openChat('person');
 </script>
 </body>
 </html>
