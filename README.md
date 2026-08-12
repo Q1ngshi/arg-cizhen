@@ -39,6 +39,9 @@ index.html   ← 官网入口（直接访问像普通网站，ARG 伪装层）
 2. 仓库 Settings → Pages → Source 选 `main` 分支 → Save
 3. 等待 1 分钟 → 访问 `https://<你的用户名>.github.io/arg-cizhen/`
 
+> ⚠️ 分发通道只用 GitHub Pages（自动构建，HTML 正确渲染）。
+> 勿用 jsDelivr（cdn.jsdelivr.net/gh/…）：2026 年起其对 .html 一律返回 `text/plain`，浏览器只显示源码不渲染。
+
 **Vercel**（备选）
 1. vercel.com 用 GitHub 登录 → New Project → 导入仓库
 2. 默认设置直接 Deploy（纯静态站，零配置）
