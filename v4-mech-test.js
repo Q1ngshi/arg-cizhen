@@ -225,6 +225,60 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await p4.click('#archive-search-btn');
   ok('C4 守正结局：陈守正已登记', (await p4.locator('#search-result').textContent()).includes('已登记'));
 
+  // C5-C7 P2 实时追逐（宽容制）：仅被登记后推进；在线满 15 分钟 −1 天；离线不计；0 天兜底
+  const mkP2 = async () => {
+    const c = await browser.newContext();
+    const p = await c.newPage();
+    await p.goto(BASE + '/', { waitUntil: 'networkidle' });
+    return { c, p };
+  };
+  // C5 在线推进：在线时长已 898s+页面存活几秒 → 跨 15 分钟线 → 5→4
+  {
+    const { c, p } = await mkP2();
+    await p.evaluate(() => {
+      localStorage.setItem('cz_evt_final_read', Date.now());
+      localStorage.setItem('cz_dict_prog', JSON.stringify({ days: 5, online: 898000 }));
+    });
+    await p.reload({ waitUntil: 'networkidle' });
+    await sleep(7500);   // 首跑建 lastTick + 5 秒轮询累计
+    ok('C5 实时追逐：在线推进 −1 天（5→4）', (await p.locator('#cz-dict-days').textContent()).trim() === '4');
+    await c.close();
+  }
+  // C6 离线不扣：页面重开（lastTick 重置）→ 离线时长不进累计
+  {
+    const { c, p } = await mkP2();
+    await p.evaluate(() => {
+      localStorage.setItem('cz_evt_final_read', Date.now());
+      localStorage.setItem('cz_dict_prog', JSON.stringify({ days: 5, online: 0 }));
+    });
+    await p.reload({ waitUntil: 'networkidle' });
+    await sleep(7500);
+    ok('C6 宽容制：离线时长不计入（保持 5 天）', (await p.locator('#cz-dict-days').textContent()).trim() === '5');
+    await c.close();
+  }
+  // C7 0 天兜底：大典日当天不再减少、无负数
+  {
+    const { c, p } = await mkP2();
+    await p.evaluate(() => {
+      localStorage.setItem('cz_evt_final_read', Date.now());
+      localStorage.setItem('cz_dict_prog', JSON.stringify({ days: 0, online: 1800000 }));
+    });
+    await p.reload({ waitUntil: 'networkidle' });
+    await sleep(7500);
+    ok('C7 0 天兜底：不再减少（0）', (await p.locator('#cz-dict-days').textContent()).trim() === '0');
+    await c.close();
+  }
+  // C8 未登记：不进实时追逐（prog 不初始化、数字静态）
+  {
+    const { c, p } = await mkP2();
+    await p.evaluate(() => localStorage.setItem('cz_dict_prog', JSON.stringify({ days: 5, online: 1800000 })));
+    await p.reload({ waitUntil: 'networkidle' });
+    await sleep(7500);
+    const dd8 = (await p.locator('#cz-dict-days').textContent()).trim();
+    ok('C8 未登记：不读实时进度（静态天数 ' + dd8 + '）', /^\d+$/.test(dd8) && dd8 !== '5' && await p.evaluate(() => !!localStorage.getItem('cz_dict_prog')));
+    await c.close();
+  }
+
   await c1.close(); await c2.close(); await c3.close(); await c4.close();
   await browser.close();
   console.log(`\n===== v4 机制验证：${pass} 通过 / ${fail} 失败 =====`);

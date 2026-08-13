@@ -1117,14 +1117,45 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
   var result = document.getElementById('search-result');
   // 恩慈大典倒计时三态（大典日 2026-08-27，纯前端计算；状态键与桌面同源共享）
   // 常态：距大典 X 天 ｜ 被登记（cz_evt_final_read）：变红绑定「名册上写着你的名字」｜ 反抗 ≥2 或好结局：待核验
+  /* P2 实时追逐（宽容制）：现实 15 分钟 = 游戏 1 天。仅被登记后推进（cz_dict_prog 累计在线时长，
+     离线不扣、只在线推进：页面关停期间不计、切走/休眠丢弃；0 天兜底不再减） */
+  var czDictTickLast = null;
+  function czDictTick() {
+    var d0 = Math.max(0, Math.ceil((new Date(2026, 7, 27).getTime() - Date.now()) / 86400000));
+    var reg = false, good = false, resist = 0;
+    try {
+      reg = !!localStorage.getItem('cz_evt_final_read');
+      good = !!localStorage.getItem('cz_evt_good_end');
+      resist = parseInt(localStorage.getItem('cz_resist') || '0', 10);
+    } catch (e) {}
+    if (!reg || good || resist >= 2) return d0;   // 未登记（静态）/ 待核验（停滞）：不进实时追逐
+    var now = Date.now();
+    var prog = null;
+    try { prog = JSON.parse(localStorage.getItem('cz_dict_prog') || 'null'); } catch (e) {}
+    if (!prog) {
+      prog = { days: d0, online: 0 };
+      localStorage.setItem('cz_dict_prog', JSON.stringify(prog));
+      czDictTickLast = now;
+      return prog.days;
+    }
+    if (czDictTickLast !== null) prog.online += now - czDictTickLast;   // 只累计本页存活时长
+    czDictTickLast = now;
+    while (prog.online >= 900000 && prog.days > 0) {   // 900000ms = 15 分钟 → 1 天
+      prog.online -= 900000;
+      prog.days -= 1;
+    }
+    try { localStorage.setItem('cz_dict_prog', JSON.stringify(prog)); } catch (e) {}
+    return prog.days;
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) czDictTickLast = null;   // 切走/休眠：停表，回来重新起算
+  });
   function czSetCountdown() {
     var el = document.getElementById('cz-dict-days');
     if (!el) return;
     var label = document.getElementById('cz-dict-label');
     var tail = document.getElementById('cz-dict-tail');
     var row = document.getElementById('cz-dict-row');
-    var d = Math.ceil((new Date(2026, 7, 27).getTime() - Date.now()) / 86400000);
-    var txt = (d > 0 ? d : '0');
     var good = false, reg = false, resist = 0;
     try {
       good = !!localStorage.getItem('cz_evt_good_end');
@@ -1138,6 +1169,8 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       if (row) row.style.color = '#8a6d3b';
       return;
     }
+    var d = czDictTick();
+    var txt = (d > 0 ? d : '0');
     if (reg) {
       el.textContent = txt;
       if (label) label.textContent = '大典还有';
