@@ -866,6 +866,7 @@ var MSG_TEXTS = {
   morse_hint3:         '八月廿七——去检索框问它。',
   resist_ready:        '第三份交接记录，还没人签收过。',
   time_sync:           '系统检测到名单变更。时间同步恢复。',
+  call_update:         '身份已核验。称呼：名单在册。',
   choice_shouzheng:    '记录已更新。新的名字在名册上。—— 陈守正：已登记。',
   good_end:            '档案写入完成。访客 05 已从名单移出。'
 };
@@ -1085,6 +1086,7 @@ function startClockSync(){
 function finalizeRegistration(){
   lsSet('cz_evt_final_read', Date.now());
   fireMsg('time_sync');
+  fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();
 }
 /* 最终卷界面 */

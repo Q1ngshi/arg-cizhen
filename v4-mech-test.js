@@ -112,6 +112,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('B4 阅读：cz_evt_final_read 写入', await page.evaluate(() => !!localStorage.getItem('cz_evt_final_read')));
   ok('B4 阅读：正文 + 二选一可见', await page.locator('#fv-body').isVisible() && await page.locator('#fv-chooser').isVisible());
   ok('B4 阅读：time_sync 消息', await hasMsg('系统检测到名单变更。时间同步恢复。'));
+  ok('B4 阅读：称呼切换为名单在册', await hasMsg('身份已核验。称呼：名单在册。'));
   const clk = await page.locator('#clock').textContent();
   ok('B4 阅读：时钟解冻为真实时间 (' + clk.trim() + ')', /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(clk.trim()) && clk.trim() !== '2026-08-11 03:00');
   ok('B4 二选一：第三选项隐藏（1 点）', await page.evaluate(() => document.getElementById('fv-third').style.display === 'none'));
@@ -167,7 +168,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('B9 好结局：记录未更新', ge.includes('记录未更新。没有新的名字。'));
   ok('B9 好结局：河边点灯钩子', ge.includes('今天，没有人被写进名册。'));
   ok('B9 好结局：cz_evt_good_end', await page.evaluate(() => !!localStorage.getItem('cz_evt_good_end')));
-  ok('B9 好结局：good_end 消息', await hasMsg('档案写入完成。访客 05 已从名单移出。'));
+  ok('B9 好结局：good_end 消息（称呼回归访客 05）', await hasMsg('档案写入完成。访客 05 已从名单移出。'));
   await sleep(2000);
   ok('B9 好结局：回到桌面按钮', await page.locator('#fv-end button:has-text("回到桌面")').isVisible());
 
