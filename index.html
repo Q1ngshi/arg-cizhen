@@ -258,7 +258,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
           <div class="news-item"><span class="n-title">槐树街三号档案库房完成恒温恒湿系统升级改造</span><span class="n-date">2026-06-22</span></div>
         </div>
         <div class="news-list" id="tab2">
-          <div class="news-item"><span class="n-title" style="color:#8B0000">距恩慈大典还有 <b id="cz-dict-days">—</b> 天</span><span class="n-date">2026-08-27</span></div>
+          <div class="news-item" id="cz-dict-row"><span class="n-title" style="color:#8B0000"><span id="cz-dict-label">距恩慈大典还有</span> <b id="cz-dict-days">—</b> <span id="cz-dict-tail">天</span></span><span class="n-date">2026-08-27</span></div>
           <div class="news-item" onclick="toggleNews(this)"><span class="n-title">关于举办恩慈大典的公告 ▸</span><span class="n-date">2026-08-14</span></div>
           <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">为传承镇域民俗传统，定于 8 月 27 日（中元节）在镇南河边举行一年一度的恩慈大典。典礼内容包括：河边点灯、祭河祈雨、灯船巡河。请各户届时参加，灯烛由镇礼部统一发放。未尽事宜，另行通知。<br><img src="assets/img/enci-festival.svg" alt="公告原件（扫描件）" style="display:block;max-width:300px;width:100%;margin:8px 0;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.18)"></span></div>
           <div class="news-item"><span class="n-title">关于开展2026年度馆藏档案整理工作的通知</span><span class="n-date">2026-08-03</span></div>
@@ -1115,23 +1115,60 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
   var input = document.getElementById('archive-search');
   var btn = document.getElementById('archive-search-btn');
   var result = document.getElementById('search-result');
-  // 恩慈大典静态倒计时（大典日 2026-08-27，纯前端计算）
+  // 恩慈大典倒计时三态（大典日 2026-08-27，纯前端计算；状态键与桌面同源共享）
+  // 常态：距大典 X 天 ｜ 被登记（cz_evt_final_read）：变红绑定「名册上写着你的名字」｜ 反抗 ≥2 或好结局：待核验
   function czSetCountdown() {
     var el = document.getElementById('cz-dict-days');
     if (!el) return;
+    var label = document.getElementById('cz-dict-label');
+    var tail = document.getElementById('cz-dict-tail');
+    var row = document.getElementById('cz-dict-row');
     var d = Math.ceil((new Date(2026, 7, 27).getTime() - Date.now()) / 86400000);
-    el.textContent = d > 0 ? d : '0';
+    var txt = (d > 0 ? d : '0');
+    var good = false, reg = false, resist = 0;
+    try {
+      good = !!localStorage.getItem('cz_evt_good_end');
+      reg = !!localStorage.getItem('cz_evt_final_read');
+      resist = parseInt(localStorage.getItem('cz_resist') || '0', 10);
+    } catch (e) {}
+    if (good || resist >= 2) {
+      el.textContent = '—';
+      if (label) label.textContent = '恩慈大典日期待核验';
+      if (tail) tail.textContent = '';
+      if (row) row.style.color = '#8a6d3b';
+      return;
+    }
+    if (reg) {
+      el.textContent = txt;
+      if (label) label.textContent = '大典还有';
+      if (tail) tail.textContent = '天。名册上写着你的名字。';
+      if (row) row.style.color = '#8B0000';
+      return;
+    }
+    el.textContent = txt;
+    if (label) label.textContent = '距恩慈大典还有';
+    if (tail) tail.textContent = '天';
+    if (row) row.style.color = '#8B0000';
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', czSetCountdown); else czSetCountdown();
+  setInterval(czSetCountdown, 5000);   // 与桌面同源共享状态，5 秒刷新一次
 
   function doSearch() {
     var q = (input.value || '').trim().toLowerCase();
     if (!q) return;
     logStage('search', q);   // 每个不同关键词记一次（同词重复只记首次）
-    // 特殊检索：被抹去的人
+    // 特殊检索：被抹去的人（三态：默认未找到 / 登记后「找到——已登记」/ 好结局「已找回——档案已补录」）
     if (q === '林远' || q === 'linyuan') {
       result.style.display = '';
-      result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      var _good = false, _reg = false;
+      try { _good = !!localStorage.getItem('cz_evt_good_end'); _reg = !!localStorage.getItem('cz_evt_final_read'); } catch(e){}
+      if (_good) {
+        result.innerHTML = '<div style="padding:20px;text-align:center;color:#2a7f2a;font-size:13px">找到——<b>已找回——档案已补录。</b><br><span style="color:#999;font-size:12px">（补录时间：2026-08-13）</span></div>';
+      } else if (_reg) {
+        result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">找到——<b>已登记</b>。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      } else {
+        result.innerHTML = '<div style="padding:20px;text-align:center;color:#8B0000;font-size:13px">未找到相关档案。<br><span style="color:#999;font-size:12px">（检索记录已存档）</span></div>';
+      }
       try { localStorage.setItem('cz_evt_search_linyuan', Date.now()); } catch (e) {}
       return;
     }
@@ -1160,8 +1197,10 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
     // 特殊检索：陈守正（现任主任，深渊区钩子）
     if (q === '陈守正') {
       result.style.display = '';
+      var _sz = false;
+      try { _sz = !!localStorage.getItem('cz_evt_choice_shouzheng'); } catch(e){}
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>人事档案 1 件</b><br>' +
-        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>陈守正</b> ｜ 主任 ｜ 主持全面工作 ｜ 任职起始：2009年12月<br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>陈守正</b> ｜ 主任 ｜ 主持全面工作 ｜ 任职起始：2009年12月' + (_sz ? ' ｜ <span style="color:#8B0000">（已登记）</span>' : '') + '<br>' +
         '主要经历：2009年12月起主持档案办工作；其父陈某（前主任）于2010年调离慈恩镇。<br>' +
         '<span style="color:#8B0000">移交说明：2010年陈某调离时移交材料一批。其中红色笔记本 1 册未登记编号，未录入电子档案目录，现由本人保管。</span></div></div>';
       try { localStorage.setItem('cz_evt_search_chenshouzheng', Date.now()); } catch (e) {}
@@ -1177,6 +1216,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
     }
     // 特殊检索：3-17 停电通知（停电-冻结暗线：对照终端冻结时刻）
     if (q === '停电' || q === '停电通知') {
+      try { localStorage.setItem('cz_evt_search_tingdian', Date.now()); } catch (e) {}
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>公告 1 件（2009 年，已归档）</b><br>' +
         '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>关于 3 月 17 日全镇停电检修的通知</b>（2009-03-14 印发）<br>' +
@@ -1196,6 +1236,16 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       return;
     }
     // 特殊检索：恩慈大典（氛围擦边词 + 公告原件图）
+    // 特殊检索：摩斯破译（八月廿七 / 0827 = 电码谜底大典日；写 cz_evt_morse_break 供最终卷解锁）
+    if (q === '八月廿七' || q === '0827' || q === '8月27日') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>恩慈大典 · 追加条目 1 件</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>恩慈大典筹备记录（补充）</b><br>' +
+        '<span style="color:#8B0000">（原件上有铅笔批注："名单照旧。八月廿七，河边。"）</span><br>' +
+        '<span style="color:#999;font-size:12px">该条目与「距恩慈大典」倒计时一致：8 月 27 日，中元节。</span></div></div>';
+      try { localStorage.setItem('cz_evt_morse_break', Date.now()); } catch (e) {}
+      return;
+    }
     if (q === '大典' || q === '恩慈大典') {
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>公告 1 件（2026 年，公开）</b><br>' +

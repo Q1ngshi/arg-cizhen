@@ -201,6 +201,31 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 .calc .disp.calc-break { animation: calcBreakGlow .9s ease-out 2; }
 @keyframes calcBreakGlow { 0%{box-shadow:0 0 0 rgba(64,192,255,0)} 30%{box-shadow:0 0 26px rgba(64,192,255,.6)} 100%{box-shadow:0 0 0 rgba(64,192,255,0)} }
 
+/* ============ 最终卷（终局揭示层 v4）============ */
+#final-veil { position:fixed; inset:0; background:#000; z-index:999; display:none; }
+#final-veil.show { display:flex; align-items:center; justify-content:center; }
+#fv-box { max-width:560px; width:92%; max-height:88vh; overflow-y:auto; background:#0c0c0e; border:1px solid #3a3226; padding:26px 30px; border-radius:3px; color:#e8d8b8; }
+#fv-box .fv-title { font-size:15px; letter-spacing:2px; color:#c8b08a; text-align:center; border-bottom:1px solid #3a3226; padding-bottom:10px; }
+#fv-box .fv-sec { font-size:12.5px; line-height:2; color:#d8c8a8; margin-top:14px; }
+#fv-box .fv-sec .red { color:#c05040; }
+#fv-box .fv-sec .dim { color:#8a7a5c; }
+#fv-box .fv-end-hook { font-size:13px; line-height:2.2; color:#d8c8a8; margin-top:16px; border-top:1px solid #3a3226; padding-top:14px; }
+.fv-actions { display:flex; gap:14px; justify-content:center; align-items:center; margin-top:22px; }
+.fv-actions .btn { background:#202a40; color:#cfdaea; border:1px solid #3a4a68; padding:8px 22px; border-radius:3px; cursor:pointer; font-size:13px; }
+.fv-actions .btn:hover { background:#2c3a58; }
+.fv-reject { background:transparent; color:#6a6a72; border:1px solid #3a3a42; padding:8px 18px; border-radius:3px; cursor:pointer; font-size:12px; }
+.fv-reject:hover { color:#8a8a92; }
+.fv-chooser { margin-top:18px; border-top:1px solid #3a3226; padding-top:16px; text-align:center; }
+.fv-chooser .fv-opt { display:block; width:100%; margin:10px 0; padding:10px; text-align:left; }
+.fv-chooser .fv-third { color:#8a7a6a; border-color:#4a4238; background:#101012; }
+#fv-confirm { display:none; margin-top:18px; border-top:1px solid #3a3226; padding-top:14px; text-align:center; }
+#fv-end { display:none; margin-top:14px; }
+#fv-end p { font-size:13px; line-height:2.2; color:#e8d8b8; margin:6px 0; }
+#fv-end .black { color:#fff; }
+#fv-end .dim { color:#8a7a5c; }
+#fv-end .btn { display:block; margin:22px auto 0; background:#202a40; color:#cfdaea; border:1px solid #3a4a68; padding:9px 26px; border-radius:3px; cursor:pointer; font-size:13px; }
+#fv-end .btn:hover { background:#2c3a58; }
+
 /* ============ 手机适配 ============ */
 @media (max-width:700px) {
   .icon { width:80px; font-size:11px; }
@@ -240,6 +265,57 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
   </div>
 </div>
 
+<!-- 最终卷：终局揭示层（阅读警告 → 正文 → 二选一 → 结局/抹除过场） -->
+<div id="final-veil">
+  <div id="fv-box">
+    <div id="fv-warn">
+      <div class="fv-title">交接记录 · 最终卷</div>
+      <p style="font-size:13px;color:#e8d8b8;line-height:2;margin-top:16px">该卷已登记阅读者信息。阅读完成即登记在册。</p>
+      <div class="fv-actions">
+        <button class="btn" onclick="fvRead()">继续阅读</button>
+        <button class="fv-reject" onclick="fvReject()">我拒绝</button>
+      </div>
+    </div>
+    <div id="fv-body" style="display:none">
+      <div class="fv-title">交接记录 · 最终卷</div>
+      <div class="fv-sec">2009 年 3 月 17 日。停电通知写的是 08:00。03:01 系统就断了。<br>
+        那一夜，名册从地下室夹层被搬出来，经教堂后门转出镇子。搬箱子的是第三个人——一个不该出现在那晚的人。<br>
+        03:01 的断线不是故障，是停电掩护下的交接。值班员看见了不该看见的，所以值班员失踪了。</div>
+      <div class="fv-sec">名册不是失踪名单，是祭品账本。登记 = 选为祭品；抹除 = 完成献祭。1942 年起，账本开始组织化。<br>
+        第一页写着——</div>
+      <img src="assets/img/roster-page.svg" alt="名册第一页" style="display:block;max-width:300px;width:100%;margin:12px auto;border:1px solid #3a3226;box-shadow:0 2px 10px rgba(0,0,0,.5)">
+      <div class="fv-sec" style="text-align:center"><span class="red">「凡登记在册者，皆已不在人世。」</span></div>
+      <div class="fv-sec">看守者宿命：交出名册之日，就是名字上名册之日。<br>
+        访客 01 王执事——<span class="red">已登记</span>。 访客 02 陈父——<span class="red">已登记</span>。<br>
+        访客 03 老陈——<span class="red">已登记</span>。 访客 04 林远——<span class="red">已登记</span>。<br>
+        <span class="dim">编号顺序，不向名单之外的人展开。</span></div>
+      <div class="fv-sec">落款：<span class="red">访客 05</span>。<span class="dim">（笔迹比对结果：与值班员林远一致。）</span><br>
+        「林远失踪」是掩盖。当年动手的人，就是此刻阅读这份记录的人。</div>
+      <div class="fv-sec">陈父弧线：1942 年二十岁接班，看守三十年，眼看一个个孩子被登记、被抹除。<br>
+        1972 年交接日前，他从库房取走名册，撕下第一页之前的旧记录，想带着它终结循环。失败了。官方说法：走失。<br>
+        他是第一个试图反抗的人。你继承了他的身份，也继承了他<span class="red">未完成的反抗</span>。</div>
+      <div class="fv-sec fv-end-hook">
+        「名册不是从 1942 年开始的。第一页之前，还有被撕掉的页。」<br>
+        「陈父没能带走全部。你打算怎么办？」<br>
+        「而河神，从未离开过这条河。」</div>
+      <div class="fv-chooser" id="fv-chooser">
+        <p style="font-size:12.5px;color:#8a7a5c">档案科要求确认移交对象（名册移交确认）：</p>
+        <button class="btn fv-opt" onclick="fvChoice('shouzheng')">陈守正（现任主任）</button>
+        <button class="btn fv-opt" onclick="fvChoice('self')">访客 05（你）</button>
+        <button class="btn fv-opt fv-third" id="fv-third" style="display:none" onclick="fvChoice('refuse')">这份记录，我不签收。</button>
+      </div>
+    </div>
+    <div id="fv-confirm">
+      <p style="font-size:13px;color:#e8d8b8;line-height:2">确认将名册移交至所选对象？</p>
+      <div class="fv-actions">
+        <button class="btn" onclick="fvConfirmGo()">确认</button>
+        <button class="fv-reject" onclick="fvBack()">再想想</button>
+      </div>
+    </div>
+    <div id="fv-end"></div>
+  </div>
+</div>
+
 <!-- 桌面 -->
 <div id="desktop">
   <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
@@ -272,6 +348,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <div class="arch-item"><span>CE-2009-003 · 水利工程备案</span><span class="a-no">损坏</span></div>
         <div class="arch-item"><span>CE-2009-004 · 人事档案（教会）</span><span class="a-no">损坏</span></div>
         <div class="arch-item" onclick="openArch('05')"><span>CE-2009-005 · 林远失踪案</span><span class="a-no">可查阅</span></div>
+        <div class="arch-item" id="arch-final-entry" style="display:none" onclick="openFinal()"><span>交接记录 · 最终卷（编号：未定）</span><span class="a-no" style="color:#8B0000">待签收</span></div>
         <div class="arch-item" onclick="openArch('06')"><span>CE-2009-006 · 安息祭</span><span class="a-no a-del">✕ 已删除</span></div>
         <div class="arch-item" onclick="openArch('p1')"><span>2009-补-001 · 林远调查笔记（残页·复印件）</span><span class="a-no">在档</span></div>
         <div class="arch-item" onclick="openArch('p2')"><span>2009-补-002 · 槐树街7号平面图（手绘标注）</span><span class="a-no">在档</span></div>
@@ -782,7 +859,15 @@ var MSG_TEXTS = {
   restore3_done:      '文件恢复完成。又发现 1 件文件：未编号抄本（第23页之后 · 节选）。',
   bp_dig_done:        '墙体检验完成。夹壁中发现纸张类物证，已登记入档。',
   calc_break:          '口令 1942 已被记录，可用于门禁。',
-  bp_plate:            '图纸柜位铭牌信息已登记入档。'
+  bp_plate:            '图纸柜位铭牌信息已登记入档。',
+  morse_break:         '检索词与恩慈大典关联。记录已归档。',
+  morse_hint1:         '抄件背面：『点划成字。』',
+  morse_hint2:         '背面还有一行：『短是点，长是划。』',
+  morse_hint3:         '八月廿七——去检索框问它。',
+  resist_ready:        '第三份交接记录，还没人签收过。',
+  time_sync:           '系统检测到名单变更。时间同步恢复。',
+  choice_shouzheng:    '记录已更新。新的名字在名册上。—— 陈守正：已登记。',
+  good_end:            '档案写入完成。访客 05 已从名单移出。'
 };
 
 function seenLog(){
@@ -815,6 +900,7 @@ function clearUnread(){
 /* 切换会话：过滤消息、清未读、更新头部与任务卡 */
 function openChat(key){
   activeChat = key;
+  if (key === 'wang') lsSet('cz_evt_wang_read', Date.now());   // 王执事已读：最终卷七键之一
   document.querySelectorAll('#chat-list .chat-item').forEach(function(it){
     it.classList.toggle('active', it.getAttribute('data-chat') === key);
   });
@@ -903,7 +989,8 @@ function pollEvents(){
     cz_evt_blueprint_001:     'blueprint_001',
     cz_evt_gate_fail:         'gate_fail',
     cz_evt_gate_ok:           'gate_ok',
-    cz_evt_gate3_ok:          'gate3_ok'
+    cz_evt_gate3_ok:          'gate3_ok',
+    cz_evt_morse_break:       'morse_break'
   };
   /* 官网 07 门禁第一次打开 → 值班员引导破译（不埋点，值班员消息已入信息窗口） */
   var g3o = 0;
@@ -960,6 +1047,175 @@ function checkTask2(){
   fireIncoming('核对结果我看了，登记人确实对不上。先记一笔。还有件事——07 号档案要门禁密码才能调阅，老王走之前留了点东西，你有空查查。');
 }
 setInterval(pollEvents, 1000);
+
+/* ============ v4 最终卷（终局揭示层）============ */
+/* 状态键：cz_evt_final_read（已读/登记）、cz_evt_choice_shouzheng/self/refuse（二选一标记）、
+   cz_evt_good_end（好结局）、cz_resist + cz_resist_d1/d2/d3（反抗点）、cz_evt_wang_read（王执事已读）、cz_erase_cnt（死亡次数） */
+function stageDone(k){
+  try { var a = JSON.parse(localStorage.getItem('cz_stage_log') || '[]'); return Array.isArray(a) && a.some(function(x){ return x.k === k; }); } catch(e){ return false; }
+}
+function ls(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+function finalReady(){
+  return !!(ls('cz_evt_search_tingdian') && ls('cz_evt_gate3_ok') && ls('cz_evt_handover_done') && ls('cz_evt_morse_break') && ls('cz_evt_wang_read') && stageDone('calc_break') && stageDone('bp_plate'));
+}
+function finalSixNoMorse(){
+  return !!(ls('cz_evt_search_tingdian') && ls('cz_evt_gate3_ok') && ls('cz_evt_handover_done') && ls('cz_evt_wang_read') && stageDone('calc_break') && stageDone('bp_plate')) && !ls('cz_evt_morse_break');
+}
+function resistAdd(k){
+  if (ls('cz_resist_d' + k)) return;
+  lsSet('cz_resist_d' + k, '1');
+  var n = Math.min(3, (parseInt(ls('cz_resist') || '0', 10) || 0) + 1);
+  lsSet('cz_resist', String(n));
+  if (n === 2) fireMsg('resist_ready');   // 仅第 2 点触发：第三选项前置提示
+}
+/* 被登记：时间同步恢复 + 时钟解冻（官网倒计时绑定由 index 同源读取 cz_evt_final_read） */
+var clockSyncTimer = null;
+function startClockSync(){
+  if (clockSyncTimer) return;
+  var el = document.getElementById('clock');
+  var pad = function(n){ return String(n).padStart(2, '0'); };
+  var tick = function(){
+    var d = new Date();
+    el.textContent = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  };
+  tick();
+  clockSyncTimer = setInterval(tick, 15000);
+}
+function finalizeRegistration(){
+  lsSet('cz_evt_final_read', Date.now());
+  fireMsg('time_sync');
+  startClockSync();
+}
+/* 最终卷界面 */
+var fvChoicePending = null;
+var fvEverOpened = false;
+function openFinal(){
+  var v = document.getElementById('final-veil');
+  v.classList.add('show');
+  var done = !!ls('cz_evt_final_read');
+  document.getElementById('fv-warn').style.display = done ? 'none' : '';
+  document.getElementById('fv-body').style.display = done ? '' : 'none';
+  document.getElementById('fv-confirm').style.display = 'none';
+  var e = document.getElementById('fv-end');
+  e.style.display = 'none'; e.innerHTML = '';
+  if (done) showChooser();
+  if (!fvEverOpened) fvEverOpened = true;
+}
+function showChooser(){
+  document.getElementById('fv-chooser').style.display = '';
+  document.getElementById('fv-third').style.display = (parseInt(ls('cz_resist') || '0', 10) || 0) >= 3 ? '' : 'none';
+}
+function fvRead(){
+  finalizeRegistration();      // 阅读完成即登记在册
+  document.getElementById('fv-warn').style.display = 'none';
+  document.getElementById('fv-body').style.display = '';
+  showChooser();
+}
+function fvReject(){
+  resistAdd(1);
+  var w = document.getElementById('fv-warn');
+  w.style.display = 'none'; void w.offsetWidth; w.style.display = '';   // 警告重弹，不阻塞主线
+}
+function fvChoice(k){
+  fvChoicePending = k;
+  document.getElementById('fv-chooser').style.display = 'none';
+  var c = document.getElementById('fv-confirm');
+  c.style.display = 'block';   // CSS 默认 none，须显式覆盖
+}
+function fvBack(){
+  resistAdd(2);                // 再想想：回到二选一
+  document.getElementById('fv-confirm').style.display = 'none';
+  showChooser();
+}
+function fvConfirmGo(){
+  var k = fvChoicePending; fvChoicePending = null;
+  document.getElementById('fv-confirm').style.display = 'none';
+  if (k === 'shouzheng') fvEndShouzheng();
+  else if (k === 'self') fvEndSelf();
+  else if (k === 'refuse') fvEndGood();
+}
+/* 结局一：写陈守正 */
+function fvEndShouzheng(){
+  var e = document.getElementById('fv-end');
+  e.innerHTML = '<p class="black">记录已更新。新的名字在名册上。</p>';
+  e.style.display = 'block';   // CSS 默认 none，须显式覆盖
+  document.getElementById('fv-body').style.display = 'none';
+  lsSet('cz_evt_choice_shouzheng', Date.now());
+  setTimeout(function(){
+    document.getElementById('final-veil').classList.remove('show');
+    fireMsg('choice_shouzheng');
+  }, 1800);
+}
+/* 结局二：写自己 → 抹除过场 → 重来入口 */
+var ERASE_LINES = [
+  '备份中缺失：3 秒的记忆。',
+  '备份中缺失：一份 2009 年的卷宗。',
+  '备份中缺失：你的名字。'
+];
+function fvEndSelf(){
+  var e = document.getElementById('fv-end');
+  e.innerHTML = '<p class="black">我选了第二个。你也会选第二个吗？</p>' +
+    '<p class="black">你已登记在册。欢迎归位。</p>' +
+    '<p class="dim" style="margin-top:18px">访客 05 状态：已注销。正在恢复备份……</p>' +
+    '<p class="dim" id="fv-erase-line"></p>';
+  e.style.display = 'block';   // CSS 默认 none，须显式覆盖
+  document.getElementById('fv-body').style.display = 'none';
+  lsSet('cz_evt_choice_self', Date.now());
+  var cnt = parseInt(ls('cz_erase_cnt') || '0', 10) || 0;
+  lsSet('cz_erase_cnt', String(cnt + 1));
+  setTimeout(function(){
+    var el = document.getElementById('fv-erase-line');
+    if (el) el.textContent = ERASE_LINES[cnt % 3];
+  }, 2200);
+  setTimeout(function(){
+    var el = document.getElementById('fv-erase-line');
+    if (el) el.innerHTML += '<br>恢复完成。访客 05 在线。';
+    var b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = '重新开始';
+    b.onclick = fvRestart;
+    e.appendChild(b);
+  }, 4600);
+}
+function fvRestart(){
+  resistAdd(3);                // 死亡过一次：知情者的反抗资格
+  lsSet('cz_evt_choice_self', '');
+  var v = document.getElementById('final-veil');
+  v.classList.remove('show');
+  var e = document.getElementById('fv-end');
+  e.style.display = 'none'; e.innerHTML = '';
+}
+/* 结局三：反抗线 · 我不签收（好结局） */
+function fvEndGood(){
+  var e = document.getElementById('fv-end');
+  e.innerHTML = '<p class="black">记录未更新。没有新的名字。</p>' +
+    '<p class="dim" style="margin-top:20px">河水还在流。你听见有人在河边点灯。</p>' +
+    '<p class="dim">……今天，没有人被写进名册。</p>' +
+    '<p class="dim">你也不知道，这个夜晚能撑多久。</p>';
+  e.style.display = 'block';   // CSS 默认 none，须显式覆盖
+  document.getElementById('fv-body').style.display = 'none';
+  lsSet('cz_evt_choice_refuse', Date.now());
+  lsSet('cz_evt_good_end', Date.now());
+  fireMsg('good_end');
+  setTimeout(function(){
+    var b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = '回到桌面';
+    b.onclick = function(){ document.getElementById('final-veil').classList.remove('show'); };
+    e.appendChild(b);
+  }, 2000);
+}
+/* v4 机制轮询：最终卷入口 / 摩斯引导档3 / 时间解冻 / 反抗触发 */
+setInterval(function(){
+  try {
+    var fe = document.getElementById('arch-final-entry');
+    if (fe && fe.style.display === 'none' && finalReady()) fe.style.display = '';
+    if (finalSixNoMorse() && !evtProcessed['morse_hint3']) { evtProcessed['morse_hint3'] = 1; fireMsg('morse_hint3'); }
+    if (!!ls('cz_evt_final_read') && !evtProcessed['time_sync']) { evtProcessed['time_sync'] = 1; fireMsg('time_sync'); startClockSync(); }
+    if (((parseInt(ls('cz_resist') || '0', 10) || 0) >= 2) && !evtProcessed['resist_ready']) { evtProcessed['resist_ready'] = 1; fireMsg('resist_ready'); }
+  } catch(e){}
+}, 1000);
 
 /* 官网首次打开即收到系统消息 */
 document.getElementById('site-frame').addEventListener('load', function(){ fireMsg('site_loaded'); });
@@ -1025,6 +1281,7 @@ function runRestore(){
             document.getElementById('restored3').classList.add('show');
             document.getElementById('restored3').closest('.window').style.height='auto';
             fireMsg('restore3_done');
+            fireMsg('morse_hint1');   // 摩斯引导档1
             logStage('restore3');
           }, 800);
         }
@@ -1285,6 +1542,7 @@ function bpApply(){
     var pl = document.getElementById('bp-plate');
     if (pl) pl.setAttribute('opacity', '1');
     fireMsg('bp_plate');
+    fireMsg('morse_hint2');   // 摩斯引导档2
     logStage('bp_plate');
   }
 }
