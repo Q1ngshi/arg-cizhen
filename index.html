@@ -258,6 +258,9 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
           <div class="news-item"><span class="n-title">槐树街三号档案库房完成恒温恒湿系统升级改造</span><span class="n-date">2026-06-22</span></div>
         </div>
         <div class="news-list" id="tab2">
+          <div class="news-item"><span class="n-title" style="color:#8B0000">距恩慈大典还有 <b id="cz-dict-days">—</b> 天</span><span class="n-date">2026-08-27</span></div>
+          <div class="news-item" onclick="toggleNews(this)"><span class="n-title">关于举办恩慈大典的公告 ▸</span><span class="n-date">2026-08-14</span></div>
+          <div class="news-item news-body" style="display:none"><span class="n-title" style="font-size:12px;color:#777;line-height:2">为传承镇域民俗传统，定于 8 月 27 日（中元节）在镇南河边举行一年一度的恩慈大典。典礼内容包括：河边点灯、祭河祈雨、灯船巡河。请各户届时参加，灯烛由镇礼部统一发放。未尽事宜，另行通知。<br><img src="assets/img/enci-festival.svg" alt="公告原件（扫描件）" style="display:block;max-width:300px;width:100%;margin:8px 0;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.18)"></span></div>
           <div class="news-item"><span class="n-title">关于开展2026年度馆藏档案整理工作的通知</span><span class="n-date">2026-08-03</span></div>
           <div class="news-item"><span class="n-title">慈恩镇志（2009-2024）修订意见征集</span><span class="n-date">2026-07-18</span></div>
           <div class="news-item"><span class="n-title">关于部分历史档案暂停借阅的通告</span><span class="n-date">2026-06-05</span></div>
@@ -1112,6 +1115,15 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
   var input = document.getElementById('archive-search');
   var btn = document.getElementById('archive-search-btn');
   var result = document.getElementById('search-result');
+  // 恩慈大典静态倒计时（大典日 2026-08-27，纯前端计算）
+  function czSetCountdown() {
+    var el = document.getElementById('cz-dict-days');
+    if (!el) return;
+    var d = Math.ceil((new Date(2026, 7, 27).getTime() - Date.now()) / 86400000);
+    el.textContent = d > 0 ? d : '0';
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', czSetCountdown); else czSetCountdown();
+
   function doSearch() {
     var q = (input.value || '').trim().toLowerCase();
     if (!q) return;
@@ -1173,6 +1185,33 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
         '<span style="color:#8B0000">（批注二："下发日期比实际早了一天。他们 16 号晚上就开始收拾了。"）</span><br>' +
         '<img src="assets/img/power-notice.svg" alt="通知原件（扫描件）" style="max-width:360px;width:100%;margin-top:14px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
         '<div style="color:#999;font-size:11px;margin-top:6px">—— 通知原件（扫描件，2009-03-14 归档）</div></div></div>';
+      return;
+    }
+    // 特殊检索：名册（氛围擦边词，纯静态不写事件键）
+    if (q === '名册' || q === '登记册') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>命中 3 条，其中 2 条已折叠（无公开权限）</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">2009 年库房盘点记录：<span style="color:#8B0000">「少了一件东西，不见即补。」</span><br>' +
+        '<span style="color:#999;font-size:12px">其余条目请联系档案科。</span></div></div>';
+      return;
+    }
+    // 特殊检索：恩慈大典（氛围擦边词 + 公告原件图）
+    if (q === '大典' || q === '恩慈大典') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>公告 1 件（2026 年，公开）</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>关于举办恩慈大典的公告</b>（2026-08-14 印发）<br>' +
+        '为传承镇域民俗传统，定于 8 月 27 日（中元节）在镇南河边举行一年一度的恩慈大典。典礼内容包括：河边点灯、祭河祈雨、灯船巡河。<br>' +
+        '<span style="color:#8B0000">（原件上有铅笔批注："1952 年后，大典不再公开举行。名单照旧。"）</span><br>' +
+        '<img src="assets/img/enci-festival.svg" alt="公告原件（扫描件）" style="max-width:360px;width:100%;margin-top:14px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
+        '<div style="color:#999;font-size:11px;margin-top:6px">—— 公告原件（扫描件，2026-08-14 归档）</div></div></div>';
+      return;
+    }
+    // 特殊检索：登记（氛围擦边词，半懂不直白）
+    if (q === '登记') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>2 类</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">① 来访登记：<span style="color:#2a7f2a">来访登记簿（2009-03）见馆藏列表</span><br>' +
+        '② 名册登记：<span style="color:#8B0000">不对外提供查询。</span></div></div>';
       return;
     }
     // 特殊检索：红色笔记本（系统知道它存在，但未录入）

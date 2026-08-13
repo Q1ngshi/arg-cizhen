@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 400">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f1e7cf"/>
+      <stop offset="1" stop-color="#e4d5b4"/>
+    </linearGradient>
+    <radialGradient id="stain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <g transform="rotate(0.4 280 200)">
+    <!-- 纸底 -->
+    <rect x="12" y="10" width="536" height="380" fill="url(#paper)" rx="2"/>
+
+    <!-- 版头分隔线 -->
+    <line x1="40" y1="116" x2="520" y2="116" stroke="#8a7a5c" stroke-width="1" opacity="0.6"/>
+
+    <!-- 标题 -->
+    <text x="280" y="64" font-family="'SimSun','Songti SC',serif" font-size="25" font-weight="bold" fill="#3a2e1e" text-anchor="middle">关于举办恩慈大典的公告</text>
+    <!-- 编号 -->
+    <text x="280" y="96" font-family="'SimSun','Songti SC',serif" font-size="12" fill="#6b5b3e" text-anchor="middle">慈礼〔2026〕1 号</text>
+
+    <!-- 正文 -->
+    <text x="280" y="152" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#3f3323" text-anchor="middle" letter-spacing="1">为传承镇域民俗传统，定于 8 月 27 日（中元节）在镇南河边举行</text>
+    <text x="280" y="180" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#3f3323" text-anchor="middle" letter-spacing="1">一年一度的恩慈大典。典礼内容包括：河边点灯、祭河祈雨、灯船巡河。</text>
+    <text x="280" y="208" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#3f3323" text-anchor="middle" letter-spacing="1">请各户届时参加，灯烛由镇礼部统一发放。未尽事宜，另行通知。</text>
+
+    <!-- 落款 -->
+    <text x="440" y="286" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#3a2e1e" text-anchor="middle" transform="rotate(-0.6 440 286)">慈恩镇礼部</text>
+    <text x="440" y="312" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#5a4a32" text-anchor="middle" transform="rotate(-0.6 440 312)">2026 年 8 月 14 日</text>
+
+    <!-- 红章：慈恩镇礼部（环形五字 + 中星） -->
+    <g>
+      <circle cx="455" cy="262" r="33" fill="none" stroke="#b3271e" stroke-width="2.5" opacity="0.85"/>
+      <circle cx="455" cy="262" r="29" fill="none" stroke="#b3271e" stroke-width="1" opacity="0.85"/>
+      <g font-family="'SimSun','Songti SC',serif" font-size="13" fill="#b3271e" opacity="0.9">
+        <text x="455" y="243" text-anchor="middle" transform="rotate(0 455 262)">慈</text>
+        <text x="455" y="243" text-anchor="middle" transform="rotate(72 455 262)">恩</text>
+        <text x="455" y="243" text-anchor="middle" transform="rotate(144 455 262)">镇</text>
+        <text x="455" y="243" text-anchor="middle" transform="rotate(216 455 262)">礼</text>
+        <text x="455" y="243" text-anchor="middle" transform="rotate(288 455 262)">部</text>
+      </g>
+      <path d="M455 251 l2.6 5.4 6 0.8 -4.4 4.2 1.1 5.9 -5.3 -2.9 -5.3 2.9 1.1 -5.9 -4.4 -4.2 6 -0.8 z" fill="#b3271e" opacity="0.85"/>
+    </g>
+
+    <!-- 铅笔批注（右上角） -->
+    <g transform="rotate(-2.2 432 132)">
+      <text x="430" y="128" font-family="'KaiTi','STKaiti',serif" font-size="12" fill="#6b6f76">1952 年后，大典不再公开举行。</text>
+      <text x="448" y="146" font-family="'KaiTi','STKaiti',serif" font-size="12" fill="#6b6f76">名单照旧。</text>
+    </g>
+
+    <!-- 旧化 -->
+    <circle cx="120" cy="340" r="42" fill="url(#stain)"/>
+    <circle cx="508" cy="360" r="30" fill="url(#stain)"/>
+    <rect x="12" y="10" width="536" height="380" filter="url(#grain)"/>
+  </g>
+</svg>
