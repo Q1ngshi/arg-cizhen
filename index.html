@@ -32,6 +32,29 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 .nav-inner { width: 1100px; margin: 0 auto; display: flex; }
 .nav-inner a { color: #fff; text-decoration: none; padding: 12px 24px; font-size: 14px; display: block; white-space: nowrap; }
 .nav-inner a:hover, .nav-inner a.on { background: #a00000; }
+/* ===== 加入我们（裂缝入口） ===== */
+#join-btn {
+  display: flex; align-items: center;
+  margin: 0 12px 0 auto;
+  padding: 0 20px;
+  background: #141414;
+  color: #f5ead0;
+  border: 2px solid #f5ead0;
+  cursor: pointer;
+  font-size: 16px; font-weight: bold;
+  letter-spacing: 6px; white-space: nowrap;
+  opacity: 0; transform: translateX(28px);
+  pointer-events: none;
+  transition: opacity .35s, transform .35s;
+}
+#join-btn.show { opacity: 1; transform: translateX(0); pointer-events: auto; animation: join-shake .5s .35s; }
+#join-btn:hover { background: #8B0000; border-color: #8B0000; }
+@keyframes join-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  45% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+}
 
 /* ===== 主标题 ===== */
 .main-title { width: 1100px; margin: 16px auto 12px; font-size: 20px; font-weight: bold; color: #222; text-align: center; padding: 0 20px; }
@@ -216,6 +239,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
     <a href="#" data-page="search">档案查询</a>
     <a href="#" data-page="topic">专题热点</a>
     <a href="#" data-page="contact">互动交流</a>
+    <button id="join-btn" onclick="joinUs()">加入我们</button>
   </div>
 </div>
 
@@ -915,6 +939,20 @@ document.getElementById('main-nav').addEventListener('click', function(e) {
     if (panel) panel.classList.add('show');
   }
 });
+
+// ===== 加入我们（裂缝入口：官网 → 终端） =====
+function joinUs(){
+  try { localStorage.setItem('cz_evt_joined', Date.now()); } catch(e){}
+  location.href = 'desktop.html';
+}
+(function(){
+  var jb = document.getElementById('join-btn');
+  if (!jb) return;
+  var joined = false;
+  try { joined = !!localStorage.getItem('cz_evt_joined'); } catch(e){}
+  if (joined) return;   // 已进过终端（已加入）→ 入口消失
+  setTimeout(function(){ jb.classList.add('show'); }, 3000);  // 3 秒后突然出现
+})();
 
 // ===== 首页新闻标签切换 =====
 document.querySelectorAll('.news-tab').forEach(function(btn) {

@@ -30,6 +30,7 @@ desktop.html  ← 终端入口（开机画面 → 桌面，系统时间停在 20
         └─ 管理员解锁 → 桌面检测到（l2Unlocked / cz_admin_ok 双通道）
               └─ 内部档案 / 信息 / 工具 解锁（终端时间同步到 2026）
 index.html   ← 官网入口（直接访问像普通网站，ARG 伪装层）
+              └─ 「加入我们」裂缝入口：加载 3 秒后从导航栏右侧突然滑入（全站唯一黑块），点击直达终端；进过终端后自动消失（cz_evt_joined）
 ```
 
 ### 部署上线
@@ -104,7 +105,7 @@ index.html   ← 官网入口（直接访问像普通网站，ARG 伪装层）
 - **音频**：Web Audio API 合成——"会说话的吉他"旋律（talk box 共振峰扫描 + 踏板钢吉他滑音 + 延迟回声），无任何音频文件
 - **存储键**（localStorage，同源共享；cz_* 惯例）：
   - 进度类：`cz_stage_log`（游玩轨迹 JSON 数组）、`cz_dict_prog`（实时追逐进度）
-  - 事件类：`cz_admin_ok`、`cz_evt_gate3_ok/open`、`cz_evt_handover_done`、`cz_evt_wang_read`、`cz_evt_morse_break`、`cz_evt_search_tingdian`、`cz_evt_final_read`、`cz_evt_choice_shouzheng/self/refuse`、`cz_evt_good_end`
+  - 事件类：`cz_admin_ok`、`cz_evt_gate3_ok/open`、`cz_evt_handover_done`、`cz_evt_wang_read`、`cz_evt_morse_break`、`cz_evt_search_tingdian`、`cz_evt_final_read`、`cz_evt_choice_shouzheng/self/refuse`、`cz_evt_good_end`、`cz_evt_joined`（「加入我们」入口：进过终端即消失）
   - 状态类：`cz_resist`（0-3 反抗点）+ `cz_resist_d1/d2/d3`、`cz_erase_cnt`（死亡次数）
   - 其他：`cz_audio_on`（背景音开关）、`cz_evt_seen`（消息去重）、`sessionStorage.cz_admin_unlock`（乱码条目顺序锁）
 

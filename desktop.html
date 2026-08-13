@@ -540,6 +540,9 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 </div>
 
 <script>
+/* ============ 加入我们入口：进过终端即记为「已加入」（官网入口随之消失） ============ */
+try { localStorage.setItem('cz_evt_joined', Date.now()); } catch(e){}
+
 /* ============ 启动画面 ============ */
 (function(){
   var lines = document.querySelectorAll('#boot p');
