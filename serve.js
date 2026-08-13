@@ -22,7 +22,7 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
     res.end(data);
   });
-}).listen(PORT, '0.0.0.0', () => {
+}).listen(PORT, () => {
   console.log('ARG游戏已启动：http://localhost:' + PORT);
   const ifaces = os.networkInterfaces();
   for (const name of Object.keys(ifaces)) {

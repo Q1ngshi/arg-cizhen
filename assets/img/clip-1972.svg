@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 540">
+  <defs>
+    <linearGradient id="news" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eceae2"/>
+      <stop offset="1" stop-color="#dddacf"/>
+    </linearGradient>
+    <radialGradient id="newsstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+    </filter>
+  </defs>
+
+  <!-- 剪报：四周为剪刀剪边（细碎锯齿），左上报头角破损 -->
+  <path d="M 18 12 L 380 10 L 384 30 L 400 22 L 402 46 L 412 38 L 408 64 L 416 70 L 406 86
+           L 414 96 L 400 104 L 404 122 L 396 132 L 400 150 L 390 158 L 394 176 L 384 184
+           L 388 202 L 378 210 L 382 228 L 372 236 L 376 254 L 366 262 L 370 280 L 360 288
+           L 364 306 L 354 314 L 358 332 L 348 340 L 352 358 L 342 366 L 346 384 L 336 392
+           L 340 410 L 330 418 L 334 436 L 324 444 L 328 462 L 318 470 L 322 488 L 312 496
+           L 316 514 L 306 522 L 310 532 L 36 534 L 30 520 L 26 500 L 20 486 L 22 466
+           L 16 452 L 20 436 L 14 422 L 18 406 L 12 392 L 16 376 L 10 362 L 16 346
+           L 12 332 L 16 316 L 10 302 L 16 286 L 12 272 L 16 256 L 10 242 L 16 226
+           L 12 212 L 16 196 L 10 182 L 16 166 L 12 152 L 16 136 L 10 122 L 16 106
+           L 12 92 L 16 76 L 10 62 L 16 46 L 12 32 Z" fill="url(#news)"/>
+
+  <!-- 报头：左上角（含破损缺角） -->
+  <path d="M 30 22 L 150 20 L 148 52 L 92 54 L 60 74 L 42 74 L 30 66 Z" fill="#c9c5b8" opacity="0.0"/>
+  <text x="40" y="52" font-family="'SimHei','Heiti SC',sans-serif" font-size="22" fill="#3a3a3a">慈恩镇报</text>
+  <text x="42" y="72" font-family="'SimSun','Songti SC',serif" font-size="11" fill="#5a5a5a">1972 年 6 月 · 第 3 版</text>
+  <!-- 报头破损角：缺一块（露出剪报下层） -->
+  <path d="M 150 20 L 190 20 L 172 44 L 150 44 Z" fill="#f2f0e8"/>
+  <path d="M 150 20 L 190 20 L 172 44 L 150 44 Z" fill="#b8b4a6" opacity="0.15"/>
+
+  <!-- 中部横向撕裂带（纸被撕开又拼回） -->
+  <path d="M 26 300 Q 90 292 150 302 Q 220 314 300 300 Q 350 290 404 302
+           L 404 318 Q 340 330 260 320 Q 180 308 120 320 Q 60 332 26 322 Z"
+        fill="#f6f4ec" stroke="#cfcab8" stroke-width="0.8"/>
+
+  <!-- 标题 -->
+  <text x="210" y="128" font-family="'SimHei','Heiti SC',sans-serif" font-size="30" fill="#1a1a1a" text-anchor="middle">寻 人 启 事</text>
+  <line x1="120" y1="142" x2="300" y2="142" stroke="#1a1a1a" stroke-width="1.4"/>
+
+  <!-- 姓名处：墨渍涂黑 -->
+  <text x="150" y="182" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#1a1a1a">姓名：</text>
+  <rect x="210" y="166" width="86" height="22" fill="#141414" transform="rotate(-1.2 253 177)"/>
+  <text x="304" y="182" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#1a1a1a">（字迹已污）</text>
+
+  <!-- 正文 -->
+  <text x="120" y="216" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#1a1a1a">兹有本镇居民，男，约五十岁，</text>
+  <text x="120" y="244" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#1a1a1a">于 1972 年 6 月离家未归。</text>
+  <text x="120" y="272" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#1a1a1a">有知其下落者，请与镇派出所联系。</text>
+
+  <!-- 撕裂带下方的正文残余（半行字迹） -->
+  <text x="120" y="346" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#2e2e2e">…知其下落者，</text>
+  <text x="120" y="372" font-family="'SimSun','Songti SC',serif" font-size="15" fill="#2e2e2e">…重酬。</text>
+
+  <!-- 茶渍与旧化 -->
+  <circle cx="330" cy="470" r="46" fill="url(#newsstain)"/>
+  <circle cx="70" cy="420" r="30" fill="url(#newsstain)"/>
+  <rect x="18" y="12" width="398" height="520" filter="url(#grain)"/>
+
+  <!-- 红笔批注（研究过这张剪报的人） -->
+  <text x="196" y="460" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#a03030" transform="rotate(-2.4 200 460)">老陈说，那年他父亲也在镇上。</text>
+  <text x="224" y="486" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#a03030" transform="rotate(1.4 226 486)">他没接话。这名字，镇上没人再提起。</text>
+
+  <!-- 墨迹飞白 -->
+  <circle cx="356" cy="470" r="2.4" fill="#141414" opacity="0.35"/>
+  <circle cx="362" cy="476" r="1.3" fill="#141414" opacity="0.2"/>
+</svg>

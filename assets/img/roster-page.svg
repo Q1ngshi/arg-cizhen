@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 640">
+  <defs>
+    <linearGradient id="oldpaper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dcc8a0"/>
+      <stop offset="1" stop-color="#c8b184"/>
+    </linearGradient>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5f1414"/>
+      <stop offset="0.6" stop-color="#7a1f1f"/>
+      <stop offset="1" stop-color="#8f2a2a"/>
+    </linearGradient>
+    <radialGradient id="oldstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6b4d2b" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#6b4d2b" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+    </filter>
+  </defs>
+
+  <!-- 红色封皮内衬（书脊与内衬，本子翻开状态） -->
+  <path d="M 14 12 Q 46 14 52 34 L 52 612 Q 44 630 16 632 Z" fill="url(#cover)"/>
+  <path d="M 52 34 L 60 34 L 60 610 L 52 612 Z" fill="#9c3838"/>
+  <path d="M 16 12 L 52 34 L 52 612 L 16 632 Z" fill="#5f1414" opacity="0.55"/>
+
+  <!-- 纸页：左侧为撕口（第一页之前的旧页被撕走），右/下缘裁切边 -->
+  <path d="M 66 22
+           L 446 18 Q 458 24 460 42 L 458 150 Q 464 160 458 180 L 460 260 Q 464 276 458 292 L 460 380
+           Q 464 396 458 412 L 460 500 Q 464 516 458 532 L 460 580 Q 462 604 444 610
+           L 84 618 Q 62 622 60 600 L 62 560 Q 58 540 66 520 L 60 470 Q 64 456 60 440
+           L 64 390 Q 60 376 66 360 L 60 310 Q 64 296 60 280 L 64 230 Q 60 216 66 200
+           L 60 150 Q 64 136 60 120 L 64 70 Q 60 56 66 42 Z" fill="url(#oldpaper)"/>
+
+  <!-- 左侧撕口毛边（纸纤维） -->
+  <path d="M 60 120 Q 54 122 58 130 Q 50 134 58 144 Q 50 148 58 158" stroke="#cbb78c" stroke-width="1.4" fill="none" opacity="0.8"/>
+  <path d="M 60 280 Q 54 282 58 292 Q 50 296 58 306" stroke="#cbb78c" stroke-width="1.4" fill="none" opacity="0.8"/>
+  <path d="M 60 440 Q 54 442 58 452 Q 50 456 58 466" stroke="#cbb78c" stroke-width="1.4" fill="none" opacity="0.8"/>
+
+  <!-- 撕口上方：更早一页的残边（没撕干净） -->
+  <path d="M 66 22 L 96 20 L 90 46 L 70 48 Z" fill="#d8c59c" opacity="0.7"/>
+  <path d="M 96 20 L 118 19 L 112 42 L 90 46 Z" fill="#d3bf94" opacity="0.55"/>
+
+  <!-- 折痕 -->
+  <path d="M 180 20 L 240 614" stroke="#ffffff" stroke-width="1.6" opacity="0.45"/>
+  <path d="M 182 20 L 242 614" stroke="#8a6b38" stroke-width="0.9" opacity="0.16"/>
+
+  <!-- 茶渍（1942 年的旧纸，渍更重） -->
+  <circle cx="380" cy="180" r="56" fill="url(#oldstain)"/>
+  <circle cx="150" cy="500" r="48" fill="url(#oldstain)"/>
+  <circle cx="400" cy="520" r="34" fill="url(#oldstain)"/>
+
+  <rect x="56" y="18" width="408" height="600" filter="url(#grain)"/>
+
+  <!-- 核心语句：1942 年陈父笔迹（大号手写） -->
+  <text x="116" y="238" font-family="'KaiTi','STKaiti',serif" font-size="40" fill="#241a10" transform="rotate(-1.6 116 238)">凡登记在册者，</text>
+  <text x="116" y="306" font-family="'KaiTi','STKaiti',serif" font-size="40" fill="#241a10" transform="rotate(1.2 116 306)">皆已不在人世。</text>
+
+  <!-- 落款 -->
+  <text x="330" y="400" font-family="'KaiTi','STKaiti',serif" font-size="22" fill="#33261a" transform="rotate(-1 330 400)">1942 年 记</text>
+
+  <!-- 下方小字：看守者备注（更晚的笔迹） -->
+  <text x="116" y="480" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#4a3a26" transform="rotate(-0.6 116 480)">这一页之后的每一页，都是名字。</text>
+  <text x="116" y="506" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#4a3a26" transform="rotate(0.8 116 506)">写上去的人，没有一个回来过。</text>
+
+  <!-- 墨迹飞白 -->
+  <circle cx="404" cy="396" r="2.6" fill="#241a10" opacity="0.4"/>
+  <circle cx="410" cy="402" r="1.4" fill="#241a10" opacity="0.22"/>
+</svg>

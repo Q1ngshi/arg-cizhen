@@ -334,7 +334,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
         <div class="news-item"><span class="n-title">民政救助与优抚档案（1970-2008）</span><span class="n-date">35卷</span></div>
         <div class="news-item"><span class="n-title alert" onclick="openGate()">▶ 特大案件卷宗（2008-2009）</span><span class="n-date">待修复</span></div>
         <div class="news-item"><span class="n-title">（2009-005 已归档，不在公开列表）</span><span class="n-date">待修复</span></div>
-        <div class="news-item"><span class="n-title">来访登记簿（2009-03）：3月17日 23:58 王××（无登记单位，无预约）</span><span class="n-date">在册</span></div>
+        <div class="news-item"><span class="n-title">来访登记簿（2009-03）：3月17日 23:58 王××（无登记单位，无预约）<img src="assets/img/visitor-log.svg" alt="登记簿扫描件" title="来访登记簿扫描件" style="width:30px;height:20px;object-fit:cover;vertical-align:middle;margin-left:8px;opacity:.85;border:1px solid #c9b896"></span><span class="n-date">在册</span></div>
         <div class="news-item"><span class="n-title">水利工程建设档案（1985-2015）</span><span class="n-date">22卷</span></div>
         <div class="news-item"><span class="n-title" style="font-family:'Courier New',monospace;color:#999;cursor:pointer" onclick="tryOpenAdmin()" title="数据异常">����� 槐树街调查记录 ���</span><span class="n-date" style="color:#c00">数�据异&#x5e38;</span></div>
       </div>
@@ -1169,7 +1169,10 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>公告 1 件（2009 年，已归档）</b><br>' +
         '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>关于 3 月 17 日全镇停电检修的通知</b>（2009-03-14 印发）<br>' +
         '因线路检修，3 月 17 日 08:00—13:00 全镇停电，档案管理系统预计停机半天。请各科室于 3 月 16 日下班前完成数据备份。机房值班电话：0571-XXXXXXX。<br>' +
-        '<span style="color:#8B0000">（原件上有手写批注："8:00？03:00 前就断了。3:01 之后没人再见过这台机器开机。"）</span></div></div>';
+        '<span style="color:#8B0000">（原件上有手写批注："8:00？03:00 前就断了。3:01 之后没人再见过这台机器开机。"）</span><br>' +
+        '<span style="color:#8B0000">（批注二："下发日期比实际早了一天。他们 16 号晚上就开始收拾了。"）</span><br>' +
+        '<img src="assets/img/power-notice.svg" alt="通知原件（扫描件）" style="max-width:360px;width:100%;margin-top:14px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
+        '<div style="color:#999;font-size:11px;margin-top:6px">—— 通知原件（扫描件，2009-03-14 归档）</div></div></div>';
       return;
     }
     // 特殊检索：红色笔记本（系统知道它存在，但未录入）

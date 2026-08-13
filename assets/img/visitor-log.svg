@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 360">
+  <defs>
+    <linearGradient id="ledger" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f1e7cf"/>
+      <stop offset="1" stop-color="#e6d8b8"/>
+    </linearGradient>
+    <radialGradient id="ledstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.055 0"/>
+    </filter>
+  </defs>
+
+  <!-- 登记簿页 -->
+  <rect x="12" y="10" width="516" height="340" fill="url(#ledger)" rx="2"/>
+
+  <!-- 表格线 -->
+  <g stroke="#8a7a5c" stroke-width="1" opacity="0.55">
+    <line x1="30" y1="64" x2="510" y2="64"/>
+    <line x1="30" y1="100" x2="510" y2="100"/>
+    <line x1="30" y1="136" x2="510" y2="136"/>
+    <line x1="30" y1="172" x2="510" y2="172"/>
+    <line x1="30" y1="236" x2="510" y2="236"/>
+    <line x1="30" y1="64" x2="30" y2="320"/>
+    <line x1="150" y1="64" x2="150" y2="320"/>
+    <line x1="280" y1="64" x2="280" y2="320"/>
+    <line x1="400" y1="64" x2="400" y2="320"/>
+    <line x1="510" y1="64" x2="510" y2="320"/>
+  </g>
+
+  <!-- 栏头 -->
+  <text x="70" y="44" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#4a3a26" text-anchor="middle">日期</text>
+  <text x="205" y="44" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#4a3a26" text-anchor="middle">姓名</text>
+  <text x="330" y="44" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#4a3a26" text-anchor="middle">单位</text>
+  <text x="448" y="44" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#4a3a26" text-anchor="middle">预约</text>
+
+  <!-- 正常登记行（淡墨印刷体） -->
+  <text x="70" y="86" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">2009-03-10</text>
+  <text x="200" y="86" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#4a3a26" text-anchor="middle">李某某</text>
+  <text x="330" y="86" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">镇农机站</text>
+  <text x="448" y="86" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">有</text>
+
+  <text x="70" y="122" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">2009-03-12</text>
+  <text x="200" y="122" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#4a3a26" text-anchor="middle">赵某某</text>
+  <text x="330" y="122" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">县档案馆</text>
+  <text x="448" y="122" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">无</text>
+
+  <text x="70" y="158" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">2009-03-15</text>
+  <text x="200" y="158" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#4a3a26" text-anchor="middle">钱某某</text>
+  <text x="330" y="158" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">（未填）</text>
+  <text x="448" y="158" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#5a4a32" text-anchor="middle">无</text>
+
+  <!-- 怪行：2009-03-17 23:58 王××（手写体、墨重、歪斜） -->
+  <g transform="rotate(-0.8 270 204)">
+    <text x="70" y="204" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#2b2b2b" text-anchor="middle">2009-03-17</text>
+    <text x="76" y="220" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#3a3a3a" text-anchor="middle">23:58</text>
+    <text x="200" y="204" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#241a10" text-anchor="middle">王××</text>
+    <text x="330" y="204" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#2b2b2b" text-anchor="middle">无登记单位</text>
+    <text x="448" y="204" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#2b2b2b" text-anchor="middle">无预约</text>
+  </g>
+  <!-- 备注（铅笔手写） -->
+  <text x="36" y="258" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#6b6f76" transform="rotate(-1.4 36 258)">夜访。登记簿上没有名字，只有这一行。</text>
+  <text x="36" y="280" font-family="'KaiTi','STKaiti',serif" font-size="13" fill="#6b6f76" transform="rotate(0.9 36 280)">问了一句：这么晚了还来？他说：明天的事，你我都别露面。</text>
+
+  <!-- 茶渍与旧化 -->
+  <circle cx="460" cy="300" r="40" fill="url(#ledstain)"/>
+  <circle cx="80" cy="320" r="26" fill="url(#ledstain)"/>
+  <rect x="12" y="10" width="516" height="340" filter="url(#grain)"/>
+</svg>

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 720">
+  <defs>
+    <linearGradient id="doc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f2e7"/>
+      <stop offset="1" stop-color="#ece4d2"/>
+    </linearGradient>
+    <radialGradient id="docstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+    <filter id="stampblur"><feGaussianBlur stdDeviation="1.6"/></filter>
+  </defs>
+
+  <!-- 公文纸 -->
+  <path d="M 30 14 L 510 14 L 510 706 L 30 706 Z" fill="url(#doc)"/>
+
+  <!-- 红头 -->
+  <text x="270" y="78" font-family="'FangSong','STFangsong',serif" font-size="28" fill="#a03030" text-anchor="middle" letter-spacing="4">慈恩镇档案管理办公室文件</text>
+  <line x1="120" y1="96" x2="420" y2="96" stroke="#a03030" stroke-width="2.4"/>
+
+  <text x="270" y="134" font-family="'SimSun','Songti SC',serif" font-size="14" fill="#333" text-anchor="middle" letter-spacing="1">档办〔2009〕3 号</text>
+
+  <text x="270" y="196" font-family="'SimHei','Heiti SC',sans-serif" font-size="20" fill="#1a1a1a" text-anchor="middle" letter-spacing="2">关于 3 月 17 日全镇停电检修的通知</text>
+
+  <!-- 正文 -->
+  <text x="84" y="252" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">各科室、各机房值班人员：</text>
+  <text x="84" y="292" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">因线路检修，3 月 17 日 08:00—13:00 全镇停电，</text>
+  <text x="84" y="322" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">档案管理系统预计停机半天。请各科室于 3 月 16 日</text>
+  <text x="84" y="352" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">下班前完成数据备份。机房值班电话：0571-XXXXXXX。</text>
+  <text x="84" y="396" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">特此通知。</text>
+
+  <!-- 落款 -->
+  <text x="400" y="452" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">慈恩镇档案管理办公室</text>
+  <text x="416" y="482" font-family="'FangSong','STFangsong',serif" font-size="16" fill="#222">2009 年 3 月 14 日</text>
+
+  <!-- 印章 -->
+  <g transform="rotate(-14 380 470)" filter="url(#stampblur)">
+    <ellipse cx="380" cy="470" rx="92" ry="42" fill="none" stroke="#c02a2a" stroke-width="2.6" opacity="0.65"/>
+    <ellipse cx="380" cy="470" rx="78" ry="31" fill="none" stroke="#c02a2a" stroke-width="1.2" opacity="0.5"/>
+    <text x="380" y="464" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#c02a2a" text-anchor="middle" opacity="0.6">慈恩镇档案管理办公室</text>
+    <text x="380" y="484" font-family="'SimSun','Songti SC',serif" font-size="11" fill="#c02a2a" text-anchor="middle" opacity="0.6">专用章</text>
+  </g>
+
+  <!-- 红笔批注 1：停电时间对不上（贴在「08:00—13:00」行） -->
+  <g transform="rotate(-3 120 300)">
+    <text x="132" y="330" font-family="'KaiTi','STKaiti',serif" font-size="17" fill="#b03030">8:00？03:00 前就断了。</text>
+    <text x="132" y="358" font-family="'KaiTi','STKaiti',serif" font-size="17" fill="#b03030">3:01 之后没人再见过这台机器开机。</text>
+  </g>
+
+  <!-- 红笔批注 2：下发日期对不上（贴在落款旁） -->
+  <g transform="rotate(-2.2 250 440)">
+    <text x="252" y="470" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#b03030">下发日期比实际早了一天。</text>
+    <text x="252" y="496" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#b03030">他们 16 号晚上就开始收拾了。</text>
+  </g>
+
+  <!-- 茶渍与折痕 -->
+  <circle cx="120" cy="620" r="48" fill="url(#docstain)"/>
+  <circle cx="440" cy="120" r="30" fill="url(#docstain)"/>
+  <path d="M 160 14 L 220 706" stroke="#ffffff" stroke-width="1.4" opacity="0.4"/>
+  <path d="M 162 14 L 222 706" stroke="#8a6b38" stroke-width="0.8" opacity="0.14"/>
+  <rect x="30" y="14" width="480" height="692" filter="url(#grain)"/>
+</svg>

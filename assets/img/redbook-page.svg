@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 640">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4e9cd"/>
+      <stop offset="1" stop-color="#e7d3ac"/>
+    </linearGradient>
+    <radialGradient id="stain1" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a5a33" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#7a5a33" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="stain2" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6d5230" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#6d5230" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.055 0"/>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+
+  <!-- 纸张主体：右缘锯齿撕痕（从笔记本上撕下），左/下缘为裁切毛边 -->
+  <path d="M 26 14
+           L 412 12
+           Q 418 34 434 42 L 424 78 Q 412 92 436 110 L 420 146 Q 416 166 438 178 L 424 214
+           Q 414 232 434 246 L 420 282 Q 416 302 436 314 L 422 350 Q 414 368 432 382 L 420 418
+           Q 416 438 436 450 L 422 486 Q 414 504 432 518 L 420 554 Q 416 574 434 586 L 424 616
+           Q 428 632 414 636
+           L 30 638
+           Q 20 620 24 590
+           Q 16 560 26 530 Q 18 500 24 470 Q 16 440 26 410
+           Q 18 380 24 350 Q 16 320 26 290 Q 18 260 24 230 Q 16 200 26 170
+           Q 18 140 24 110 Q 16 80 26 50 Z" fill="url(#paper)"/>
+
+  <!-- 装订侧（左侧）隐约的装订压痕 -->
+  <line x1="40" y1="20" x2="40" y2="630" stroke="#a8894f" stroke-width="1.6" opacity="0.35"/>
+  <line x1="48" y1="20" x2="48" y2="630" stroke="#a8894f" stroke-width="0.8" opacity="0.22"/>
+
+  <!-- 折痕 -->
+  <path d="M 96 8 L 150 636" stroke="#ffffff" stroke-width="1.6" opacity="0.5"/>
+  <path d="M 98 8 L 152 636" stroke="#8a6b38" stroke-width="1" opacity="0.18"/>
+
+  <!-- 茶渍 -->
+  <circle cx="356" cy="120" r="52" fill="url(#stain1)"/>
+  <circle cx="118" cy="470" r="44" fill="url(#stain2)"/>
+  <circle cx="330" cy="560" r="30" fill="url(#stain1)"/>
+
+  <!-- 旧化噪点 -->
+  <rect x="16" y="10" width="430" height="630" filter="url(#grain)" opacity="0.9"/>
+
+  <!-- 上方铅笔批注：撕页痕迹提示 -->
+  <text x="62" y="64" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#6b6f76" transform="rotate(-1 62 64)">第 23 页之后，缺一页——原页被撕走。</text>
+  <text x="62" y="88" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#6b6f76" transform="rotate(0.8 62 88)">这本抄本不是完整的。</text>
+
+  <!-- 林远字迹（值班人手记） -->
+  <text x="70" y="240" font-family="'KaiTi','STKaiti',serif" font-size="26" fill="#2b2b2b" transform="rotate(-1.4 70 240)">他们搬的箱子，</text>
+  <text x="70" y="288" font-family="'KaiTi','STKaiti',serif" font-size="26" fill="#2b2b2b" transform="rotate(1.1 70 288)">我在门口看见了。</text>
+
+  <text x="70" y="360" font-family="'KaiTi','STKaiti',serif" font-size="19" fill="#3a3a3a" transform="rotate(-0.6 70 360)">灯是三点整熄的。不是停电的那种熄。</text>
+  <text x="70" y="392" font-family="'KaiTi','STKaiti',serif" font-size="19" fill="#3a3a3a" transform="rotate(0.9 70 392)">是有人拔了线。</text>
+
+  <text x="70" y="452" font-family="'KaiTi','STKaiti',serif" font-size="19" fill="#3a3a3a" transform="rotate(-0.8 70 452)">王执事站在地下室门口，手里提着那口箱子。</text>
+  <text x="70" y="484" font-family="'KaiTi','STKaiti',serif" font-size="19" fill="#3a3a3a" transform="rotate(0.7 70 484)">他看见我了。他没说话，只是摇了摇头。</text>
+  <text x="70" y="516" font-family="'KaiTi','STKaiti',serif" font-size="19" fill="#3a3a3a" transform="rotate(-0.5 70 516)">摇头的意思是：今天的事，你我都别露面。</text>
+
+  <!-- 落款 -->
+  <text x="300" y="580" font-family="'KaiTi','STKaiti',serif" font-size="18" fill="#2b2b2b" transform="rotate(-1.8 300 580)">——值班人 记</text>
+  <text x="300" y="606" font-family="'KaiTi','STKaiti',serif" font-size="16" fill="#555555" transform="rotate(1.2 300 606)">2009-03-17</text>
+
+  <!-- 墨迹飞白（手写收笔） -->
+  <circle cx="402" cy="578" r="3" fill="#2b2b2b" opacity="0.4"/>
+  <circle cx="410" cy="584" r="1.6" fill="#2b2b2b" opacity="0.25"/>
+  <circle cx="414" cy="590" r="1" fill="#2b2b2b" opacity="0.15"/>
+</svg>
