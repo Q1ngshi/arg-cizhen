@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 620">
+  <defs>
+    <linearGradient id="doc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f2e7"/>
+      <stop offset="1" stop-color="#ece4d2"/>
+    </linearGradient>
+    <radialGradient id="docstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+    <filter id="stampblur"><feGaussianBlur stdDeviation="1.6"/></filter>
+  </defs>
+
+  <!-- 表格纸 -->
+  <path d="M 30 14 L 510 14 L 510 606 L 30 606 Z" fill="url(#doc)"/>
+
+  <!-- 标题 -->
+  <text x="270" y="62" font-family="'SimHei','Heiti SC',sans-serif" font-size="19" fill="#1a1a1a" text-anchor="middle" letter-spacing="2">档案管理办公室 · 2009 年 3 月值班安排表</text>
+  <text x="270" y="90" font-family="'SimSun','Songti SC',serif" font-size="12" fill="#666" text-anchor="middle">（夜班：03:00—08:00）</text>
+
+  <!-- 表头 -->
+  <line x1="56" y1="112" x2="486" y2="112" stroke="#333" stroke-width="1.2"/>
+  <line x1="56" y1="140" x2="486" y2="140" stroke="#333" stroke-width="1.2"/>
+  <text x="110" y="132" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">日期</text>
+  <line x1="168" y1="112" x2="168" y2="140" stroke="#333" stroke-width="1.2"/>
+  <text x="242" y="132" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">班次</text>
+  <line x1="316" y1="112" x2="316" y2="140" stroke="#333" stroke-width="1.2"/>
+  <text x="400" y="132" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">值班员</text>
+
+  <!-- 普通行 -->
+  <g font-family="'SimSun','Songti SC',serif" font-size="12.5" fill="#333">
+    <line x1="56" y1="168" x2="486" y2="168" stroke="#999" stroke-width="0.8"/>
+    <text x="110" y="160" text-anchor="middle">3月15日</text><line x1="168" y1="140" x2="168" y2="168" stroke="#999" stroke-width="0.8"/>
+    <text x="242" y="160" text-anchor="middle">03:00—08:00</text><line x1="316" y1="140" x2="316" y2="168" stroke="#999" stroke-width="0.8"/>
+    <text x="400" y="160" text-anchor="middle">刘慧兰</text>
+    <line x1="56" y1="196" x2="486" y2="196" stroke="#999" stroke-width="0.8"/>
+    <text x="110" y="188" text-anchor="middle">3月16日</text><line x1="168" y1="168" x2="168" y2="196" stroke="#999" stroke-width="0.8"/>
+    <text x="242" y="188" text-anchor="middle">03:00—08:00</text><line x1="316" y1="168" x2="316" y2="196" stroke="#999" stroke-width="0.8"/>
+    <text x="400" y="188" text-anchor="middle">周建民</text>
+  </g>
+
+  <!-- 3月17日行：林远（夜班，系统被断的清晨） -->
+  <g font-family="'SimSun','Songti SC',serif" font-size="13" fill="#1a1a1a">
+    <line x1="56" y1="224" x2="486" y2="224" stroke="#555" stroke-width="1"/>
+    <rect x="56" y="196" width="430" height="28" fill="#e8dcc0" opacity="0.5"/>
+    <text x="110" y="216" text-anchor="middle" font-weight="bold">3月17日</text>
+    <text x="242" y="216" text-anchor="middle">03:00—08:00</text>
+    <text x="400" y="216" text-anchor="middle" font-weight="bold">林远</text>
+  </g>
+
+  <!-- 红笔批注：停电检修（与停电暗线互证：3-17 清晨系统被断） -->
+  <g transform="rotate(-2.6 150 268)">
+    <path d="M 150 252 q -8 -16 -2 -30" stroke="#b03030" stroke-width="1.6" fill="none"/>
+    <text x="156" y="286" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#b03030">3-17 停电检修，班次照旧。机器再没开过机。</text>
+  </g>
+
+  <g font-family="'SimSun','Songti SC',serif" font-size="12.5" fill="#333">
+    <line x1="56" y1="252" x2="486" y2="252" stroke="#999" stroke-width="0.8"/>
+    <text x="110" y="276" text-anchor="middle">3月18日</text><line x1="168" y1="252" x2="168" y2="280" stroke="#999" stroke-width="0.8"/>
+    <text x="242" y="276" text-anchor="middle">03:00—08:00</text><line x1="316" y1="252" x2="316" y2="280" stroke="#999" stroke-width="0.8"/>
+    <text x="400" y="276" text-anchor="middle">（空缺）</text>
+    <line x1="56" y1="280" x2="486" y2="280" stroke="#999" stroke-width="0.8"/>
+    <text x="110" y="304" text-anchor="middle">3月19日</text><line x1="168" y1="280" x2="168" y2="308" stroke="#999" stroke-width="0.8"/>
+    <text x="242" y="304" text-anchor="middle">03:00—08:00</text><line x1="316" y1="280" x2="316" y2="308" stroke="#999" stroke-width="0.8"/>
+    <text x="400" y="304" text-anchor="middle">郑文斌</text>
+    <line x1="56" y1="308" x2="486" y2="308" stroke="#333" stroke-width="1.2"/>
+  </g>
+
+  <!-- 3月18日空缺处小字（值班员失踪后无人补班） -->
+  <text x="400" y="276" font-family="'KaiTi','STKaiti',serif" font-size="11" fill="#8a6a3a" text-anchor="middle" transform="rotate(-1 400 276)">（人没来）</text>
+
+  <!-- 落款 -->
+  <text x="370" y="360" font-family="'FangSong','STFangsong',serif" font-size="15" fill="#222">档案科</text>
+  <text x="370" y="386" font-family="'FangSong','STFangsong',serif" font-size="15" fill="#222">2009 年 2 月 27 日印发</text>
+
+  <!-- 印章（模糊） -->
+  <g transform="rotate(-12 300 430)" filter="url(#stampblur)" opacity="0.55">
+    <ellipse cx="300" cy="430" rx="86" ry="38" fill="none" stroke="#c02a2a" stroke-width="2.4"/>
+    <text x="300" y="428" font-family="'SimSun','Songti SC',serif" font-size="12" fill="#c02a2a" text-anchor="middle">慈恩镇档案管理办公室</text>
+    <text x="300" y="446" font-family="'SimSun','Songti SC',serif" font-size="10" fill="#c02a2a" text-anchor="middle">值班专用章</text>
+  </g>
+
+  <!-- 茶渍与折痕 -->
+  <circle cx="440" cy="540" r="40" fill="url(#docstain)"/>
+  <circle cx="80" cy="500" r="30" fill="url(#docstain)"/>
+  <path d="M 190 14 L 246 606" stroke="#ffffff" stroke-width="1.4" opacity="0.4"/>
+  <path d="M 192 14 L 248 606" stroke="#8a6b38" stroke-width="0.8" opacity="0.14"/>
+  <rect x="30" y="14" width="480" height="592" filter="url(#grain)"/>
+</svg>

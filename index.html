@@ -151,6 +151,17 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 .dossier-clue { color: #c41e3a; font-weight: bold; font-family: "Courier New",monospace; }
 .dossier-footer { margin-top: 40px; padding: 18px; background: #111; border-left: 3px solid #c41e3a; font-size: 13px; color: #777; font-family: "Courier New",monospace; line-height: 1.8; }
 
+/* ===== 记录核对（验证式交互：玩家判断 → 系统核对） ===== */
+.judge-box { margin-top: 14px; padding: 14px 16px; background: #101010; border: 1px solid #2a2a2a; border-left: 3px solid #c41e3a; }
+.judge-q { color: #c41e3a; font-size: 13px; margin: 0 0 10px; line-height: 1.8; }
+.judge-opt { display: block; width: 100%; margin: 7px 0; padding: 9px 12px; text-align: left; background: #1a1a1a; border: 1px solid #333; color: #ccc; font-size: 12.5px; border-radius: 3px; cursor: pointer; line-height: 1.6; }
+.judge-opt:hover { background: #262626; border-color: #c41e3a; color: #fff; }
+.judge-fb { margin-top: 10px; padding: 10px 12px; font-size: 12.5px; line-height: 1.9; border-radius: 3px; }
+.judge-fb.ok { background: #0d1a10; border: 1px solid #2a4a30; border-left: 3px solid #5fbf8f; color: #bfe0c8; }
+.judge-fb.err { background: #1a120d; border: 1px solid #4a3a28; border-left: 3px solid #c9a35a; color: #d8c8a8; }
+.judge-fb.hidden { display: none; }
+.judge-done { color: #5fbf8f; font-size: 12px; margin-top: 8px; font-family: "Courier New",monospace; }
+
 /* ===== 内部页面面板（机构概况 / 档案查询 等）===== */
 .page-panel { display: none; width: 1100px; margin: 16px auto; background: #fff; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 20px; }
 .page-panel.show { display: block; }
@@ -554,6 +565,8 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
         <tr><th>报案人</th><td>林远之母（已故）</td></tr>
         <tr><th>案件状态</th><td>未结 · 卷宗封存</td></tr>
       </table>
+      <img src="assets/img/duty-roster.svg" alt="值班安排表（2009年3月）" title="2009年3月值班安排表（扫描件）" style="display:block;max-width:320px;width:100%;margin:14px 0 4px 16px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.18)">
+      <div style="color:#666;font-size:11px;margin:0 0 8px 16px;font-family:'Courier New',monospace">—— 3 月值班安排表（扫描件，2009-02-27 印发）</div>
 
       <div class="dossier-section">
         <h3>关联卷宗</h3>
@@ -701,6 +714,22 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
           <tr><td>2009-补-002</td><td>槐树街7号平面图（手绘标注）</td><td style="color:#0a0;">在档</td></tr>
           <tr><td>0172</td><td>CE-2009-001 教会建筑图纸备案（副本）</td><td style="color:#0a0;">在档</td></tr>
         </table>
+      </div>
+
+      <div class="dossier-section">
+        <h2>人员出入登记（节选）</h2>
+        <table class="dossier-table">
+          <tr><td>2009-03-17 01:47</td><td>地下档案室 · 出入登记</td><td>无姓名　<span style="color:#c41e3a">备注：已登记</span></td></tr>
+        </table>
+        <div class="judge-box" id="judge-0147">
+          <p class="judge-q">记录核对：来访登记簿（馆藏目录）载 3 月 17 日 23:58 「王××」来访（无登记单位，无预约）；本备案记录载同日 01:47 出入登记，未署名，备注「已登记」。<br>请核对：01:47 出入地下档案室者，最可能是——</p>
+          <div id="judge-0147-opts">
+            <button class="judge-opt" onclick="judge0147('wang')">王执事（教会执事，07 备案最后更新人）</button>
+            <button class="judge-opt" onclick="judge0147('chen')">陈某（时任档案办主任，录音对话人）</button>
+            <button class="judge-opt" onclick="judge0147('lin')">林远（值班员，3-17 当日失踪）</button>
+          </div>
+          <div class="judge-fb hidden" id="judge-0147-fb"></div>
+        </div>
       </div>
 
       <div class="dossier-footer">
@@ -1127,6 +1156,24 @@ function checkGate3() {
 function closeDossier3() {
   document.getElementById('dossier3').classList.remove('show');
 }
+/* 记录核对：01:47 出入者判断（验证式交互；答对揭示交接批注，答错「记录矛盾，待查」不惩罚）
+   判定依据：来访登记簿 23:58「王××」↔ 本备案 01:47 出入登记 ↔ 07 备案最后更新人（王执事）；
+   备注「已登记」与看守者交接规则吻合（交接之日即登记之时，与最终卷访客编号互证） */
+function judge0147(ans){
+  var fb = document.getElementById('judge-0147-fb');
+  if (ans === 'wang') {
+    fb.className = 'judge-fb ok';
+    fb.innerHTML = '<b>记录核对完成。</b>来访登记簿 23:58「王××」与 01:47 出入登记为同一人：先访，后入。<br>' +
+      '备注「已登记」与交接记录吻合——<span style="color:#c41e3a">访客 01，登记于交接之日。</span><br>' +
+      '<span style="color:#8a8a8a">（登记在先。其余事项，另行记录。）</span><br><span class="judge-done">✓ 已核对入档</span>';
+    try { localStorage.setItem('cz_evt_judge_0147', Date.now()); } catch(e){}
+    document.getElementById('judge-0147-opts').style.display = 'none';
+  } else {
+    fb.className = 'judge-fb err';
+    fb.innerHTML = '记录矛盾，待查。<span style="color:#b0a080">请对照：来访登记簿（馆藏目录）3 月 17 日的来访记录，与本备案记录同日凌晨的出入登记——姓氏、时间、备注。</span>';
+  }
+  fb.classList.remove('hidden');
+}
 /* 建筑图纸附件下载（收录到值班终端 d:\archive\maps\） */
 function downloadBP() {
   try { localStorage.setItem('cz_evt_blueprint_p2', Date.now()); } catch (e) {}
@@ -1304,6 +1351,8 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.style.display = '';
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>命中 3 条，其中 2 条已折叠（无公开权限）</b><br>' +
         '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">2009 年库房盘点记录：<span style="color:#8B0000">「少了一件东西，不见即补。」</span><br>' +
+        '<img src="assets/img/inventory-list.svg" alt="库房盘点单（2009-03-16）" style="max-width:340px;width:100%;margin-top:12px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
+        '<div style="color:#999;font-size:11px;margin-top:6px">—— 库房盘点单（扫描件，2009-03-16）</div>' +
         '<span style="color:#999;font-size:12px">其余条目请联系档案科。</span></div></div>';
       return;
     }

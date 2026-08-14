@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 600">
+  <defs>
+    <linearGradient id="doc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f2e7"/>
+      <stop offset="1" stop-color="#ece4d2"/>
+    </linearGradient>
+    <radialGradient id="docstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <!-- 盘点单纸 -->
+  <path d="M 30 14 L 490 14 L 490 586 L 30 586 Z" fill="url(#doc)"/>
+
+  <text x="260" y="62" font-family="'SimHei','Heiti SC',sans-serif" font-size="19" fill="#1a1a1a" text-anchor="middle" letter-spacing="2">档案库房盘点单</text>
+  <text x="260" y="94" font-family="'SimSun','Songti SC',serif" font-size="12.5" fill="#555" text-anchor="middle">盘点日期：2009 年 3 月 16 日　｜　盘点范围：库房 B 区（教会档案移交件）</text>
+
+  <!-- 表头 -->
+  <line x1="60" y1="118" x2="460" y2="118" stroke="#333" stroke-width="1.2"/>
+  <line x1="60" y1="146" x2="460" y2="146" stroke="#333" stroke-width="1.2"/>
+  <text x="140" y="138" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">编号</text>
+  <line x1="220" y1="118" x2="220" y2="146" stroke="#333" stroke-width="1.2"/>
+  <text x="310" y="138" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">物品名称</text>
+  <line x1="400" y1="118" x2="400" y2="146" stroke="#333" stroke-width="1.2"/>
+  <text x="430" y="138" font-family="'SimSun','Songti SC',serif" font-size="13" fill="#222" text-anchor="middle">结果</text>
+
+  <g font-family="'SimSun','Songti SC',serif" font-size="13" fill="#333">
+    <line x1="60" y1="174" x2="460" y2="174" stroke="#999" stroke-width="0.8"/>
+    <text x="140" y="166" text-anchor="middle">1942-001</text>
+    <line x1="220" y1="146" x2="220" y2="174" stroke="#999" stroke-width="0.8"/>
+    <text x="310" y="166" text-anchor="middle">教会建造施工图原件</text>
+    <line x1="400" y1="146" x2="400" y2="174" stroke="#999" stroke-width="0.8"/>
+    <text x="430" y="166" text-anchor="middle">在</text>
+    <line x1="60" y1="202" x2="460" y2="202" stroke="#999" stroke-width="0.8"/>
+    <text x="140" y="194" text-anchor="middle">1959-007</text>
+    <line x1="220" y1="174" x2="220" y2="202" stroke="#999" stroke-width="0.8"/>
+    <text x="310" y="194" text-anchor="middle">户籍变更记录（陈氏）</text>
+    <line x1="400" y1="174" x2="400" y2="202" stroke="#999" stroke-width="0.8"/>
+    <text x="430" y="194" text-anchor="middle">在</text>
+    <line x1="60" y1="230" x2="460" y2="230" stroke="#999" stroke-width="0.8"/>
+    <text x="140" y="222" text-anchor="middle">未编号</text>
+    <line x1="220" y1="202" x2="220" y2="230" stroke="#999" stroke-width="0.8"/>
+    <text x="310" y="222" text-anchor="middle">名册（红皮封面，未编号）</text>
+    <line x1="400" y1="202" x2="400" y2="230" stroke="#999" stroke-width="0.8"/>
+    <text x="430" y="222" fill="#8a2a2a">少一件</text>
+    <line x1="60" y1="258" x2="460" y2="258" stroke="#333" stroke-width="1.2"/>
+  </g>
+
+  <!-- 手写批注：不见即补（库房盘点口吻，系统决定不补） -->
+  <g transform="rotate(-1.8 130 300)">
+    <text x="120" y="296" font-family="'KaiTi','STKaiti',serif" font-size="17" fill="#8a2a2a">少了一件东西，不见即补。</text>
+    <text x="120" y="326" font-family="'KaiTi','STKaiti',serif" font-size="15" fill="#6b5a38">（清点两次，结果一致。不再追问。）</text>
+  </g>
+
+  <!-- 落款 -->
+  <text x="330" y="396" font-family="'FangSong','STFangsong',serif" font-size="15" fill="#222">经办：档案保管科　李　核：××</text>
+  <text x="330" y="424" font-family="'FangSong','STFangsong',serif" font-size="15" fill="#222">2009 年 3 月 16 日</text>
+
+  <!-- 印章 -->
+  <g transform="rotate(-10 240 470)" opacity="0.55">
+    <ellipse cx="240" cy="470" rx="80" ry="36" fill="none" stroke="#c02a2a" stroke-width="2.4"/>
+    <text x="240" y="468" font-family="'SimSun','Songti SC',serif" font-size="11" fill="#c02a2a" text-anchor="middle">档案保管科</text>
+    <text x="240" y="486" font-family="'SimSun','Songti SC',serif" font-size="10" fill="#c02a2a" text-anchor="middle">盘点专用</text>
+  </g>
+
+  <!-- 茶渍与折痕 -->
+  <circle cx="120" cy="520" r="40" fill="url(#docstain)"/>
+  <circle cx="420" cy="96" r="28" fill="url(#docstain)"/>
+  <path d="M 180 14 L 230 586" stroke="#ffffff" stroke-width="1.4" opacity="0.4"/>
+  <path d="M 182 14 L 232 586" stroke="#8a6b38" stroke-width="0.8" opacity="0.14"/>
+  <rect x="30" y="14" width="460" height="572" filter="url(#grain)"/>
+</svg>

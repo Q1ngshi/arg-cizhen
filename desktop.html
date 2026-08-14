@@ -72,7 +72,7 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .w-titlebar .t-btn { width:30px; height:30px; border:0; background:transparent; color:#7e90ad; font-size:12px; cursor:pointer; font-family:Consolas,monospace; }
 .w-titlebar .t-btn:hover { background:#3a4c70; color:#dfe9f5; }
 .w-titlebar .t-close:hover { background:#8b1f1f; color:#fff; }
-.w-body { padding:14px; color:#c6cfdd; font-size:13px; line-height:1.8; overflow:auto; }
+.w-body { padding:14px; color:#c6cfdd; font-size:13px; line-height:1.8; overflow:auto; max-height:calc(100% - 30px); }
 
 /* 浏览器窗口 */
 #win-browser .w-body { padding:0; }
@@ -227,10 +227,33 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 #fv-end .btn { display:block; margin:22px auto 0; background:#202a40; color:#cfdaea; border:1px solid #3a4a68; padding:9px 26px; border-radius:3px; cursor:pointer; font-size:13px; }
 #fv-end .btn:hover { background:#2c3a58; }
 
+/* ============ 记录核对（红本判断式） ============ */
+.judge-box { margin-top:12px; padding:12px; border:1px solid #4a3a28; border-left:3px solid #c9a35a; background:#1a1510; }
+.judge-q { color:#c9a35a; font-size:12.5px; margin:0 0 8px; line-height:1.9; }
+.judge-opt { display:block; width:100%; margin:6px 0; padding:8px 10px; text-align:left; background:#20202a; border:1px solid #3a3a44; color:#cfdaea; font-size:12px; border-radius:3px; cursor:pointer; line-height:1.6; }
+.judge-opt:hover { background:#2c2c3a; border-color:#c9a35a; color:#fff; }
+.judge-fb { margin-top:8px; padding:9px 11px; font-size:12px; line-height:1.9; border-radius:3px; }
+.judge-fb.ok { background:#0f1a12; border:1px solid #2a4a30; border-left:3px solid #5fbf8f; color:#bfe0c8; }
+.judge-fb.err { background:#1a1510; border:1px solid #4a3a28; border-left:3px solid #c9a35a; color:#d8c8a8; }
+.judge-fb.hidden { display:none; }
+.judge-done { color:#5fbf8f; font-size:11px; margin-top:6px; font-family:Consolas,monospace; }
+
+/* ============ 建筑图 v3：擦除 + 热区标注 ============ */
+#bp-stage { touch-action:none; }
+#bp-stage.erase-mode { cursor:crosshair; }
+.bp-red { transition: opacity .25s; }
+.bp-hot { fill:rgba(180,200,255,0); cursor:help; }
+.bp-hot:hover { fill:rgba(180,200,255,.12); }
+#bp-crossout, #bp-erase-reveal { transition: opacity .8s; }
+#bp-erase-reveal.on { opacity:1 !important; }
+#bp-hot-anno { position:absolute; top:14px; left:50%; transform:translateX(-50%); max-width:72%; background:rgba(10,14,22,.96); border:1px solid #4a5f8c; border-radius:5px; padding:9px 14px; font-size:12px; color:#c8d6ea; line-height:1.8; display:none; z-index:20; box-shadow:0 6px 18px rgba(0,0,0,.5); font-family:Consolas,monospace; }
+#bp-hot-anno.show { display:block; }
+
 /* ============ 手机适配 ============ */
 @media (max-width:700px) {
   .icon { width:80px; font-size:11px; }
   .window { width:100% !important; left:0 !important; height:calc(100% - 34px) !important; top:0 !important; }
+  .bp-bar { flex-wrap:wrap; max-width:96%; bottom:8px; padding:6px 10px; }
 }
 </style>
 </head>
@@ -255,11 +278,13 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 <!-- 建筑图纸放大查看 -->
 <div id="bp-zoom">
   <div class="bp-stage" id="bp-stage"></div>
+  <div id="bp-hot-anno"></div>
   <div class="bp-bar">
     <span id="bp-zoom-label">100%</span>
     <button onclick="bpZoomBy(1/1.25)">−</button>
     <button onclick="bpZoomAt(1)">1:1</button>
     <button onclick="bpZoomBy(1.25)">＋</button>
+    <button id="bp-erase-btn" onclick="bpEraseToggle()">擦除</button>
     <button id="bp-cmp-btn" onclick="toggleCompare()" style="display:none">对照</button>
     <input type="range" id="bp-cmp-slider" min="20" max="80" value="50" oninput="bpCmpOpacity(this.value)">
     <button id="bp-zoom-close" onclick="closeBPZoom()">✕</button>
@@ -286,6 +311,8 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         第一页写着——</div>
       <img src="assets/img/roster-page.svg" alt="名册第一页" style="display:block;max-width:300px;width:100%;margin:12px auto;border:1px solid #3a3226;box-shadow:0 2px 10px rgba(0,0,0,.5)">
       <div class="fv-sec" style="text-align:center"><span class="red">「凡登记在册者，皆已不在人世。」</span></div>
+      <div class="fv-sec" style="text-align:center"><span class="dim">—— 这一页之前，还有被撕掉的页。残片与名册一同归档：</span></div>
+      <img src="assets/img/roster-torn-page.svg" alt="名册被撕旧页（残片）" style="display:block;max-width:300px;width:100%;margin:12px auto;border:1px solid #3a3226;box-shadow:0 2px 10px rgba(0,0,0,.5)">
       <div class="fv-sec">看守者宿命：交出名册之日，就是名字上名册之日。<br>
         访客 01 王执事——<span class="red">已登记</span>。 访客 02 陈父——<span class="red">已登记</span>。<br>
         访客 03 老陈——<span class="red">已登记</span>。 访客 04 林远——<span class="red">已登记</span>。<br>
@@ -389,6 +416,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           王执事看我的眼神，像是看一个已经登记过的人。<br>
           3月17日。如果到时候我还没回来，这份笔记请转交档案室。
         </div>
+        <img src="assets/img/household-change.svg" alt="户籍登记卡（抄件，1972 更正）" style="display:block;max-width:300px;width:100%;margin:10px 0 8px 14px;border:1px solid #cfcab8;box-shadow:0 2px 8px rgba(0,0,0,.15)">
         <div><span class="k">备注：</span><span class="v dim">其余页损坏，无法辨认。</span></div>
       </div>
       <div class="arch-detail" id="arch-p2">
@@ -479,6 +507,13 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
           <img src="assets/img/clip-1972.svg" alt="剪报（1972年6月）" style="display:block;max-width:250px;width:100%;margin:10px 0 8px 18px;border:1px solid #cfcab8;box-shadow:0 2px 8px rgba(0,0,0,.15)"><br>
           ……3月16日 老陈走前说：红本里还有别的东西，第23页之后，等值完班再看。他说这话的时候，没有看我。<br><br>
+          <div class="judge-box" id="judge-redbook">
+            <p class="judge-q">记录核对：3 月 14-16 日，老陈三次到访。依据抄本判断，老陈真正要从王执事处接走的，是——</p>
+            <button class="judge-opt" onclick="judgeRedbook('pwd')">地下室门禁密码（1942 的来历）</button>
+            <button class="judge-opt" onclick="judgeRedbook('roster')">名册（红皮封面，未编号）</button>
+            <button class="judge-opt" onclick="judgeRedbook('clip')">1972 年寻人启事剪报</button>
+            <div class="judge-fb hidden" id="judge-redbook-fb"></div>
+          </div>
           <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
         <div class="restored" id="restored3">已恢复：红本抄本（第23页之后 · 节选）<br><br>
           ……3月17日 21:40 老陈又来了，看了我白天抄的东西，没说话。走前他翻出那张剪报又放回去，说：那年我父亲也在镇上。就这一句。<br>
@@ -864,6 +899,7 @@ var MSG_TEXTS = {
   bp_dig_done:        '墙体检验完成。夹壁中发现纸张类物证，已登记入档。',
   calc_break:          '口令 1942 已被记录，可用于门禁。',
   bp_plate:            '图纸柜位铭牌信息已登记入档。',
+  bp_erase_done:       '擦除完成。批注层已清理，比对还原已登记入档。',
   morse_break:         '检索词与恩慈大典关联。记录已归档。',
   morse_hint1:         '抄件背面：『点划成字。』',
   morse_hint2:         '背面还有一行：『短是点，长是划。』',
@@ -1226,11 +1262,16 @@ setInterval(function(){
 /* 官网首次打开即收到系统消息 */
 document.getElementById('site-frame').addEventListener('load', function(){ fireMsg('site_loaded'); });
 
-/* ============ 内部档案 ============ */
+/* 内部档案 ============ */
+function fitWin(el){
+  /* 内容超高时封顶窗口高度（正文内部滚动），防止小屏/移动端内容溢出视口不可达 */
+  var w = el.closest('.window');
+  if (w) w.style.height = 'min(72vh, 640px)';
+}
 function openArch(no){
   document.querySelectorAll('.arch-detail').forEach(function(d){ d.classList.remove('show'); });
   var d = document.getElementById('arch-'+no);
-  if (d) { d.classList.add('show'); d.closest('.window').style.height='auto'; }
+  if (d) { d.classList.add('show'); fitWin(d); }
   logStage('arch_' + no);
   if (no === '01') logStage('gate3_open');
 }
@@ -1270,11 +1311,11 @@ function runRestore(){
       clearInterval(t); fill.style.width = '100%';
       setTimeout(function(){
         document.getElementById('restored').classList.add('show');
-        document.getElementById('restored').closest('.window').style.height='auto';
+        fitWin(document.getElementById('restored'));
       }, 400);
       setTimeout(function(){
         document.getElementById('restored2').classList.add('show');
-        document.getElementById('restored2').closest('.window').style.height='auto';
+        fitWin(document.getElementById('restored2'));
         fireMsg('restore_done');
         injectWangDadian();
         logStage('restore');
@@ -1285,7 +1326,7 @@ function runRestore(){
         if (hd) {
           setTimeout(function(){
             document.getElementById('restored3').classList.add('show');
-            document.getElementById('restored3').closest('.window').style.height='auto';
+            fitWin(document.getElementById('restored3'));
             fireMsg('restore3_done');
             fireMsg('morse_hint1');   // 摩斯引导档1
             logStage('restore3');
@@ -1294,6 +1335,23 @@ function runRestore(){
       }, 1100);
     } else fill.style.width = p+'%';
   }, 130);
+}
+
+/* 红本抄本关系判断：老陈三次到访真正要接走的是什么（答对揭示，答错「记录矛盾，待查」不惩罚）
+   判定依据：密码来历 / 剪报 / 「第23页之后」三线均指向看守者交接物——名册 */
+function judgeRedbook(ans){
+  var fb = document.getElementById('judge-redbook-fb');
+  if (ans === 'roster') {
+    fb.className = 'judge-fb ok';
+    fb.innerHTML = '<b>核对完成。</b>三次到访，话头是密码与剪报，落点是「第23页之后」——老陈要接走的是册子（红皮，未编号）。<br>' +
+      '<span style="color:#8a8a8a">红本没有记下他说这话时，王执事的表情。</span><br><span class="judge-done">✓ 已核对入档</span>';
+    try { localStorage.setItem('cz_evt_judge_redbook', Date.now()); } catch(e){}
+    document.querySelectorAll('#judge-redbook .judge-opt').forEach(function(b){ b.style.display = 'none'; });
+  } else {
+    fb.className = 'judge-fb err';
+    fb.innerHTML = '记录矛盾，待查。<span style="color:#b0a080">请对照抄本三天的记录：密码、剪报、以及「等值完班再看」的那件东西——哪一件是物件本身，哪一件是话头？</span>';
+  }
+  fb.classList.remove('hidden');
 }
 
 /* 计算器 */
@@ -1344,7 +1402,7 @@ var STAGE_NAMES = {
   unlock:'系统时钟同步', arch_open:'内部档案 打开', arch_01:'档案 CE-2009-001', arch_05:'档案 CE-2009-005',
   arch_06:'档案 CE-2009-006', arch_p1:'档案 2009-补-001', arch_p2:'档案 2009-补-002',
   gate3_open:'门禁 07 打开', gate3_ok:'门禁 07 通过', restore:'文件恢复', dig:'墙体检验',
-  calc_break:'计算器 破译', bp_plate:'图纸 柜位铭牌',
+  calc_break:'计算器 破译', bp_plate:'图纸 柜位铭牌', bp_erase:'图纸 批注擦除',
   bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成', restore3:'文件恢复（续）',
   task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成'
 };
@@ -1391,7 +1449,7 @@ function genHandover(){
   s += fmtStageLog();
   out.textContent = s;
   out.classList.add('show');
-  out.closest('.window').style.height = 'auto';
+  fitWin(out);
   document.getElementById('btn-handover-copy').style.display = 'inline-block';
   document.getElementById('btn-handover').textContent = '重新生成';
   logStage('handover');
@@ -1426,31 +1484,46 @@ function fallbackCopy(txt){
 }
 
 /* ============ 建筑图纸系统（雨穴式：图纸本身就是证据） ============ */
-/* 图 A：手绘批注图（2009-补-002）——主殿西侧有一间「被划掉的房间」，只剩轮廓和一个问号 */
+/* 图 A：手绘批注图（2009-补-002）——主殿西侧有一间「被划掉的房间」，只剩轮廓和一个问号
+   v3：红批注可擦除（class bp-red）；全部擦除后还原出「先画后划」的房间轮廓（bp-erase-reveal） */
 var BP_A = '<svg id="BP-A" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="KaiTi,STKaiti,SimSun,serif">' +
   '<rect x="0" y="0" width="640" height="470" fill="#f2ecd9"/>' +
   '<text x="24" y="30" font-size="14" fill="#4a4a4a">槐树街7号平面图（手绘标注） 2009-02</text>' +
-  '<rect x="34" y="60" width="70" height="170" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-dasharray="4 3"/>' +
-  '<path d="M42 222 L96 68 M96 222 L42 68" stroke="#8a8a8a" stroke-width="1.5"/>' +
-  '<text x="60" y="152" font-size="15" fill="#9a9a9a">？</text>' +
+  '<g id="bp-crossout">' +
+    '<rect x="34" y="60" width="70" height="170" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-dasharray="4 3"/>' +
+    '<path d="M42 222 L96 68 M96 222 L42 68" stroke="#8a8a8a" stroke-width="1.5"/>' +
+    '<text x="60" y="152" font-size="15" fill="#9a9a9a">？</text>' +
+  '</g>' +
+  /* 擦除揭示：红批注全部擦除后浮出的实线房间轮廓（先画后划的物证） */
+  '<g id="bp-erase-reveal" style="opacity:0">' +
+    '<rect x="30" y="56" width="78" height="178" fill="none" stroke="#3a2e1c" stroke-width="3"/>' +
+    '<rect x="34" y="60" width="70" height="170" fill="none" stroke="#3a2e1c" stroke-width="1.2"/>' +
+    '<text x="30" y="252" font-size="11" fill="#3a2e1c">西侧房间 · 原稿实线闭合，后划除。用途：无记录。</text>' +
+  '</g>' +
   '<rect x="120" y="45" width="300" height="290" fill="none" stroke="#4a4a4a" stroke-width="2.5"/>' +
   '<text x="255" y="100" font-size="13" fill="#6b6b6b">主殿</text>' +
-  '<text x="150" y="132" font-size="13" fill="#b03a2e" transform="rotate(-1.5 150 132)">隔三岔五有人下去</text>' +
-  '<text x="150" y="154" font-size="13" fill="#b03a2e" transform="rotate(-1 150 154)">东西越放越多</text>' +
-  '<text x="150" y="176" font-size="13" fill="#b03a2e" transform="rotate(-2 150 176)">灯从来不关</text>' +
+  '<text x="150" y="132" font-size="13" fill="#b03a2e" transform="rotate(-1.5 150 132)" class="bp-red">隔三岔五有人下去</text>' +
+  '<text x="150" y="154" font-size="13" fill="#b03a2e" transform="rotate(-1 150 154)" class="bp-red">东西越放越多</text>' +
+  '<text x="150" y="176" font-size="13" fill="#b03a2e" transform="rotate(-2 150 176)" class="bp-red">灯从来不关</text>' +
   '<circle cx="165" cy="268" r="28" fill="none" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="8 4"/>' +
   '<path d="M165 240 L165 296 M137 268 L193 268 M150 252 L180 284 M180 252 L150 284" stroke="#4a4a4a" stroke-width="1"/>' +
   '<text x="138" y="312" font-size="11" fill="#4a4a4a">旋转楼梯 17级</text>' +
   '<rect x="430" y="85" width="140" height="240" fill="none" stroke="#4a4a4a" stroke-width="2.5"/>' +
   '<path d="M430 215 h14" stroke="#f2ecd9" stroke-width="4"/>' +
   '<text x="475" y="112" font-size="13" fill="#6b6b6b">圣器室</text>' +
-  '<path d="M465 85 H555" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="6 5"/>' +
-  '<path d="M505 85 L499 72 L513 74 Z" fill="#b03a2e"/>' +
-  '<text x="444" y="62" font-size="11" fill="#b03a2e">暗门（可容一人）</text>' +
-  '<rect x="438" y="120" width="26" height="170" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="5 4"/>' +
-  '<text x="470" y="148" font-size="11" fill="#b03a2e">夹层 · 备案图纸上没有</text>' +
+  '<path d="M465 85 H555" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="6 5" class="bp-red"/>' +
+  '<path d="M505 85 L499 72 L513 74 Z" fill="#b03a2e" class="bp-red"/>' +
+  '<text x="444" y="62" font-size="11" fill="#b03a2e" class="bp-red">暗门（可容一人）</text>' +
+  '<rect x="438" y="120" width="26" height="170" fill="none" stroke="#b03a2e" stroke-width="2" stroke-dasharray="5 4" class="bp-red"/>' +
+  '<text x="470" y="148" font-size="11" fill="#b03a2e" class="bp-red">夹层 · 备案图纸上没有</text>' +
   '<rect x="120" y="345" width="300" height="95" fill="none" stroke="#4a4a4a" stroke-width="2" stroke-dasharray="7 5"/>' +
   '<text x="225" y="396" font-size="12" fill="#4a4a4a">地下室（深约 4.5 米）</text>' +
+  /* 热区：点击房间出系统标注（雨穴式交互化） */
+  '<rect class="bp-hot" x="120" y="45" width="300" height="290" onclick="bpHot(\'A-main\')"/>' +
+  '<rect class="bp-hot" x="430" y="85" width="140" height="240" onclick="bpHot(\'A-holy\')"/>' +
+  '<rect class="bp-hot" x="30" y="56" width="78" height="178" onclick="bpHot(\'A-store\')"/>' +
+  '<rect class="bp-hot" x="137" y="240" width="56" height="56" onclick="bpHot(\'A-stairs\')"/>' +
+  '<rect class="bp-hot" x="120" y="345" width="300" height="95" onclick="bpHot(\'A-base\')"/>' +
   '</svg>';
 /* 图 B：正式备案图纸（CE-2009-001）——主殿西侧有一间没有门的「西侧储物间」 */
 var BP_B = '<svg id="BP-B" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="SimSun,serif">' +
@@ -1504,6 +1577,12 @@ var BP_B = '<svg id="BP-B" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 4
     '<text x="478" y="72" font-size="9" fill="#555">柜位铭牌 · 放大查看</text>' +
     '<text x="478" y="90" font-size="14" fill="#1a1a1a" font-weight="bold">柜位 0172 · 密</text>' +
   '</g>' +
+  /* 热区：点击房间出系统标注（西侧储物间即挖掘点，不设热区） */
+  '<rect class="bp-hot" x="120" y="90" width="300" height="270" onclick="bpHot(\'B-main\')"/>' +
+  '<rect class="bp-hot" x="430" y="100" width="110" height="230" onclick="bpHot(\'B-holy\')"/>' +
+  '<rect class="bp-hot" x="552" y="148" width="72" height="64" onclick="bpHot(\'B-stairs\')"/>' +
+  '<rect class="bp-hot" x="120" y="360" width="300" height="75" onclick="bpHot(\'B-base\')"/>' +
+  '<rect class="bp-hot" x="430" y="360" width="190" height="75" onclick="bpHot(\'B-title\')"/>' +
   '</svg>';
 
 function hasBP(k){
@@ -1564,6 +1643,8 @@ function bpZoomBy(f){
 function bpZoomAt(z){ bpZoom = z; bpApply(); }
 function openBPZoom(id){
   bpIsOpen = true; bpZoom = 1; bpDX = 0; bpDY = 0; bpOverlayEl = null;
+  bpEraseDone = false;
+  try { bpEraseDone = !!localStorage.getItem('cz_evt_bp_erase'); } catch(e){}
   var stage = document.getElementById('bp-stage');
   stage.innerHTML = (id === '001') ? BP_B : BP_A;
   bpSvgEl = stage.firstChild;
@@ -1578,10 +1659,104 @@ function openBPZoom(id){
   document.getElementById('bp-cmp-btn').style.display = hasBoth ? '' : 'none';
   document.getElementById('bp-cmp-slider').style.display = 'none';
   document.getElementById('bp-cmp-btn').textContent = '对照';
+  // 擦除工具：仅手绘图（BP-A）可用；已还原过则直接呈现结果态
+  var eb = document.getElementById('bp-erase-btn');
+  if (eb) {
+    eb.style.display = (id === 'p2') ? '' : 'none';
+    eb.textContent = '擦除';
+    stage.classList.remove('erase-mode');
+    if (bpEraseDone && id === 'p2') {
+      var co = document.getElementById('bp-crossout');
+      var rv = document.getElementById('bp-erase-reveal');
+      if (co) co.style.opacity = 0;
+      if (rv) rv.classList.add('on');
+      if (eb) eb.style.display = 'none';
+    }
+  }
+  hideBPHot();
   bpApply();
 }
 function closeBPZoom(){
   document.getElementById('bp-zoom').classList.remove('show'); bpIsOpen = false; bpOverlayEl = null;
+  var stage = document.getElementById('bp-stage');
+  stage.classList.remove('erase-mode');
+  var eb = document.getElementById('bp-erase-btn');
+  if (eb) eb.textContent = '擦除';
+  hideBPHot();
+}
+
+/* ===== 热区标注（点击房间 → 系统标注，雨穴式「资料+图纸」交互化） ===== */
+var BP_HOT = {
+  'A-main':  '主殿（2009-02 手绘）。批注：隔三岔五有人下去。— 与备案图一致。',
+  'A-holy':  '圣器室（手绘）。北墙暗门、东墙夹层——批注：备案图纸上没有。',
+  'A-store': '西侧区域（手绘）。已划除，仅余问号。— 备案图同位置：西侧储物间，无门。',
+  'A-stairs':'旋转楼梯（手绘）。17 级。— 与备案图直径对照，深度存疑。',
+  'A-base':  '地下室（手绘）。深约 4.5 米。— 楼梯 17 级，垂直深度存疑。',
+  'B-main':  '主殿（1952 年测绘）。— 无异常记录。',
+  'B-holy':  '圣器室（1952 年测绘）。东墙设门。— 北墙无开口。',
+  'B-stairs':'旋转楼梯（备案）。直径 2.1m。— 与手绘图「17 级」对照，深度存疑。',
+  'B-base':  '地下室（战时避难所）。层高 3.2m，1942 年建造。',
+  'B-title': '图框。审定：档案管理办公室。复核：2008.12。— CE-2009-001'
+};
+function bpHot(key){
+  var box = document.getElementById('bp-hot-anno');
+  if (!box) return;
+  var text = BP_HOT[key];
+  if (key === '__erase_hint__') text = '擦除模式：划过红色批注即可擦除。全部擦除后，将进行比对还原。';
+  if (key === '__erase_done__') text = '比对还原完成：西侧房间原稿为实线闭合，后被划除。备案图与手绘图均未记录其用途。';
+  if (!text) { hideBPHot(); return; }
+  box.innerHTML = '▸ ' + text;
+  box.classList.add('show');
+}
+function hideBPHot(){
+  var box = document.getElementById('bp-hot-anno');
+  if (box) box.classList.remove('show');
+}
+
+/* ===== 批注擦除（彩蛋：擦掉红批注 → 还原出「先画后划」的房间轮廓） ===== */
+var bpEraseDone = false;
+function bpEraseToggle(){
+  if (bpEraseDone) return;
+  var stage = document.getElementById('bp-stage');
+  var on = !stage.classList.contains('erase-mode');
+  stage.classList.toggle('erase-mode', on);
+  var eb = document.getElementById('bp-erase-btn');
+  if (eb) eb.textContent = on ? '擦除中' : '擦除';
+  if (on) bpHot('__erase_hint__'); else hideBPHot();
+  return on;
+}
+function bpEraseAt(clientX, clientY){
+  var els = document.querySelectorAll('#bp-stage .bp-red');
+  var changed = false;
+  els.forEach(function(el){
+    if (el._bpErased) return;
+    var rect = el.getBoundingClientRect();
+    if (clientX >= rect.left - 6 && clientX <= rect.right + 6 && clientY >= rect.top - 6 && clientY <= rect.bottom + 6) {
+      el._bpErased = true;
+      el.style.opacity = 0;
+      changed = true;
+    }
+  });
+  if (changed) bpEraseCheck();
+}
+function bpEraseCheck(){
+  var remaining = 0;
+  document.querySelectorAll('#bp-stage .bp-red').forEach(function(el){ if (!el._bpErased) remaining++; });
+  if (remaining > 0) return;
+  if (bpEraseDone) return;
+  bpEraseDone = true;
+  var co = document.getElementById('bp-crossout');
+  if (co) co.style.opacity = 0;
+  var rv = document.getElementById('bp-erase-reveal');
+  if (rv) rv.classList.add('on');
+  try { localStorage.setItem('cz_evt_bp_erase', Date.now()); } catch(e){}
+  logStage('bp_erase');
+  fireMsg('bp_erase_done');
+  bpHot('__erase_done__');
+  var stage = document.getElementById('bp-stage');
+  stage.classList.remove('erase-mode');
+  var eb = document.getElementById('bp-erase-btn');
+  if (eb) { eb.textContent = '已还原'; eb.style.display = 'none'; }
 }
 /* 叠加对照：另一张图半透明叠在当前图上（两图 viewBox 一致，天然对齐） */
 function toggleCompare(){
@@ -1659,20 +1834,85 @@ document.getElementById('bp-stage').addEventListener('wheel', function(e){
   e.preventDefault();
   bpZoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12);
 }, { passive: false });
+/* 放大查看交互 v3：Pointer 统一（鼠标/触屏）——拖拽平移 / 双指缩放 / 双击缩放 / 擦除模式优先
+   注意：不 setPointerCapture，保证点按仍走元素 click（挖掘 / 热区 / 按钮） */
 (function(){
   var stage = document.getElementById('bp-stage');
-  var sx = 0, sy = 0, ox = 0, oy = 0, dragging = false;
-  stage.addEventListener('mousedown', function(e){
+  var pointers = {};
+  var panStart = null;
+  var pinchDist = 0, pinchZoom = 1, pinchDX = 0, pinchDY = 0;
+  var lastTap = 0, lastTapX = 0, lastTapY = 0;
+  var keys = function(){ return Object.keys(pointers); };
+
+  stage.addEventListener('pointerdown', function(e){
     if (!bpIsOpen) return;
-    dragging = true; sx = e.clientX; sy = e.clientY; ox = bpDX; oy = bpDY;
-    stage.classList.add('dragging');
+    pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    if (stage.classList.contains('erase-mode')) {
+      bpEraseAt(e.clientX, e.clientY);
+      return;
+    }
+    var now = Date.now();
+    if (now - lastTap < 300 && Math.abs(e.clientX - lastTapX) < 34 && Math.abs(e.clientY - lastTapY) < 34) {
+      bpZoomBy(2); lastTap = 0; return;   // 触屏双击缩放
+    }
+    lastTap = now; lastTapX = e.clientX; lastTapY = e.clientY;
+    if (keys().length === 1) {
+      panStart = { x: e.clientX, y: e.clientY, dx: bpDX, dy: bpDY };
+      stage.classList.add('dragging');
+    } else if (keys().length === 2) {
+      panStart = null;
+      var p = keys().map(function(k){ return pointers[k]; });
+      pinchDist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+      pinchZoom = bpZoom; pinchDX = bpDX; pinchDY = bpDY;
+    }
   });
-  document.addEventListener('mousemove', function(e){
-    if (!dragging) return;
-    bpDX = ox + (e.clientX - sx); bpDY = oy + (e.clientY - sy); bpApply();
+  stage.addEventListener('pointermove', function(e){
+    if (!bpIsOpen || !pointers[e.pointerId]) return;
+    if (stage.classList.contains('erase-mode')) {
+      bpEraseAt(e.clientX, e.clientY);
+      return;
+    }
+    pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ks = keys();
+    if (ks.length === 1 && panStart) {
+      bpDX = panStart.dx + (e.clientX - panStart.x);
+      bpDY = panStart.dy + (e.clientY - panStart.y);
+      bpApply();
+    } else if (ks.length === 2 && pinchDist > 0) {
+      var p = ks.map(function(k){ return pointers[k]; });
+      var d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+      var nz = Math.min(4, Math.max(0.25, pinchZoom * (d / pinchDist)));
+      if (nz !== bpZoom) {
+        var r = stage.getBoundingClientRect();
+        var mx = (p[0].x + p[1].x) / 2 - r.left, my = (p[0].y + p[1].y) / 2 - r.top;
+        bpDX = mx - (mx - pinchDX) * (nz / pinchZoom);
+        bpDY = my - (my - pinchDY) * (nz / pinchZoom);
+        bpZoom = nz;
+        bpApply();
+      }
+    }
   });
-  document.addEventListener('mouseup', function(){
-    dragging = false; stage.classList.remove('dragging');
+  function endPointer(e){
+    if (!pointers[e.pointerId]) return;
+    delete pointers[e.pointerId];
+    if (keys().length < 2) pinchDist = 0;
+    if (keys().length === 0) { panStart = null; stage.classList.remove('dragging'); }
+  }
+  stage.addEventListener('pointerup', endPointer);
+  stage.addEventListener('pointercancel', endPointer);
+  stage.addEventListener('pointerleave', function(e){
+    if (!pointers[e.pointerId]) return;
+    delete pointers[e.pointerId];
+    if (keys().length < 2) pinchDist = 0;
+    if (keys().length === 0) { panStart = null; stage.classList.remove('dragging'); }
+  });
+  stage.addEventListener('dblclick', function(e){
+    if (!bpIsOpen || stage.classList.contains('erase-mode')) return;
+    if (e.target && e.target.closest && e.target.closest('.bp-dig,.bp-hot,.bp-red')) return;   // 交互元素不缩放（防误触）
+    bpZoomBy(2);   // 桌面双击缩放
+  });
+  stage.addEventListener('contextmenu', function(e){
+    if (stage.classList.contains('erase-mode')) { e.preventDefault(); bpEraseToggle(); }
   });
 })();
 

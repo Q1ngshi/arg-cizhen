@@ -5,7 +5,7 @@
   "description": "慈恩镇 ARG 悬疑侦探游戏（官网 + 终端双层）",
   "scripts": {
     "start": "node serve.js",
-    "test": "node test/test-tracking.js && node test/verify-chat.js && node test/v4-mech-test.js"
+    "test": "node test/test-tracking.js && node test/verify-chat.js && node test/v4-mech-test.js && node test/test-v5.js"
   },
   "devDependencies": {
     "playwright": "1.57.0"

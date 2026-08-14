@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 560">
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2ead6"/>
+      <stop offset="1" stop-color="#e6dcc0"/>
+    </linearGradient>
+    <radialGradient id="cardstain" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#7a6544" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7a6544" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <!-- 户籍卡（竖式档案卡） -->
+  <path d="M 36 18 L 464 18 L 464 542 L 36 542 Z" fill="url(#card)"/>
+  <line x1="36" y1="52" x2="464" y2="52" stroke="#555" stroke-width="1.2"/>
+
+  <text x="250" y="40" font-family="'SimHei','Heiti SC',sans-serif" font-size="15" fill="#222" text-anchor="middle" letter-spacing="1">慈恩镇户籍登记卡（抄件）</text>
+
+  <!-- 字段 -->
+  <g font-family="'SimSun','Songti SC',serif" font-size="14" fill="#222">
+    <text x="70" y="104" >姓名</text><text x="176" y="104" font-family="'KaiTi','STKaiti',serif" font-size="17">陈□　（字迹潦草）</text>
+    <line x1="56" y1="124" x2="444" y2="124" stroke="#bbb" stroke-width="0.8"/>
+    <text x="70" y="160" >性别</text><text x="176" y="160">男</text>
+    <line x1="56" y1="180" x2="444" y2="180" stroke="#bbb" stroke-width="0.8"/>
+    <text x="70" y="216" >出生</text><text x="176" y="216" font-family="'KaiTi','STKaiti',serif" font-size="17">民国□年（原记录涂抹）</text>
+    <line x1="56" y1="236" x2="444" y2="236" stroke="#bbb" stroke-width="0.8"/>
+    <text x="70" y="272" >登记年份</text><text x="176" y="272" font-family="'KaiTi','STKaiti',serif" font-size="17">1972 年　更正：19□□</text>
+    <line x1="56" y1="292" x2="444" y2="292" stroke="#bbb" stroke-width="0.8"/>
+    <text x="70" y="328" >住址</text><text x="176" y="328" font-family="'KaiTi','STKaiti',serif" font-size="17">槐树街 7 号（教会）</text>
+    <line x1="56" y1="348" x2="444" y2="348" stroke="#bbb" stroke-width="0.8"/>
+    <text x="70" y="384" >备注</text><text x="176" y="384" font-family="'KaiTi','STKaiti',serif" font-size="17">1972.6 户籍更正一次</text>
+  </g>
+
+  <!-- 登记年份行的涂改痕迹（「改得很规矩」：数字被盖住，更正章很正） -->
+  <g transform="rotate(-0.8 300 268)">
+    <rect x="248" y="246" width="128" height="34" fill="#d8c9a0"/>
+    <rect x="250" y="248" width="124" height="30" fill="#c9b98c" opacity="0.7"/>
+    <text x="254" y="270" font-family="'SimSun','Songti SC',serif" font-size="16" fill="#666">19□□</text>
+    <path d="M 262 258 q 6 -4 12 0 q 8 6 14 0 q 6 -6 12 -2 q 10 8 18 0 q 6 -6 14 -2" stroke="#5a4a2a" stroke-width="2" fill="none" opacity="0.6"/>
+  </g>
+  <!-- 更正戳（正、清晰——「改得很规矩」） -->
+  <g transform="rotate(-2 330 290)" opacity="0.8">
+    <rect x="286" y="266" width="96" height="30" fill="none" stroke="#8a2a2a" stroke-width="1.6"/>
+    <text x="334" y="285" font-family="'SimSun','Songti SC',serif" font-size="12" fill="#8a2a2a" text-anchor="middle">更 正</text>
+  </g>
+
+  <!-- 年份被改的旁证：一行几乎看不见的铅笔字 -->
+  <text x="70" y="452" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#8a7a5c" opacity="0.65" transform="rotate(-0.6 70 452)">登记年份被改过一个数字。改得很规矩。</text>
+  <text x="70" y="478" font-family="'KaiTi','STKaiti',serif" font-size="14" fill="#8a7a5c" opacity="0.65" transform="rotate(0.7 70 478)">—— 林远，2009-03 调查笔记</text>
+
+  <!-- 茶渍与折痕 -->
+  <circle cx="408" cy="120" r="38" fill="url(#cardstain)"/>
+  <circle cx="120" cy="500" r="34" fill="url(#cardstain)"/>
+  <path d="M 150 18 L 196 542" stroke="#ffffff" stroke-width="1.4" opacity="0.4"/>
+  <path d="M 152 18 L 198 542" stroke="#8a6b38" stroke-width="0.8" opacity="0.14"/>
+  <rect x="36" y="18" width="428" height="524" filter="url(#grain)"/>
+</svg>
