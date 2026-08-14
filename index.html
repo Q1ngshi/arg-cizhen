@@ -492,6 +492,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
   <div class="news-item"><span class="n-title">如何向档案馆捐赠历史资料？——请联系档案接收征集科</span></div>
   <h3 style="font-size:15px;color:#333;margin:12px 0 8px">在线留言</h3>
   <div style="border:1px solid #ddd;border-radius:4px;margin-bottom:8px">
+    <div id="mboard-live"></div>
     <div style="padding:8px 12px;border-bottom:1px dotted #eee;font-size:12.5px;line-height:1.9">
       <b>王**</b> <span style="color:#999;font-size:11px">2026-07-28 14:22</span><br>
       请问 2009 年的补录档案可以网上查阅吗？
@@ -1308,9 +1309,29 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
   setInterval(czSetCountdown, 5000);   // 与桌面同源共享状态，5 秒刷新一次
 
   function doSearch() {
-    var q = (input.value || '').trim().toLowerCase();
+    var raw = (input.value || '').trim();
+    var q = raw.toLowerCase();
     if (!q) return;
     logStage('search', q);   // 每个不同关键词记一次（同词重复只记首次）
+    // 文件彩蛋解码：盘点单加密存档（base64）→ 复制本行粘贴至检索框 → 「记录已解码」（UTF-8 base64，raw 大小写敏感）
+    function b64DecodeUtf8(s){
+      try {
+        return decodeURIComponent(Array.prototype.map.call(atob(s), function(c){
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+      } catch(e){ return ''; }
+    }
+    if (raw.length >= 16 && /^[A-Za-z0-9+/=]+$/.test(raw) && raw.indexOf('===') === -1) {
+      var _dec = b64DecodeUtf8(raw);
+      if (_dec.indexOf('慈恩·库房加密存档') === 0) {
+        result.style.display = '';
+        result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>加密存档 · 记录已解码（1 件）</b><br>' +
+          '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><span style="color:#8B0000">' + _dec.replace('慈恩·库房加密存档:', '') + '</span><br>' +
+          '<span style="color:#999;font-size:12px">该记录与「来访登记簿（2009-03）」3-17 23:58 条目、地下档案室出入登记吻合。检索记录已存档。</span></div></div>';
+        try { localStorage.setItem('cz_evt_roster_decode', Date.now()); } catch(e){}
+        return;
+      }
+    }
     // 特殊检索：被抹去的人（三态：默认未找到 / 登记后「找到——已登记」/ 好结局「已找回——档案已补录」）
     if (q === '林远' || q === 'linyuan') {
       result.style.display = '';
@@ -1387,7 +1408,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
       result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>命中 3 条，其中 2 条已折叠（无公开权限）</b><br>' +
         '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">2009 年库房盘点记录：<span style="color:#8B0000">「少了一件东西，不见即补。」</span><br>' +
         '<img src="assets/img/inventory-list.svg" alt="库房盘点单（2009-03-16）" style="max-width:340px;width:100%;margin-top:12px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
-        '<div style="color:#999;font-size:11px;margin-top:6px">—— 库房盘点单（扫描件，2009-03-16） ｜ <a href="assets/img/inventory-list.svg" download="2009-库房盘点单.svg" style="color:#8B0000">[下载原件]</a><span style="color:#999">（附件为源文件，可用文本方式打开核对）</span></div>' +
+        '<div style="color:#999;font-size:11px;margin-top:6px">—— 库房盘点单（扫描件，2009-03-16） ｜ <a href="assets/img/inventory-list.svg" download="2009-库房盘点单.svg" style="color:#8B0000">[下载原件]</a><span style="color:#999">（附件为源文件，可用文本方式打开核对；内含加密存档，复制本行粘贴至检索框解码）</span></div>' +
         '<span style="color:#999;font-size:12px">其余条目请联系档案科。</span></div></div>';
       return;
     }
@@ -1556,6 +1577,19 @@ function logStage(k, extra){
     var fv = document.querySelector('link[rel="icon"]');
     if (fv && reg && !good) {
       fv.href = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%238B0000\'/%3E%3Ctext x=\'16\' y=\'22\' font-size=\'14\' font-family=\'serif\' fill=\'%23f5ead0\' text-anchor=\'middle\'%3E登记%3C/text%3E%3C/svg%3E';
+    }
+  } catch(e){}
+})();
+/* 伪社区动态留言：被登记后留言板多出一条「03:01 见。」（全站 03:01 母题，通关玩家可晒；好结局不出现） */
+(function(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    var el = document.getElementById('mboard-live');
+    if (reg && !good && el) {
+      var d = new Date();
+      var ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' 03:02';
+      el.innerHTML = '<div style="padding:8px 12px;border-bottom:1px dotted #eee;font-size:12.5px;line-height:1.9;color:#8B0000"><b>匿名</b> <span style="color:#999;font-size:11px">' + ds + '</span><br>03:01 见。<div style="color:#999;font-size:12px">（该留言已标记待审核）</div></div>';
     }
   } catch(e){}
 })();

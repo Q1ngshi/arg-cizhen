@@ -214,6 +214,57 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('D7 检索名册：下载原件入口（源文件核对暗示）', await pd.locator('#search-result a[download]').count() > 0);
   await pd.close();
 
+  /* ================= Phase E：提分路线——藏宝链（base64 解码）+ 自传播钩子（统计/留言） ================= */
+  console.log('【E 藏宝链 + 自传播钩子】');
+  const pe = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  // E1 base64 解码链：SVG 源文件 → 提取加密存档行 → 官网检索框粘贴解码
+  const svgResp = await pe.request.get(BASE + '/assets/img/inventory-list.svg');
+  const svgSrcE = await svgResp.text();
+  const b64m = svgSrcE.match(/5oWI[A-Za-z0-9+/=]+/);
+  ok('E1 加密存档行存在于盘点单源文件', !!b64m);
+  await pe.goto(BASE + '/', { waitUntil: 'networkidle' });
+  await pe.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await pe.reload({ waitUntil: 'networkidle' });
+  await pe.click('#main-nav a[data-page="search"]');
+  await pe.fill('#archive-search', b64m ? b64m[0] : '');
+  await pe.click('#archive-search-btn');
+  const decTxt = await pe.locator('#search-result').textContent();
+  ok('E1 检索框解码：记录已解码', decTxt.includes('记录已解码'));
+  ok('E1 解码内容与 01:47 谜题互文（已登记）', decTxt.includes('已登记'));
+  ok('E1 解码写入 cz_evt_roster_decode', await pe.evaluate(() => !!localStorage.getItem('cz_evt_roster_decode')));
+  // E2 留言板动态留言：被登记态多出「03:01 见。」，好结局不出现
+  await pe.evaluate(() => localStorage.setItem('cz_evt_final_read', Date.now()));
+  await pe.reload({ waitUntil: 'networkidle' });
+  await pe.click('#main-nav a[data-page="contact"]');
+  ok('E2 被登记：留言板多出「03:01 见。」', (await pe.locator('#mboard-live').textContent()).includes('03:01 见'));
+  await pe.evaluate(() => localStorage.setItem('cz_evt_good_end', Date.now()));
+  await pe.reload({ waitUntil: 'networkidle' });
+  await pe.click('#main-nav a[data-page="contact"]');
+  ok('E2 好结局：留言板不再出现「03:01 见。」', !(await pe.locator('#mboard-live').textContent()).includes('03:01 见'));
+  await pe.close();
+  // E3 被登记统计消息：桌面阅读最终卷 → 「已发现 X / 12 处」
+  const pe2 = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  await pe2.goto(BASE + '/desktop.html', { waitUntil: 'networkidle' });
+  await pe2.evaluate(() => {
+    localStorage.setItem('cz_admin_ok', '1');
+    localStorage.setItem('cz_evt_gate3_ok', Date.now());
+    localStorage.setItem('cz_evt_handover_done', Date.now());
+    localStorage.setItem('cz_evt_wang_read', Date.now());
+    localStorage.setItem('cz_evt_morse_break', Date.now());
+    localStorage.setItem('cz_evt_search_tingdian', Date.now());
+    localStorage.setItem('cz_stage_log', JSON.stringify([{ k: 'calc_break' }, { k: 'bp_plate' }]));
+  });
+  await pe2.reload({ waitUntil: 'networkidle' });
+  await pe2.waitForFunction(() => document.querySelectorAll('.icon.locked').length === 0, null, { timeout: 20000 });
+  await pe2.waitForFunction(() => document.getElementById('arch-final-entry').style.display !== 'none', null, { timeout: 10000 });
+  await pe2.dblclick('.icon[data-win="archive"]');
+  await pe2.click('#arch-final-entry');
+  await pe2.waitForSelector('#final-veil.show');
+  await pe2.click('#fv-warn .btn');
+  await sleep(600);
+  ok('E3 被登记：异常记录统计 X / 12 处', await pe2.evaluate(() => [...document.querySelectorAll('#msg-list .msg-item')].some(m => /已发现 \d+ \/ 12 处/.test(m.textContent))));
+  await pe2.close();
+
   await browser.close();
   const errs = errors.filter(e => !e.includes('favicon'));
   console.log(errs.length ? '⚠ 页面错误：\n' + errs.join('\n') : '（无页面 JS 错误）');

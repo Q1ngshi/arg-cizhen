@@ -1144,12 +1144,23 @@ function startClockSync(){
   tick();
   clockSyncTimer = setInterval(tick, 15000);
 }
+/* 异常记录统计：已发现 X / 共 12 处（可晒完成度，二周目补齐钩子；含 v5/v5.1 新增发现物） */
+function foundCount(){
+  var n = 0;
+  var keys = ['cz_evt_search_tingdian','cz_evt_gate3_ok','cz_evt_handover_done','cz_evt_wang_read','cz_evt_morse_break','cz_evt_judge_0147','cz_evt_judge_redbook','cz_evt_bp_erase','cz_evt_roster_decode'];
+  keys.forEach(function(k){ if (ls(k)) n++; });
+  if (stageDone('calc_break')) n++;
+  if (stageDone('bp_plate')) n++;
+  if (stageDone('dig')) n++;
+  return n;
+}
 function finalizeRegistration(){
   lsSet('cz_evt_final_read', Date.now());
   fireMsg('time_sync');
   fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();
   setDesktopMeta();         // 标签页/控制台同步「名单在册」（meta 叙事）
+  pushMsg('m-sys', '📡', '系统', '本卷异常记录核对：已发现 ' + foundCount() + ' / 12 处。尚未发现的部分，仍封存于库。');
 }
 /* 最终卷界面 */
 var fvChoicePending = null;
