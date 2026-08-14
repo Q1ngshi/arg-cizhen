@@ -578,6 +578,27 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 /* ============ 加入我们入口：进过终端即记为「已加入」（官网入口随之消失） ============ */
 try { localStorage.setItem('cz_evt_joined', Date.now()); } catch(e){}
 
+/* 系统层 meta（借鉴：DDLC / 《背影全家福》——浏览器标签页与控制台本身参与叙事）：
+   title / favicon / console 随玩家状态变化（被登记 → 「名单在册」；好结局 → 恢复） */
+function setDesktopMeta(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    if (reg && !good) {
+      document.title = '慈恩镇档案管理 · 内网终端（名单在册）';
+      console.log('[内网终端] 名单在册。');
+    } else {
+      document.title = '慈恩镇档案管理 · 内网终端';
+      console.log('[内网终端] 系统版本 v1.0.2（build 2008.11）。登录身份：xf001。');
+    }
+    var fv = document.querySelector('link[rel="icon"]');
+    if (fv && reg && !good) {
+      fv.href = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' fill=\'%238B0000\'/%3E%3Ctext x=\'16\' y=\'22\' font-size=\'14\' font-family=\'serif\' fill=\'%23f5ead0\' text-anchor=\'middle\'%3E登记%3C/text%3E%3C/svg%3E';
+    }
+  } catch(e){}
+}
+setDesktopMeta();
+
 /* ============ 启动画面 ============ */
 (function(){
   var lines = document.querySelectorAll('#boot p');
@@ -1128,6 +1149,7 @@ function finalizeRegistration(){
   fireMsg('time_sync');
   fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();
+  setDesktopMeta();         // 标签页/控制台同步「名单在册」（meta 叙事）
 }
 /* 最终卷界面 */
 var fvChoicePending = null;
@@ -1240,6 +1262,7 @@ function fvEndGood(){
   lsSet('cz_evt_choice_refuse', Date.now());
   lsSet('cz_evt_good_end', Date.now());
   fireMsg('good_end');
+  setDesktopMeta();   // 好结局：标签页/控制台恢复（访客 05 已从名单移出）
   setTimeout(function(){
     var b = document.createElement('button');
     b.className = 'btn';

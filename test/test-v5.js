@@ -170,7 +170,49 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(400);
   const winBox = await mob.locator('#win-browser').boundingBox();
   ok('C1 移动端：窗口全宽自适应', winBox && winBox.width >= 389);
-  await mob.close();
+  /* ================= Phase D：ARG 借鉴落地（meta 界面层 / 守则 / 伪社区 / 文件彩蛋） ================= */
+  console.log('【D ARG 借鉴：meta + 守则 + 伪社区 + 文件彩蛋】');
+  const pd = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const dLogs = [];
+  pd.on('console', m => { if (m.type() === 'log') dLogs.push(m.text()); });
+  await pd.goto(BASE + '/', { waitUntil: 'networkidle' });
+  await pd.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await pd.reload({ waitUntil: 'networkidle' });
+  ok('D1 默认态：控制台系统日志（慈恩镇档案门户）', dLogs.some(t => t.includes('慈恩镇档案门户')));
+  ok('D1 默认态：title 正常', (await pd.title()) === '慈恩镇档案管理办公室');
+  // 守则矛盾条款（规则怪谈：官方语气混入恶意条款）
+  await pd.click('#main-nav a[data-page="search"]');
+  ok('D2 守则条款：检索到本人姓名立即停止', (await pd.locator('#page-search').textContent()).includes('如检索结果出现您的姓名'));
+  // 伪社区留言板
+  await pd.click('#main-nav a[data-page="contact"]');
+  const contactTxt = await pd.locator('#page-contact').textContent();
+  ok('D3 留言板：别搜林远', contactTxt.includes('别搜「林远」'));
+  ok('D3 留言板：替他值个班（伪社区钩子）', contactTxt.includes('他让我替他值个班'));
+  ok('D3 留言板：8-27 暂停服务（大典日呼应）', contactTxt.includes('2026-08-27 起暂停服务'));
+  // 被登记态：title / favicon / console 全部变化
+  await pd.evaluate(() => localStorage.setItem('cz_evt_final_read', Date.now()));
+  await pd.reload({ waitUntil: 'networkidle' });
+  ok('D4 被登记：title 检索记录已存档', (await pd.title()).includes('检索记录已存档'));
+  ok('D4 被登记：控制台名单在册', dLogs.some(t => t.includes('名单在册')));
+  ok('D4 被登记：favicon 换登记章', await pd.evaluate(() => document.querySelector('link[rel="icon"]').href.includes('%E7%99%BB%E8%AE%B0')));
+  // 好结局态：title / console 恢复
+  await pd.evaluate(() => { localStorage.setItem('cz_evt_good_end', Date.now()); });
+  await pd.reload({ waitUntil: 'networkidle' });
+  ok('D5 好结局：title 档案已补录', (await pd.title()).includes('档案已补录'));
+  ok('D5 好结局：控制台档案已补录', dLogs.some(t => t.includes('档案已补录')));
+  // SVG 源文件彩蛋（fetch 文本断言：文件本身即恐怖）
+  const resp = await pd.request.get(BASE + '/assets/img/inventory-list.svg');
+  const svgSrc = await resp.text();
+  ok('D6 盘点单源码彩蛋：复核备注（3-17 之后不在原位）', svgSrc.includes('3-17 之后再查，已不在原位'));
+  ok('D6 盘点单源码彩蛋：隐藏文本（名册不在库里。在册里。）', svgSrc.includes('名册不在库里。在册里。'));
+  // 下载原件入口
+  await pd.evaluate(() => localStorage.clear());
+  await pd.reload({ waitUntil: 'networkidle' });
+  await pd.click('#main-nav a[data-page="search"]');
+  await pd.fill('#archive-search', '名册');
+  await pd.click('#archive-search-btn');
+  ok('D7 检索名册：下载原件入口（源文件核对暗示）', await pd.locator('#search-result a[download]').count() > 0);
+  await pd.close();
 
   await browser.close();
   const errs = errors.filter(e => !e.includes('favicon'));

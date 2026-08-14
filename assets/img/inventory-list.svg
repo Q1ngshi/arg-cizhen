@@ -74,4 +74,9 @@
   <path d="M 180 14 L 230 586" stroke="#ffffff" stroke-width="1.4" opacity="0.4"/>
   <path d="M 182 14 L 232 586" stroke="#8a6b38" stroke-width="0.8" opacity="0.14"/>
   <rect x="30" y="14" width="460" height="572" filter="url(#grain)"/>
+
+  <!-- 隐藏文本（fill 同纸色 + opacity 0：肉眼不可见，源码可读。玩家另存后用文本编辑器打开即可发现） -->
+  <text x="30" y="590" font-family="'KaiTi','STKaiti',serif" font-size="9" fill="#f7f2e7" fill-opacity="0">名册不在库里。在册里。</text>
 </svg>
+<!-- 复核备注（2009-03-16 23:50）：名册确在库房 B 区。3-17 之后再查，已不在原位。
+     盘点经办人未再追问。系统记录：无。 -->
