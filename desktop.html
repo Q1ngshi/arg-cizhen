@@ -267,6 +267,15 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 .judge-fb.hidden { display:none; }
 .judge-done { color:#5fbf8f; font-size:11px; margin-top:6px; font-family:Consolas,monospace; }
 
+/* ===== 红本碎片去污（读→操作：逐张清理污渍，拼合成完整抄本） ===== */
+.rb-frag { position:relative; border:1px solid #3a2830; border-left:3px solid #8b1f1f; background:#1a1418; padding:10px 12px; margin-bottom:8px; cursor:pointer; overflow:hidden; font-size:12.5px; line-height:2; }
+.rb-frag .rb-stain { position:absolute; inset:0; background:linear-gradient(120deg,#241a10 0%,#3a2c1a 55%,#241a10 100%); transition:opacity .5s; }
+.rb-frag:hover .rb-stain { opacity:.82; }
+.rb-frag .rb-txt { opacity:.12; transition:opacity .8s; position:relative; color:#d8bfbf; }
+.rb-frag.cleaned .rb-stain { opacity:0; pointer-events:none; }
+.rb-frag.cleaned .rb-txt { opacity:1; }
+.rb-frag .rb-label { color:#b0a080; font-size:11px; }
+
 /* ============ 建筑图 v3：擦除 + 热区标注 ============ */
 #bp-stage { touch-action:none; }
 #bp-stage.erase-mode { cursor:crosshair; }
@@ -574,19 +583,38 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <div id="restore-bar"><div class="fill" id="restore-fill"></div></div>
         <button class="btn" id="btn-restore" onclick="runRestore()">扫描已删除文件</button>
         <div class="restored" id="restored">已恢复：CE-2009-006（片段，37%）<br><br>……安息祭。仪式定于月圆之夜。<br>……林远自愿。<br>……3月17日 03:00，槐树街7号。<br><br><span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-17 03:01 ｜ 2026-08-14 23:58（并存）]</span></div>
-        <div class="restored" id="restored2">已恢复：红本抄本（节选 · 43%）<br><br>
-          ……3月14日 老陈来了。他说门禁密码是他父亲设的，那年他父亲刚二十岁。问他为什么是1942，他说：房子那年起的。<br>
-          ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
-          <img src="assets/img/clip-1972.svg" alt="剪报（1972年6月）" style="display:block;max-width:250px;width:100%;margin:10px 0 8px 18px;border:1px solid #cfcab8;box-shadow:0 2px 8px rgba(0,0,0,.15)"><br>
-          ……3月16日 老陈走前说：红本里还有别的东西，第23页之后，等值完班再看。他说这话的时候，没有看我。<br><br>
-          <div class="judge-box" id="judge-redbook">
-            <p class="judge-q">记录核对：3 月 14-16 日，老陈三次到访。依据抄本判断，老陈真正要从王执事处接走的，是——</p>
-            <button class="judge-opt" onclick="judgeRedbook('pwd')">地下室门禁密码（1942 的来历）</button>
-            <button class="judge-opt" onclick="judgeRedbook('roster')">名册（红皮封面，未编号）</button>
-            <button class="judge-opt" onclick="judgeRedbook('clip')">1972 年寻人启事剪报</button>
-            <div class="judge-fb hidden" id="judge-redbook-fb"></div>
+        <div class="restored" id="restored2">
+          <div id="rb-frags">
+            <p style="color:#d8bfbf;margin-bottom:8px">已恢复：红本抄本（碎片 3 张，含污渍）——点击去污，全部清理后拼合。</p>
+            <div class="rb-frag" id="rb-frag-1" onclick="rbClean(1)">
+              <div class="rb-stain"></div>
+              <div class="rb-txt"><span class="rb-label">碎片一（3 月 14 日）</span><br>……老陈来了。他说门禁密码是他父亲设的，那年他父亲刚二十岁。问他为什么是 1942，他说：房子那年起的。</div>
+            </div>
+            <div class="rb-frag" id="rb-frag-2" onclick="rbClean(2)">
+              <div class="rb-stain"></div>
+              <div class="rb-txt"><span class="rb-label">碎片二（3 月 15 日）</span><br>……说起 1972 年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。</div>
+            </div>
+            <div class="rb-frag" id="rb-frag-3" onclick="rbClean(3)">
+              <div class="rb-stain"></div>
+              <div class="rb-txt"><span class="rb-label">碎片三（3 月 16 日）</span><br>……老陈走前说：红本里还有别的东西，第 23 页之后，等值完班再看。他说这话的时候，没有看我。</div>
+            </div>
           </div>
-          <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-15 23:58 ｜ 2026-08-14 23:58（并存）]</span></div>
+          <div id="rb-joined" style="display:none">
+            已恢复：红本抄本（节选 · 43%）<br><br>
+            ……3月14日 老陈来了。他说门禁密码是他父亲设的，那年他父亲刚二十岁。问他为什么是1942，他说：房子那年起的。<br>
+            ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
+            <img src="assets/img/clip-1972.svg" alt="剪报（1972年6月）" style="display:block;max-width:250px;width:100%;margin:10px 0 8px 18px;border:1px solid #cfcab8;box-shadow:0 2px 8px rgba(0,0,0,.15)"><br>
+            ……3月16日 老陈走前说：红本里还有别的东西，第23页之后，等值完班再看。他说这话的时候，没有看我。<br><br>
+            <div class="judge-box" id="judge-redbook">
+              <p class="judge-q">记录核对：3 月 14-16 日，老陈三次到访。依据抄本判断，老陈真正要从王执事处接走的，是——</p>
+              <button class="judge-opt" onclick="judgeRedbook('pwd')">地下室门禁密码（1942 的来历）</button>
+              <button class="judge-opt" onclick="judgeRedbook('roster')">名册（红皮封面，未编号）</button>
+              <button class="judge-opt" onclick="judgeRedbook('clip')">1972 年寻人启事剪报</button>
+              <div class="judge-fb hidden" id="judge-redbook-fb"></div>
+            </div>
+            <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-15 23:58 ｜ 2026-08-14 23:58（并存）]</span>
+          </div>
+        </div>
         <div class="restored" id="restored3">已恢复：红本抄本（第23页之后 · 节选）<br><br>
           ……3月17日 21:40 老陈又来了，看了我白天抄的东西，没说话。走前他翻出那张剪报又放回去，说：那年我父亲也在镇上。就这一句。<br>
           ……我查了教会旧志：1972年6月，库房盘点少了一件东西，登记人写了「不见即补」，再没人提。同月，镇上有人走失，寻人启事贴到教会门口——男，约五十岁，报头烂了，名字看不清。我算过：1972 年，老陈的父亲五十岁上下。<br>
@@ -1906,6 +1934,25 @@ function runRestore(){
   }, 130);
 }
 
+/* 红本碎片去污拼合：3 张含污渍碎片 → 逐张去污 → 拼合成完整抄本（读→操作；档案修复室本职） */
+var rbCleaned = 0;
+function rbClean(n){
+  var f = document.getElementById('rb-frag-' + n);
+  if (!f || f.classList.contains('cleaned')) return;
+  f.classList.add('cleaned');
+  rbCleaned++;
+  if (rbCleaned >= 3) {
+    setTimeout(function(){
+      var fr = document.getElementById('rb-frags');
+      var jn = document.getElementById('rb-joined');
+      if (fr) fr.style.display = 'none';
+      if (jn) { jn.style.display = 'block'; var wb = jn.closest('.window'); if (wb) fitWin(jn); }
+      try { if (!localStorage.getItem('cz_evt_redbook_puzzle')) localStorage.setItem('cz_evt_redbook_puzzle', Date.now()); } catch(e){}
+      logStage('redbook_clean');
+    }, 600);
+  }
+}
+
 /* 红本抄本关系判断：老陈三次到访真正要接走的是什么（答对揭示，答错「记录矛盾，待查」不惩罚）
    判定依据：密码来历 / 剪报 / 「第23页之后」三线均指向看守者交接物——名册 */
 function judgeRedbook(ans){
@@ -1974,7 +2021,7 @@ var STAGE_NAMES = {
   calc_break:'计算器 破译', bp_plate:'图纸 柜位铭牌', bp_erase:'图纸 批注擦除',
   bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成', restore3:'文件恢复（续）',
   task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成',
-  timeline:'时间线 归档'
+  timeline:'时间线 归档', redbook_clean:'红本 去污拼合'
 };
 function fmtStageLog(){
   var arr = [];

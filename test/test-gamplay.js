@@ -118,6 +118,46 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('F4 收集进度条存在（已归档异常记录 N/12）', (await pf.locator('#collect-prog').textContent()).match(/已归档异常记录：\d+ \/ 12/));
   await pf.close();
 
+  /* ================= G：去污修复探针（卷宗落款涂黑 + 红本碎片拼合） ================= */
+  console.log('【G 去污修复探针】');
+  // G1 官网：卷宗落款涂黑 → 去污显形（管理员密码「落款年份」从读变操作）
+  const pg1 = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  track(pg1);
+  await pg1.goto(BASE + '/', { waitUntil: 'networkidle' });
+  await pg1.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await pg1.reload({ waitUntil: 'networkidle' });
+  await pg1.click('#main-nav a[data-page="search"]');
+  await pg1.fill('#archive-search', '05');
+  await pg1.click('#archive-search-btn');
+  await pg1.click('#search-result .search-result-item');
+  await pg1.fill('#gate-input', 'linyuan');
+  await pg1.click('#gate-modal .gate-btn:not(.cancel)');
+  await pg1.waitForSelector('#dossier.show');
+  ok('G1 卷宗落款被涂黑（▊ 遮罩）', (await pg1.locator('#dossier-date').textContent()).includes('▊'));
+  await pg1.click('#btn-restore-date');
+  await sleep(300);
+  ok('G1 去污后年份显形（二〇〇九年三月十七日）', (await pg1.locator('#dossier-date').textContent()).includes('二〇〇九年三月十七日'));
+  ok('G1 写入 cz_evt_restore_year', await pg1.evaluate(() => !!localStorage.getItem('cz_evt_restore_year')));
+  await pg1.close();
+  // G2 桌面：红本碎片去污拼合
+  const pg2 = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  track(pg2);
+  await pg2.goto(BASE + '/desktop.html', { waitUntil: 'networkidle' });
+  await pg2.evaluate(() => { localStorage.clear(); localStorage.setItem('cz_admin_ok', '1'); });
+  await pg2.reload({ waitUntil: 'networkidle' });
+  await pg2.waitForFunction(() => document.querySelectorAll('.icon.locked').length === 0, null, { timeout: 20000 });
+  await pg2.dblclick('.icon[data-win="tools"]');
+  await pg2.click('#win-tools .tab-btn:has-text("文件恢复")');
+  await pg2.click('#btn-restore');
+  await pg2.waitForSelector('#restored2.show', { timeout: 20000 });
+  ok('G2 红本恢复：3 张含污渍碎片', await pg2.locator('#rb-frags .rb-frag').count() === 3);
+  ok('G2 拼合前完整抄本隐藏', await pg2.evaluate(() => document.getElementById('rb-joined').style.display === 'none'));
+  for (let i = 1; i <= 3; i++) { await pg2.click('#rb-frag-' + i); await sleep(300); }
+  await pg2.waitForFunction(() => document.getElementById('rb-joined').style.display === 'block', null, { timeout: 5000 });
+  ok('G2 三张去污后自动拼合（完整抄本 + 剪报）', await pg2.evaluate(() => document.getElementById('rb-joined').textContent.includes('3月16日')));
+  ok('G2 写入 cz_evt_redbook_puzzle + 埋点 redbook_clean', await pg2.evaluate(() => !!localStorage.getItem('cz_evt_redbook_puzzle')));
+  await pg2.close();
+
   /* ================= E：浏览器窗口默认最大化（主内容界面大屏） ================= */
   console.log('【E 浏览器默认大屏】');
   const pe = await browser.newPage({ viewport: { width: 1280, height: 800 } });

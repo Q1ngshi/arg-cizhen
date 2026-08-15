@@ -115,6 +115,11 @@ async function try3(fn) {
   const gate2c = await try3(async () => { await frame().locator('#gate-modal .gate-btn:not(.cancel)').click(); await sleep(500); });
   const dossierShown = await frame().locator('#dossier').evaluate(el => el.classList.contains('show')).catch(() => false);
   step('密码门输入 linyuan（学员名单名字的拼音）', '培训班名单「林远」→ 拼音 linyuan，赌一把', gate2a && gate2b && gate2c && dossierShown, '卷宗解锁:' + dossierShown);
+  /* 卷宗落款被涂黑 → 去污修复（管理员密码线索从读变操作） */
+  const redactedSeen = (await frame().locator('#dossier-date').textContent().catch(() => '')).includes('▊');
+  const restoreOk = await try3(async () => { await frame().locator('#btn-restore-date').click(); await sleep(400); });
+  const yearTxt = await frame().locator('#dossier-date').textContent().catch(() => '');
+  step('卷宗落款被涂黑 → 点「去污修复」', '落款被涂黑了？档案修复室的本职——去污。露出了「二〇〇九年三月十七日」，记下年份 2009', redactedSeen && restoreOk && yearTxt.includes('二〇〇九年'), '涂黑:' + redactedSeen + ' 去污显形:' + yearTxt.slice(0, 16));
   await frame().locator('#dossier.show .dossier-close').click().catch(() => {});
 
   /* 9. 机构概况 → xf001 */

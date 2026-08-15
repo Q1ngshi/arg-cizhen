@@ -84,6 +84,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await p2.click('#win-tools .tab-btn:has-text("文件恢复")');
   await p2.click('#btn-restore');
   await p2.waitForSelector('#restored2.show', { timeout: 20000 });
+  for (let i = 1; i <= 3; i++) { await p2.click('#rb-frag-' + i); await p2.waitForTimeout(300); }   // 先去污拼合
+  await p2.waitForFunction(() => document.getElementById('rb-joined').style.display === 'block', null, { timeout: 5000 });
   await p2.click('#judge-redbook .judge-opt:has-text("门禁密码")');      // 错答
   await sleep(200);
   ok('B1 错答：记录矛盾，待查', (await p2.locator('#judge-redbook-fb').textContent()).includes('记录矛盾'));
