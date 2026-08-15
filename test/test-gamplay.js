@@ -94,6 +94,30 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('D1 统计消息含「CE-2009-006」暗示', msgTxt.includes('CE-2009-006'));
   await pd.close();
 
+  /* ================= F：任务①操作化——归档登记表（核对→改正→归档） ================= */
+  console.log('【F 归档登记表】');
+  const pf = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  track(pf);
+  await pf.goto(BASE + '/desktop.html', { waitUntil: 'networkidle' });
+  await pf.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await pf.reload({ waitUntil: 'networkidle' });
+  await pf.click('#boot').catch(() => {});
+  await sleep(600);
+  await pf.dblclick('.icon[data-win="archform"]');
+  await pf.waitForSelector('#win-archform.open');
+  ok('F1 待归档文件：登记表可见（编号05/年份2009预填/xf001）', await pf.evaluate(() => document.getElementById('archform-year').value === '2009' && document.getElementById('win-archform').textContent.includes('05')));
+  await pf.click('#win-archform .btn');
+  await sleep(300);
+  ok('F2 未核对直接归档：被拦下（待查不惩罚）', (await pf.locator('#archform-fb').textContent()).includes('馆藏动态补录通知不一致'));
+  ok('F2 未核对：不写 cz_evt_archive_filed', await pf.evaluate(() => !localStorage.getItem('cz_evt_archive_filed')));
+  await pf.fill('#archform-year', '2026');
+  await pf.click('#win-archform .btn');
+  await sleep(400);
+  ok('F3 改 2026 归档：归档完成', (await pf.locator('#archform-fb').textContent()).includes('归档完成'));
+  ok('F3 写入 cz_evt_archive_filed + 任务①✅', await pf.evaluate(() => !!localStorage.getItem('cz_evt_archive_filed') && document.getElementById('task-1').textContent.includes('✅')));
+  ok('F4 收集进度条存在（已归档异常记录 N/12）', (await pf.locator('#collect-prog').textContent()).match(/已归档异常记录：\d+ \/ 12/));
+  await pf.close();
+
   /* ================= E：浏览器窗口默认最大化（主内容界面大屏） ================= */
   console.log('【E 浏览器默认大屏】');
   const pe = await browser.newPage({ viewport: { width: 1280, height: 800 } });

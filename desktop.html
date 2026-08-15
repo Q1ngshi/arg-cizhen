@@ -390,9 +390,29 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 <!-- 桌面 -->
 <div id="desktop">
   <div class="icon" data-win="browser" style="left:26px;top:24px;"><span class="ico">🌐</span>内网浏览器</div>
+  <div class="icon" data-win="archform" style="left:150px;top:24px;"><span class="ico">📄</span>待归档文件</div>
   <div class="icon locked" data-win="archive" style="left:26px;top:130px;"><span class="ico">📁<span class="lock-badge">🔒</span></span>内部档案</div>
   <div class="icon" data-win="msg" style="left:26px;top:236px;"><span class="ico">✉️<span class="msg-badge" id="icon-msg-badge">1</span></span>信息</div>
   <div class="icon locked" data-win="tools" style="left:26px;top:342px;"><span class="ico">🧰<span class="lock-badge">🔒</span></span>工具</div>
+
+  <!-- 窗口：待归档文件（任务①操作化：核对并改正归档登记表） -->
+  <div class="window" id="win-archform">
+    <div class="w-titlebar"><span class="t-ico">📄</span><span class="t-title">待归档 · 补录档案登记表</span>
+      <button class="t-btn" onclick="maxWin('archform')">▢</button>
+      <button class="t-btn" onclick="minWin('archform')">—</button>
+      <button class="t-btn t-close" onclick="closeWin('archform')">✕</button></div>
+    <div class="w-body">
+      <p style="font-size:12px;color:#8fa3c0">今日补录档案待整理。登记表已按系统记录预填，请核对后归档。</p>
+      <div style="border:1px solid #2a3348;border-radius:4px;padding:12px;margin:10px 0">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="width:70px;color:#8fa3c0;font-size:12px">档案编号</span><span style="font-family:Consolas,monospace;color:#dfe9f5">05（锁存）</span></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="width:70px;color:#8fa3c0;font-size:12px">补录年份</span><input type="text" id="archform-year" value="2009" maxlength="4" style="width:80px;background:#0d1220;border:1px solid #2a3348;color:#dfe9f5;padding:5px 8px;font-family:Consolas,monospace;outline:none"></div>
+        <div style="display:flex;gap:8px;align-items:center"><span style="width:70px;color:#8fa3c0;font-size:12px">登记人</span><span style="font-family:Consolas,monospace;color:#dfe9f5">xf001（档案修复室）</span></div>
+      </div>
+      <p style="font-size:11px;color:#8a6a3a;line-height:1.8">如不确定补录年份，可前往官网「馆藏动态」核对补录通知。</p>
+      <button class="btn" onclick="archFormCheck()">归 档</button>
+      <div id="archform-fb" style="margin-top:8px;font-size:12px;line-height:1.9"></div>
+    </div>
+  </div>
 
   <!-- 窗口：内网浏览器（内嵌官网） -->
   <div class="window" id="win-browser">
@@ -505,9 +525,10 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <div id="chat-view">
         <div id="chat-head"><span class="c-avatar">📩</span><span id="chat-head-name">值班员 · 档案科</span></div>
         <div class="task-card" id="task-card">
-          <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开浏览器 → 看「馆藏动态」补录通知 / 首页红色标题 / 学员名单 → 回来汇报</div>
+          <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开「待归档文件」核对登记表 → 完成归档</div>
           <div id="task-2" style="display:none">📋 任务 2/3：核对 05 号档案登记异常（馆藏动态 → 补录通知）</div>
           <div id="task-3" style="display:none">📋 任务 3/3：07 号档案需门禁密码（调阅限制）</div>
+          <div id="collect-prog" style="font-size:11px;color:#5f7090;margin-top:8px;font-family:Consolas,monospace">已归档异常记录：0 / 12</div>
         </div>
         <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
         <div id="msg-list">
@@ -515,7 +536,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-15 21:03</span></div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
           <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-16 23:54</span></div><div class="m-body">明天的事，你我都别露面。</div></div>
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
-          <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面。先看三个地方：首页红色标题那条、馆藏动态里新补录的通知、通知公告里的学员名单——看到异常记下来，回来汇报。</div></div>
+          <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，桌面有个「待归档文件」——登记表我先按系统记录填了一版，你打开看看，拿不准的对照官网核对，没问题就归档。对了，官网「馆藏动态」里新补录的那条通知，留意一下日期。</div></div>
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
           <div class="msg-item m-zhang" data-hist="1" data-chat="zhang" id="shadow-msg-1" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/zhang-xuekuo.svg" alt=""></span><span class="m-name">张学阔</span><span class="m-time">2009-03-17 03:14</span></div><div class="m-body">你点了那行灰字。<br>说明你也看见了那扇没关严的门。<br>2009 年那个人走之前留了话——门后面不只有你。<br>名册上被划掉的人，有些不是死了，是藏进了"登记"和"抹除"之间的缝里。<br>我们管自己叫「有志之士」。<br>我是张学阔。别用系统说话，它看着这里。</div></div>
           <div class="msg-item m-chenyu" data-hist="1" data-chat="chenyu" id="shadow-msg-2" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/chen-yu.svg" alt=""></span><span class="m-name">陈誉</span><span class="m-time">2009-03-17 03:16</span></div><div class="m-body">我管 1942 年以前的卷宗。名册每页中间都有一条缝——登记和抹除不是两件事，是一件事的两面。<br>被划掉的人不是死了，是被挪去了「没被记录」那一栏。<br>你去数档案室那面墙，第十三块砖比别的新。下面压着的是那一栏的底账。</div></div>
@@ -804,11 +825,11 @@ function maybePageflip(){
 /* ============ 窗口管理 ============ */
 var winStack = 10;
 var cascade = 0;
-var wins = { browser:'内网浏览器', archive:'内部档案', msg:'信息', tools:'工具' };
+var wins = { browser:'内网浏览器', archform:'待归档文件', archive:'内部档案', msg:'信息', tools:'工具' };
 var unlocked = false;
 
 function openWin(id){
-  if (id !== 'browser' && id !== 'msg' && !unlocked) { lockedToast(); return; }
+  if (id !== 'browser' && id !== 'msg' && id !== 'archform' && !unlocked) { lockedToast(); return; }
   if (id === 'msg') {
     msgWinOpen = true; liveCount = 0;
     document.getElementById('icon-msg-badge').classList.remove('show');
@@ -1046,13 +1067,16 @@ function checkUnlock(){
       document.getElementById('win-msg').classList.remove('locked-hist');
       adminToast();
       fireMsg('admin_ok');
+      logStage('unlock');   // 先记解锁，再记任务 1（保持 unlock→task1_done 相邻的既有断言）
       // 任务闭环：任务 1 完成 → 显示任务 2（值班员布置核对）
-      var t1 = document.getElementById('task-1');
-      if (t1) { t1.textContent = '✅ 任务 1/3：补录档案已整理，记录已存档。'; t1.style.color = '#7fb98a'; }
+      if (!task1DoneFlag) {   // 若玩家已通过「待归档文件」完成归档，则不重复/不覆盖
+        var t1 = document.getElementById('task-1');
+        if (t1) { t1.textContent = '✅ 任务 1/3：补录档案已整理，记录已存档。'; t1.style.color = '#7fb98a'; }
+        task1DoneFlag = true;
+        logStage('task1_done');
+      }
       var t2 = document.getElementById('task-2');
       if (t2) { t2.style.display = 'block'; }
-      task1DoneFlag = true;
-      logStage('unlock'); logStage('task1_done');
       playUnlockMelody();
       fireIncoming('收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
     });
@@ -1211,6 +1235,36 @@ function fireMsg(key){
   pushMsg('m-sys', '📡', '系统', text);
 }
 
+/* 任务①操作化：核对归档登记表——补录年份预填错误值 2009，玩家去官网「馆藏动态」核实后改为 2026。
+   填对 → 归档完成 + 任务①闭环 + 登记人账号异常引出（衔接任务②）。错值 → 待查不惩罚。 */
+function archFormCheck(){
+  var fb = document.getElementById('archform-fb');
+  var y = (document.getElementById('archform-year').value || '').trim();
+  if (y === '2026') {
+    fb.style.color = '#7fb98a';
+    fb.textContent = '归档完成。补录年份 2026 与馆藏动态补录通知一致。登记人账号核验：xf001——账号状态：2009-03-17 已停用？（登记日期对不上，稍后核对。）';
+    try { if (!localStorage.getItem('cz_evt_archive_filed')) localStorage.setItem('cz_evt_archive_filed', Date.now()); } catch(e){}
+    if (!task1DoneFlag) {
+      task1DoneFlag = true;
+      var t1 = document.getElementById('task-1');
+      if (t1) { t1.textContent = '✅ 任务 1/3：补录档案已归档（登记表已核对入档）。'; t1.style.color = '#7fb98a'; }
+      logStage('task1_done');
+    }
+    playDing();
+  } else if (y === '2009') {
+    fb.style.color = '#e0b64b';
+    fb.textContent = '登记表与馆藏动态补录通知不一致：通知载 2026 年 6 月完成补录。请核对后归档。';
+  } else {
+    fb.style.color = '#e0b64b';
+    fb.textContent = '补录年份核对失败。请前往官网「馆藏动态」展开「失踪人口档案补录」通知核对日期。';
+  }
+}
+/* 收集进度条：信息窗口任务卡下实时显示已归档异常记录 N/12（第一局即可见的收集感） */
+function updateCollectProg(){
+  var el = document.getElementById('collect-prog');
+  if (el) el.textContent = '已归档异常记录：' + foundCount() + ' / 12';
+}
+
 /* 值班员主动消息（解锁回执 / 任务布置） */
 function fireIncoming(text){
   var pn = playerName();
@@ -1299,6 +1353,7 @@ function pollEvents(){
     }
   }
   checkTask2();   // 任务 2 完成判定（展开补录通知 → 值班员布置任务 3）
+  updateCollectProg();   // 收集进度条实时刷新
 }
 
 /* 暗网入口：「有志之士」多成员浮现（张学阔 + 陈誉/施宏宇/王鹏越/陈渝渊 渐进触发） */
