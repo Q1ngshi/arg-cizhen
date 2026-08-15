@@ -635,7 +635,7 @@ setDesktopMeta();
 /* ============ 开机任务：值班员开场消息 ============ */
 var booted = false;
 var openingShown = false;
-function bootDone(){ booted = true; restoreArchRead(); setTimeout(showOpening, 3000); }  // 3 秒兜底（无点击时也触发）
+function bootDone(){ booted = true; restoreArchRead(); syncAudioAmbient(); setTimeout(showOpening, 3000); }  // 3 秒兜底（无点击时也触发）；R3-3C：跨会话恢复心跳环境音
 document.addEventListener('click', function(){ if (booted && !openingShown) showOpening(); });  // 首次点击即触发（保证有用户手势可播音频）
 function showOpening(){
   if (openingShown) return;
@@ -690,6 +690,63 @@ function playDing(){
       g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
       o.start(t); o.stop(t + 0.65);
     });
+  } catch(e){}
+}
+/* ============ R3-3C 音频变化（被登记后：极低频心跳 + 纸张翻页环境音，Web Audio 合成） ============ */
+var ambHeartbeatTimer = null;
+function heartbeatThump(vol){
+  var ctx = audioCtx(); if (!ctx) return;
+  try {
+    var t0 = ctx.currentTime + 0.01;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(58, t0);
+    o.frequency.exponentialRampToValueAtTime(42, t0 + 0.22);
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.14, t0 + 0.025);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+    o.start(t0); o.stop(t0 + 0.4);
+  } catch(e){}
+}
+function pageflipNoise(){
+  var ctx = audioCtx(); if (!ctx) return;
+  try {
+    var dur = 0.16, n = Math.floor(ctx.sampleRate * dur);
+    var buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++){ d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.2); }
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    var g = ctx.createGain(); g.gain.value = 0.05;
+    var hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 700;
+    src.connect(hp); hp.connect(g); g.connect(ctx.destination);
+    src.start(ctx.currentTime + 0.005);
+  } catch(e){}
+}
+function startHeartbeatAmbient(){
+  if (ambHeartbeatTimer) return;
+  var tick = function(){ heartbeatThump(0.12); };
+  tick();
+  ambHeartbeatTimer = setInterval(tick, 2800);   // 极低频心跳：约每 2.8 秒一次，很轻
+}
+function stopHeartbeatAmbient(){
+  if (ambHeartbeatTimer){ clearInterval(ambHeartbeatTimer); ambHeartbeatTimer = null; }
+}
+/* 被登记后启动环境音（跨会话恢复也启动）；好结局后停止 */
+function syncAudioAmbient(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    if (reg && !good) startHeartbeatAmbient();
+    else stopHeartbeatAmbient();
+  } catch(e){}
+}
+/* 打开档案/翻页时播放纸张声（仅被登记后） */
+function maybePageflip(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    if (reg && !good) pageflipNoise();
   } catch(e){}
 }
 
@@ -1354,6 +1411,7 @@ function visitorId(){
 }
 function finalizeRegistration(){
   lsSet('cz_evt_final_read', Date.now());
+  startHeartbeatAmbient();   // R3-3C：被登记 → 极低频心跳环境音启动
   fireMsg('time_sync');
   fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();
@@ -1370,6 +1428,7 @@ function finalizeRegistration(){
 var fvChoicePending = null;
 var fvEverOpened = false;
 function openFinal(){
+  maybePageflip();   // R3-3C：打开最终卷也触发纸张声
   var v = document.getElementById('final-veil');
   v.classList.add('show');
   var done = !!ls('cz_evt_final_read');
@@ -1479,6 +1538,7 @@ function fvRestart(){
 }
 /* 结局三：反抗线 · 我不签收（好结局） */
 function fvEndGood(){
+  stopHeartbeatAmbient();   // R3-3C：好结局 → 心跳环境音停止（名单移出，压迫感解除）
   var e = document.getElementById('fv-end');
   e.innerHTML = '<p class="black">记录未更新。没有新的名字。</p>' +
     '<p class="dim" style="margin-top:20px">河水还在流。你听见有人在河边点灯。</p>' +
@@ -1592,6 +1652,7 @@ function fitWin(el){
   if (w) w.style.height = 'min(72vh, 640px)';
 }
 function openArch(no){
+  maybePageflip();   // R3-3C：被登记后翻页环境音（纸张声）
   document.querySelectorAll('.arch-detail').forEach(function(d){ d.classList.remove('show'); });
   var d = document.getElementById('arch-'+no);
   if (d) { d.classList.add('show'); fitWin(d); }

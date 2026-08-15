@@ -116,7 +116,7 @@ index.html   ← 官网入口（直接访问像普通网站，ARG 伪装层）
 ### 自动化测试
 
 ```bash
-npm test               # 七个回归脚本：test-tracking（13）+ verify-chat（10）+ test-shadow-network（13）+ v4-mech-test（52）+ test-v5（43）+ test-r1c（12）+ test-r4（12）
+npm test               # 八个回归脚本：test-tracking（13）+ verify-chat（10）+ test-shadow-network（13）+ v4-mech-test（52）+ test-v5（43）+ test-r1c（12）+ test-r3（20）+ test-r4（12）
 ```
 
 | 脚本 | 覆盖 | 通过数 |
@@ -127,6 +127,7 @@ npm test               # 七个回归脚本：test-tracking（13）+ verify-chat
 | `test/v4-mech-test.js` | v4 终局全流程（摩斯三档 / 七键解锁 / 三结局 / 反抗点 / 抹除过场 / 倒计时三态 / 实时追逐宽容制） | 52 |
 | `test/test-v5.js` | v5 提升（01:47 判断 / 红本关系判断 / 批注擦除彩蛋 / 热区标注 / 4 张新证据图 / 移动端视口骨架 / ARG 借鉴：meta 界面层·守则·伪社区·文件彩蛋 / 藏宝解码链·自传播钩子） | 43 |
 | `test/test-r1c.js` | R1 收尾（6-B 档案已读回溯 / 8-A PNG tEXt 隐写证据图） | 12 |
+| `test/test-r3.js` | R3 氛围峰值（1-A 网群异变 / 1-B ver=2009 / 1-C 假404 / 3-A 异变 / 3-B 指令反噬 / 3-C 音频变化） | 20 |
 | `test/test-r4.js` | R4（传播回收埋点 cz_share_copy / cz_share_foreign / 7-C 社区挂靠引导文案 / 运营指引文档） | 12 |
 
 前置：本地服务器运行中（`npm start`）。`test/` 目录为开发回归工具，非游戏内容。

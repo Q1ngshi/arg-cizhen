@@ -1826,7 +1826,8 @@ logStage('site_open');
         el.style.cssText = 'color:#8B0000;cursor:pointer;text-decoration:underline;text-decoration-style:dotted';
         el.textContent = '请关闭此页面。';
         el.title = '点击执行';
-        el.addEventListener('click', function(){
+        el.addEventListener('click', function(e){
+          if (e && e.stopPropagation) e.stopPropagation();   // 阻止冒泡到 document，否则覆盖层刚创建就被 off 立即移除
           var ov = document.createElement('div');
           ov.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer';
           var t = document.createElement('div');
