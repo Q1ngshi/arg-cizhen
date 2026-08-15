@@ -278,6 +278,19 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 #bp-hot-anno { position:absolute; top:14px; left:50%; transform:translateX(-50%); max-width:72%; background:rgba(10,14,22,.96); border:1px solid #4a5f8c; border-radius:5px; padding:9px 14px; font-size:12px; color:#c8d6ea; line-height:1.8; display:none; z-index:20; box-shadow:0 6px 18px rgba(0,0,0,.5); font-family:Consolas,monospace; }
 #bp-hot-anno.show { display:block; }
 
+/* ============ 时间线归档（可玩性：档案员本职操作——散落记录按时间排序） ============ */
+#tl-cards { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.tl-card { padding:7px 10px; background:#1c2740; border:1px solid #3a4a68; border-radius:4px; font-size:11.5px; color:#cfdaea; cursor:pointer; line-height:1.6; max-width:200px; }
+.tl-card:hover { background:#263352; }
+.tl-card.picked { background:#2c3a58; border-color:#7ba7d9; }
+.tl-card .tl-no { display:inline-block; min-width:18px; height:18px; line-height:18px; text-align:center; background:#8B0000; color:#fff; border-radius:9px; font-size:10px; margin-right:6px; font-family:Consolas,monospace; }
+#tl-timeline { display:flex; gap:4px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px; }
+.tl-slot { flex:1; min-width:84px; height:64px; border:1px dashed #39445c; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10.5px; color:#5f7090; font-family:Consolas,monospace; }
+.tl-slot.filled { border-style:solid; border-color:#4a5f8c; color:#cfdaea; }
+.tl-fb { margin-top:8px; font-size:12px; line-height:1.9; }
+.tl-fb.ok { color:#7fb98a; }
+.tl-fb.err { color:#e0b64b; }
+
 /* ============ 手机适配 ============ */
 @media (max-width:700px) {
   .icon { width:80px; font-size:11px; }
@@ -527,6 +540,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <button class="tab-btn" onclick="switchTab(this,'restore')">文件恢复</button>
         <button class="tab-btn" onclick="switchTab(this,'calc')">计算器</button>
         <button class="tab-btn" onclick="switchTab(this,'handover')">交接班</button>
+        <button class="tab-btn" onclick="switchTab(this,'timeline');renderTimeline()">归档整理</button>
         <button class="tab-btn" onclick="switchTab(this,'blueprint');renderBlueprints()">建筑图</button>
       </div>
       <div class="tab-pane show" id="pane-notepad">
@@ -580,6 +594,13 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <div class="tab-pane" id="pane-blueprint">
         <p style="font-size:12px;color:#8fa3c0">已收录的建筑图纸（d:\archive\maps\），点击放大查看。</p>
         <div id="bp-list"></div>
+      </div>
+      <div class="tab-pane" id="pane-timeline">
+        <p style="font-size:12px;color:#8fa3c0">将散落的记录按时间先后归档——按「最早 → 最晚」依次点击事件卡，再核对。</p>
+        <div id="tl-cards"></div>
+        <div id="tl-timeline"></div>
+        <button class="btn" id="btn-tl-check" onclick="tlCheck()" disabled>核对归档</button>
+        <div class="tl-fb" id="tl-fb"></div>
       </div>
     </div>
   </div>
@@ -1473,7 +1494,7 @@ function finalizeRegistration(){
   fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();
   setDesktopMeta();         // 标签页/控制台同步「名单在册」（meta 叙事）
-  pushMsg('m-sys', '📡', '系统', '本卷异常记录核对：已发现 ' + foundCount() + ' / 12 处。尚未发现的部分，仍封存于库。');
+  pushMsg('m-sys', '📡', '系统', '本卷异常记录核对：已发现 ' + foundCount() + ' / 12 处。尚未发现的部分，仍封存于库。全部核验完成后可生成归档码，用于调阅 CE-2009-006。');
   lsSet('cz_visitor_id', visitorId());   // 7-B 唯一访客编号（行为哈希，可晒）
   pushMsg('m-sys', '📡', '系统', '本机档案编号已生成：访客 ' + ls('cz_visitor_id') + '。');
   if (foundCount() >= 12) {
@@ -1877,7 +1898,8 @@ var STAGE_NAMES = {
   gate3_open:'门禁 07 打开', gate3_ok:'门禁 07 通过', restore:'文件恢复', dig:'墙体检验',
   calc_break:'计算器 破译', bp_plate:'图纸 柜位铭牌', bp_erase:'图纸 批注擦除',
   bp_p2:'图纸 收录（手绘）', bp_001:'图纸 收录（备案）', handover:'值班交接 生成', restore3:'文件恢复（续）',
-  task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成'
+  task1_done:'任务1 完成', task2_done:'任务2 完成', task3_done:'任务3 完成',
+  timeline:'时间线 归档'
 };
 function fmtStageLog(){
   var arr = [];
@@ -1984,6 +2006,75 @@ function fallbackCopy(txt){
   document.body.appendChild(ta); ta.select();
   try { document.execCommand('copy'); } catch(e) {}
   document.body.removeChild(ta);
+}
+
+/* ============ 时间线归档（可玩性 R6：档案员本职操作——散落记录按时间排序，想出来才看得到） ============ */
+/* 7 件记录（id 即正确时序 1-7，卡面不写日期，玩家对照红本抄本/来访登记簿/07 备案推断）：
+   ① 3-14 老陈首次到访（红本） ② 3-16 23:50 库房复核（盘点单） ③ 3-16 23:54 王执事消息
+   ④ 3-16 23:58 王×× 来访登记（来访登记簿） ⑤ 3-17 01:47 出入登记·已登记（07 备案）
+   ⑥ 3-17 03:01 系统断线（停电批注） ⑦ 3-17 19:40 林远走进教会后门（卷宗轨迹） */
+var TL_EVENTS = [
+  { text: '老陈首次到访，问起门禁密码的来历' },
+  { text: '库房复核：名册仍在原位' },
+  { text: '「明天的事，你我都别露面。」' },
+  { text: '来访登记簿：王××，无登记单位，无预约' },
+  { text: '地下档案室出入登记，备注「已登记」' },
+  { text: '外部时间同步中断，系统断线' },
+  { text: '林远独自走进教会后门' }
+];
+var tlPicked = [];
+function renderTimeline(){
+  var box = document.getElementById('tl-cards');
+  if (!box) return;
+  tlPicked = [];
+  var fb = document.getElementById('tl-fb');
+  if (fb) { fb.className = 'tl-fb'; fb.textContent = ''; }
+  var btn = document.getElementById('btn-tl-check');
+  if (btn) btn.disabled = true;
+  var order = TL_EVENTS.map(function(e, i){ return { id: i + 1, text: e.text }; });
+  for (var i = order.length - 1; i > 0; i--) {   // Fisher-Yates 洗牌：每次进入乱序
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = order[i]; order[i] = order[j]; order[j] = t;
+  }
+  box.innerHTML = order.map(function(e){
+    return '<div class="tl-card" id="tl-card-' + e.id + '" onclick="tlPick(' + e.id + ')">' + e.text + '</div>';
+  }).join('');
+  var tl = document.getElementById('tl-timeline');
+  tl.innerHTML = '';
+  for (var s = 1; s <= 7; s++) {
+    tl.innerHTML += '<div class="tl-slot" id="tl-slot-' + s + '">' + (s === 1 ? '最早' : (s === 7 ? '最晚' : '第 ' + s + ' 件')) + '</div>';
+  }
+}
+function tlPick(id){
+  var idx = tlPicked.indexOf(id);
+  if (idx >= 0) tlPicked.splice(idx, 1);   // 再点取消
+  else { if (tlPicked.length >= 7) return; tlPicked.push(id); }
+  for (var i = 1; i <= 7; i++) {
+    var c = document.getElementById('tl-card-' + i);
+    if (!c) continue;
+    var inP = tlPicked.indexOf(i);
+    c.className = inP >= 0 ? 'tl-card picked' : 'tl-card';
+    c.innerHTML = (inP >= 0 ? '<span class="tl-no">' + (inP + 1) + '</span>' : '') + TL_EVENTS[i - 1].text;
+  }
+  var btn = document.getElementById('btn-tl-check');
+  if (btn) btn.disabled = tlPicked.length !== 7;
+}
+function tlCheck(){
+  if (tlPicked.length !== 7) return;
+  var fb = document.getElementById('tl-fb');
+  var ok = tlPicked.every(function(id, idx){ return id === idx + 1; });
+  if (ok) {
+    if (fb) { fb.className = 'tl-fb ok'; fb.textContent = '时间线归档完成。3-14 到访，3-16 深夜复核、留话、来访，3-17 凌晨出入、断线，当晚 19:40 后门。来访登记 23:58 与出入登记 01:47 指向同一人——备注「已登记」。登记在先，其余事项另行记录。已入档。'; }
+    try {
+      if (!localStorage.getItem('cz_evt_timeline')) { localStorage.setItem('cz_evt_timeline', Date.now()); logStage('timeline'); }
+    } catch(e){}
+    var btn = document.getElementById('btn-tl-check');
+    if (btn) btn.disabled = true;
+  } else {
+    var wrong = [];
+    tlPicked.forEach(function(id, idx){ if (id !== idx + 1) wrong.push('第 ' + (idx + 1) + ' 件'); });
+    if (fb) { fb.className = 'tl-fb err'; fb.textContent = '记录矛盾，待查。' + wrong.join('、') + '顺序有误——请对照红本抄本、来访登记簿与 07 备案记录的日期。'; }
+  }
 }
 
 /* ============ 建筑图纸系统（雨穴式：图纸本身就是证据） ============ */
