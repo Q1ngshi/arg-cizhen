@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<radialGradient id="bg" cx="50%" cy="40%" r="75%">
+<stop offset="0%" stop-color="#ecdfc0"/>
+<stop offset="55%" stop-color="#dccba4"/>
+<stop offset="100%" stop-color="#c6b086"/>
+</radialGradient>
+<filter id="stain" x="0%" y="0%" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="0.62" numOctaves="3" seed="7" result="n"/>
+<feColorMatrix in="n" type="matrix" values="0 0 0 0 0.36  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 0.13 0" result="s"/>
+<feComposite in="SourceGraphic" in2="s" operator="over"/>
+</filter>
+<filter id="grain" x="0%" y="0%" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="2" seed="12" result="n"/>
+<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+</filter>
+<filter id="vignette" x="0%" y="0%" width="100%" height="100%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="90" result="b"/>
+<feOffset dx="0" dy="0"/>
+<feComponentTransfer in="b"><feFuncA type="linear" slope="0.22"/></feComponentTransfer>
+<feComposite in="SourceGraphic" operator="over"/>
+</filter>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<rect width="512" height="512" filter="url(#grain)"/>
+<g stroke="#44301b" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#stain)">
+
+<path d="M256 96 C300 96 324 126 324 156 C324 190 300 208 282 224 L282 268 C282 282 300 292 300 308 L212 308 C212 292 230 282 230 268 L230 224 C212 208 188 190 188 156 C188 126 212 96 256 96 Z"/>
+<path d="M256 108 L256 216" stroke-width="4" opacity="0.3"/>
+<path d="M256 168 C238 186 232 204 242 220 C252 236 268 236 274 220 C280 206 270 192 256 186" fill="#44301b" stroke="none" opacity="0.75"/>
+<path d="M200 308 L312 308 L316 332 L196 332 Z"/>
+<path d="M216 332 L218 360 L294 360 L296 332"/>
+<path d="M256 96 C242 120 214 130 208 146" stroke-width="4" opacity="0.45"/>
+</g>
+<rect x="16" y="16" width="480" height="480" fill="none" stroke="#44301b" stroke-width="3" opacity="0.5"/>
+<rect width="512" height="512" filter="url(#vignette)" opacity="0.55"/>
+</svg>

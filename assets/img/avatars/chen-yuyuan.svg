@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+<radialGradient id="bg" cx="50%" cy="40%" r="75%">
+<stop offset="0%" stop-color="#ecdfc0"/>
+<stop offset="55%" stop-color="#dccba4"/>
+<stop offset="100%" stop-color="#c6b086"/>
+</radialGradient>
+<filter id="stain" x="0%" y="0%" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="0.62" numOctaves="3" seed="7" result="n"/>
+<feColorMatrix in="n" type="matrix" values="0 0 0 0 0.36  0 0 0 0 0.25  0 0 0 0 0.13  0 0 0 0.13 0" result="s"/>
+<feComposite in="SourceGraphic" in2="s" operator="over"/>
+</filter>
+<filter id="grain" x="0%" y="0%" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="2" seed="12" result="n"/>
+<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+</filter>
+<filter id="vignette" x="0%" y="0%" width="100%" height="100%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="90" result="b"/>
+<feOffset dx="0" dy="0"/>
+<feComponentTransfer in="b"><feFuncA type="linear" slope="0.22"/></feComponentTransfer>
+<feComposite in="SourceGraphic" operator="over"/>
+</filter>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<rect width="512" height="512" filter="url(#grain)"/>
+<g stroke="#44301b" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#stain)">
+
+<rect x="136" y="158" width="240" height="196" rx="6"/>
+<path d="M136 158 L256 268 L376 158" stroke-width="5"/>
+<path d="M136 354 L256 268 L376 354" stroke-width="5" opacity="0.5"/>
+<path d="M256 268 L256 354" stroke-width="4" opacity="0.4"/>
+<path d="M268 316 L356 316" stroke-width="4" opacity="0.6"/>
+<path d="M284 330 L332 330" stroke-width="3" opacity="0.4"/>
+<circle cx="376" cy="158" r="10" opacity="0.5"/>
+<path d="M150 130 L250 130" stroke-width="4" opacity="0.35"/>
+</g>
+<rect x="16" y="16" width="480" height="480" fill="none" stroke="#44301b" stroke-width="3" opacity="0.5"/>
+<rect width="512" height="512" filter="url(#vignette)" opacity="0.55"/>
+</svg>

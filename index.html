@@ -56,6 +56,25 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
   70% { transform: translateX(-2px); }
 }
 
+/* 此页存疑（第四条线入口：王执事后门） */
+#doubt-btn {
+  margin-left: 8px;
+  padding: 0 8px;
+  background: transparent;
+  color: #9a9a9a;
+  border: none;
+  border-bottom: 1px dashed #9a9a9a;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 3px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s;
+}
+#doubt-btn.show { opacity: 1; pointer-events: auto; }
+#doubt-btn:hover { color: #6a3a1a; border-bottom-color: #6a3a1a; }
+
 /* ===== 主标题 ===== */
 .main-title { width: 1100px; margin: 16px auto 12px; font-size: 20px; font-weight: bold; color: #222; text-align: center; padding: 0 20px; }
 
@@ -178,6 +197,19 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 .search-result-item .sr-status { font-size: 11px; margin-top: 4px; }
 .search-result-item.broken .sr-status { color: #999; }
 .search-result-item.broken:hover { background: #fffbe6; cursor: pointer; }
+
+/* 3-A 深水区异变（被登记后）：hero 变暗 + 倒计时血字慢闪 */
+body.cz-registered .hero-img { filter: brightness(0.72) sepia(0.35); transition: filter 2s; }
+body.cz-registered .main-title { color: #6b1f1f; }
+body.cz-registered .cz-blink { animation: czBloodBlink 1.6s ease-in-out infinite; }
+@keyframes czBloodBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* 1-B 历史版本时间胶囊（?ver=2009）：2009 版全站黑白复古维护页 */
+body.cz-ver2009 { filter: grayscale(1); background:#e8e8e8; }
+body.cz-ver2009 .top-bar { background:#555; }
+body.cz-ver2009 .main-title { font-size:20px; color:#333; }
+body.cz-ver2009 .cz-ver2009-banner { display:block !important; }
+.cz-ver2009-banner { display:none; background:#222; color:#eee; font-family:SimSun,serif; font-size:13px; letter-spacing:2px; padding:10px 16px; text-align:center; }
 </style>
 <!--
   2009-03-17 23:58:12  文档上传记录：本次修改 12 字节。
@@ -190,6 +222,8 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 -->
 </head>
 <body>
+
+<div class="cz-ver2009-banner">慈恩镇档案管理办公室 · 网站维护中（2009 年 3 月 17 日 存档版）</div>
 
 <!-- ===== 灰顶条 ===== -->
 <div class="top-bar">
@@ -251,6 +285,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
     <a href="#" data-page="topic">专题热点</a>
     <a href="#" data-page="contact">互动交流</a>
     <button id="join-btn" onclick="joinUs()">加入我们</button>
+    <button id="doubt-btn" onclick="doubtUs()">此页存疑</button>
   </div>
 </div>
 
@@ -418,6 +453,20 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
 
   <h3 style="font-size:15px;color:#333;margin:12px 0 8px">联系方式</h3>
   <p>办公地址：慈恩镇槐树街7号<br>查阅服务时间：周一至周五 8:30-12:00 14:00-17:30<br>联系电话：0571-XXXXXXX<br>电子邮箱：archive@cizhen.gov.cn<br>档案修复室位于三楼西侧，来访请提前预约。</p>
+
+  <h3 style="font-size:15px;color:#333;margin:12px 0 8px">慈恩镇网站群</h3>
+  <p style="font-size:12px;color:#777">以下单位网站均为慈恩镇人民政府下属机构站点。部分单位网站正在改版中，敬请谅解。</p>
+  <table id="town-sites">
+    <tr><th width="140">单位</th><th>网址</th><th width="100">状态</th></tr>
+    <tr><td>慈恩镇人民政府</td><td>www.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+    <tr><td>慈恩镇档案管理办公室</td><td>archive.cizhen.gov.cn</td><td>正常</td></tr>
+    <tr><td>慈恩镇水利站</td><td>sl.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+    <tr><td>慈恩镇文教办</td><td>wjb.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+    <tr><td>慈恩镇公安派出所</td><td>gaj.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+    <tr><td>慈恩镇卫生院</td><td>wsy.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+    <tr><td>慈恩镇粮站</td><td>lz.cizhen.gov.cn</td><td style="color:#8B0000">建设中</td></tr>
+  </table>
+  <div style="font-size:11px;color:#999;margin-top:6px">＊ 网群页面以 1998 年版本为基准进行维护，页面样式可能较为老旧。</div>
 </div>
 
 <!-- ===== 档案查询页 ===== -->
@@ -435,7 +484,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
   <strong>步骤二：</strong>查看检索结果，点击目标档案条目。<br>
   <strong>步骤三：</strong>如档案可在线查阅，直接浏览；如提示"数据损坏"，请携带有效证件至三楼修复室申请查阅。<br>
   <strong>注意：</strong>编号05号档案因数字化过程中数据损坏，暂不支持在线查阅。该档案涉及2009年相关卷宗。<br>
-  <strong>补充条款（2009-03 修订）：</strong>如检索结果出现您的姓名，请立即停止检索，关闭页面，并与档案科值班员联系。</p>
+  <strong>补充条款（2009-03 修订）：</strong><span id="clause-extra">如检索结果出现您的姓名，请立即停止检索，关闭页面，并与档案科值班员联系。</span></p>
 </div>
 
 <!-- ===== 新闻动态页 ===== -->
@@ -569,6 +618,25 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
     <div class="gate-actions">
       <button class="gate-btn cancel" onclick="closeGate3()">取 消</button>
       <button class="gate-btn" onclick="checkGate3()">确 认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 王执事后门（第四条线入口） ===== -->
+<div class="modal-mask" id="doubt-modal">
+  <div class="gate-card" style="width:520px">
+    <div class="gate-title">系统异常 · 检测到未完成的加入请求</div>
+    <div style="color:#666;font-size:12px;text-align:left;margin-bottom:12px;font-family:'Courier New',monospace">正在记录访问者操作轨迹…… 命中一条 2009 年未删除的草稿：</div>
+    <div style="color:#d8cbb0;font-size:14px;line-height:2;text-align:left;border-left:3px solid #8B0000;padding:4px 0 4px 16px">
+      「你没点下去。好。<br>
+      我当年点下去了，后来想反悔，已经晚了。<br><br>
+      在点下去之前，先想清楚——他们让你加入的，到底是什么。<br>
+      还有，名册上，从来不止你一个名字。<br>
+      我不是第一个想走的，你也不会是最后一个。<br><br>
+      ——2009 年，一个没能离开的人」
+    </div>
+    <div class="gate-actions">
+      <button class="gate-btn" onclick="doubtContinue()">进 入 终 端</button>
     </div>
   </div>
 </div>
@@ -717,7 +785,7 @@ body { font-family: "Microsoft YaHei","SimSun",serif; background: #f5f5f5; color
           <tr><td>入口</td><td>教会圣器室北墙暗门，向下旋转楼梯17级</td></tr>
           <tr><td>面积</td><td>约38平方米</td></tr>
           <tr><td>建造年份</td><td>约1942年（据教会旧志）</td></tr>
-          <tr><td>用途</td><td>原为战时避难所，1965年后改作教会内部档案存放</td></tr>
+          <tr><td>用途</td><td>原为战时避难所，1965年后改作教会内部档案存放；据教会旧志，教会自建堂起即负每年「祭河」之责，此处兼作祭河香火账目的存放处</td></tr>
           <tr><td>最后登记维修</td><td>2008年12月 · 王执事</td></tr>
         </table>
       </div>
@@ -852,6 +920,25 @@ var AudioMgr = {
       o.start(t); o.stop(t + 0.2);
     };
     thump(ctx.currentTime); thump(ctx.currentTime + 0.22);
+  },
+  /* 纸张翻页声（低频白噪短促包络，被登记后的环境音之一） */
+  pageflip: function() {
+    if (!this.enabled || !this.ctx) return;
+    var ctx = this.ctx;
+    var dur = 0.14;
+    var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.7;
+    }
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    var bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 900; bp.Q.value = 0.8;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+    src.start(); src.stop(ctx.currentTime + dur);
   },
   /* 警示音（密码错误） */
   warn: function() {
@@ -988,6 +1075,9 @@ document.getElementById('main-nav').addEventListener('click', function(e) {
   e.preventDefault();
   var page = a.getAttribute('data-page');
 
+  // 页面打开统计（行为感知：桌面消息「你打开了 N 个页面」数据源）
+  try { localStorage.setItem('cz_page_open', String((parseInt(localStorage.getItem('cz_page_open') || '0', 10) || 0) + 1)); } catch(e){}
+
   // 更新导航高亮
   this.querySelectorAll('a').forEach(function(el) { el.classList.remove('on'); });
   a.classList.add('on');
@@ -1016,8 +1106,28 @@ function joinUs(){
   var joined = false;
   try { joined = !!localStorage.getItem('cz_evt_joined'); } catch(e){}
   if (joined) return;   // 已进过终端（已加入）→ 入口消失
-  setTimeout(function(){ jb.classList.add('show'); }, 3000);  // 3 秒后突然出现
+  setTimeout(function(){
+    jb.classList.add('show');   // 3 秒后突然出现
+    // 第四条线入口：加入我们浮现后，静置 5 秒仍未点击 → 浮现「此页存疑」
+    var db = document.getElementById('doubt-btn');
+    if (!db) return;
+    setTimeout(function(){
+      var stillJoined = false;
+      try { stillJoined = !!localStorage.getItem('cz_evt_joined'); } catch(e){}
+      if (!stillJoined) db.classList.add('show');
+    }, 5000);
+  }, 3000);
 })();
+
+// ===== 此页存疑（第四条线：王执事后门 → 打入内部） =====
+function doubtUs(){
+  try { localStorage.setItem('cz_evt_question', Date.now()); } catch(e){}
+  document.getElementById('doubt-modal').classList.add('show');
+}
+function doubtContinue(){
+  document.getElementById('doubt-modal').classList.remove('show');
+  location.href = 'desktop.html';
+}
 
 // ===== 首页新闻标签切换 =====
 document.querySelectorAll('.news-tab').forEach(function(btn) {
@@ -1313,6 +1423,7 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
     var q = raw.toLowerCase();
     if (!q) return;
     logStage('search', q);   // 每个不同关键词记一次（同词重复只记首次）
+    try { localStorage.setItem('cz_search_cnt', String((parseInt(localStorage.getItem('cz_search_cnt') || '0', 10) || 0) + 1)); } catch(e){}
     // 文件彩蛋解码：盘点单加密存档（base64）→ 复制本行粘贴至检索框 → 「记录已解码」（UTF-8 base64，raw 大小写敏感）
     function b64DecodeUtf8(s){
       try {
@@ -1409,7 +1520,88 @@ document.getElementById('gate3-modal').addEventListener('click', function(e) {
         '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">2009 年库房盘点记录：<span style="color:#8B0000">「少了一件东西，不见即补。」</span><br>' +
         '<img src="assets/img/inventory-list.svg" alt="库房盘点单（2009-03-16）" style="max-width:340px;width:100%;margin-top:12px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
         '<div style="color:#999;font-size:11px;margin-top:6px">—— 库房盘点单（扫描件，2009-03-16） ｜ <a href="assets/img/inventory-list.svg" download="2009-库房盘点单.svg" style="color:#8B0000">[下载原件]</a><span style="color:#999">（附件为源文件，可用文本方式打开核对；内含加密存档，复制本行粘贴至检索框解码）</span></div>' +
+        '<img src="assets/img/roster-scan.png" alt="名册首页（扫描件，2009-03-17）" style="max-width:340px;width:100%;margin-top:12px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
+        '<div style="color:#999;font-size:11px;margin-top:6px">—— 名册首页（扫描件，2009-03-17） ｜ <a href="assets/img/roster-scan.png" download="2009-名册首页.png" style="color:#8B0000">[下载原件]</a><span style="color:#999">（图片属性/文本方式打开可核对附加信息）</span></div>' +
         '<span style="color:#999;font-size:12px">其余条目请联系档案科。</span></div></div>';
+      return;
+    }
+    // 特殊检索：CE-2009-006 归档码解锁（R1-2A：12 位归档码 = 12 处发现事件时间戳末位，本机校验）
+    // 全发现 → desktop 生成 cz_archive_code → 输入官网检索框 → 解锁卷宗六「执行者档案」（3-17 行动命令链）
+    if (/^\d{12}$/.test(q)) {
+      var localCode = '';
+      try { localCode = localStorage.getItem('cz_archive_code') || ''; } catch(e){}
+      if (q === localCode) {
+        result.style.display = '';
+        result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>卷宗解锁 · CE-2009-006 执行者档案（1 件）</b><br>' +
+          '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">' +
+          '<b>CE-2009-006 · 3-17 行动命令链（摘录）</b><br>' +
+          '2009-03-17 03:01 命令下达。执行者共三人。<br>' +
+          '命令内容：整理名册，清点登记，完成交接。<br>' +
+          '<span style="color:#8B0000">交接对象：以「访客」身份出现者。</span><br>' +
+          '批注（值班员手写）：<span style="color:#8B0000">「执行者名单不对外。但执行者本人，应该知道自己做过什么。」</span><br>' +
+          '<span style="color:#999;font-size:11px">—— 归档码核验通过。该卷宗已从「限制调阅」转为「已核」。</span></div></div>';
+        try { localStorage.setItem('cz_evt_006_unlocked', Date.now()); } catch(e){}
+        logStage('unlock_006');
+        return;
+      }
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>无匹配条目</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">归档码核验失败。该归档码不属于本机档案库。<br>' +
+        '<span style="color:#999;font-size:11px">—— 若是他人归档码，请确认输入完整 12 位；归档码每位对应一处发现记录的时间。</span></div></div>';
+      return;
+    }
+    // 特殊检索：跨玩家交接码解码（R1-2B：输入他人交接记录尾部的归档码 → 显示其调查进度摘要）
+    // 归档码格式：6 位大写 HEX + 连字符 + 2 位已发现数（如 3F2A91-07；q 已 toLowerCase，故用 a-f 匹配）
+    if (/^[0-9a-f]{6}-\d{2}$/.test(q)) {
+      /* R4-回收传播数据：记录「他人交接码被解码」次数（运营者可回收传播链） */
+      try {
+        var sf = parseInt(localStorage.getItem('cz_share_foreign') || '0', 10) || 0;
+        localStorage.setItem('cz_share_foreign', String(sf + 1));
+        logStage('share_foreign');
+      } catch(e){}
+      result.style.display = '';
+      var parts = q.split('-');
+      var cnt = parseInt(parts[1], 10);
+      var line = (cnt >= 12)
+        ? '<b style="color:#8B0000">该玩家已发现 12 / 12 处异常记录。</b>最后操作：完成全部核对。'
+        : ('该玩家已发现 <b>' + cnt + ' / 12</b> 处异常记录。仍有余卷封存于库。');
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>交接记录 · 进度摘要 1 件</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>本班交接记录（归档码 ' + q + '）</b><br>' +
+        line +
+        '<div style="color:#999;font-size:11px;margin-top:8px">—— 归档码来自交接记录尾部。输入他人的归档码，即可看到对方走到了哪一步。</div></div></div>';
+      return;
+    }
+    // 特殊检索：守则（R1-2C：完整守则含更多矛盾条款，纯静态不写事件键）
+    if (q === '守则' || q === '查阅指南' || q === '指南') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>档案查询 · 查阅指南（完整版）</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">' +
+        '1. 检索范围限本馆公开目录；涉密卷宗不对外提供查询。<br>' +
+        '2. 检索结果出现您的姓名时，请立即停止检索，关闭页面，并与档案科值班员联系。<br>' +
+        '3. 名册登记不对外提供查询。<br>' +
+        '<span style="color:#8B0000">4. 值班员如发现访客在 03:01 后仍在馆内，请协助其完成离馆登记。</span><br>' +
+        '<span style="color:#8B0000">5. 03:01 后到访的访客，登记簿上不记录其姓名。</span><br>' +
+        '<span style="color:#8B0000">6. 如您读到第 5 条，说明您正于 03:01 后到访。请在离馆前确认：您是否已被登记。</span><br>' +
+        '<span style="color:#999;font-size:11px">—— 第 4-6 条为 2009-03 修订增补。</span></div></div>';
+      return;
+    }
+    // 特殊检索：3:01（R1-2C：时间戳档案，纯静态不写事件键）
+    if (q === '3:01' || q === '03:01' || q === '301') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>系统日志 · 时间戳 1 件</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2"><b>2009-03-17 03:01</b> — 外部时间同步中断。<br>' +
+        '同日 03:02：最后一条通讯记录发出。<br>' +
+        '<span style="color:#8B0000">此后至次日 03:01，本馆不再记录访客出入。</span><br>' +
+        '<span style="color:#999;font-size:11px">—— 与你桌面时钟显示的时间一致。</span></div></div>';
+      return;
+    }
+    // 特殊检索：执行者（R1-2C：引导 CE-2009-006 命令链，纯静态不写事件键）
+    if (q === '执行者' || q === '执行') {
+      result.style.display = '';
+      result.innerHTML = '<div style="padding:20px;text-align:center;color:#333;font-size:13px">检索结果：<b>卷宗关联 · 执行者 1 件</b><br>' +
+        '<div style="text-align:left;margin-top:12px;font-size:12.5px;line-height:2">CE-2009-006 检索记录显示：该卷宗此前仅有一名查阅者。<br>' +
+        '<span style="color:#8B0000">批注：该卷宗不公开。执行者名单不对外提供。</span><br>' +
+        '<span style="color:#999;font-size:11px">—— 提示：006 与「3-17 行动命令链」有关。全部 12 处异常记录核对完成后，可生成归档码。</span></div></div>';
       return;
     }
     // 特殊检索：恩慈大典（氛围擦边词 + 公告原件图）
@@ -1594,6 +1786,175 @@ function logStage(k, extra){
   } catch(e){}
 })();
 logStage('site_open');
-</script>
+
+/* 4-C 滚动回应（行为感知）：被登记后滚动到页脚出现一次性「你还在。」 */
+(function(){
+  var done = false;
+  function maybe(){
+    if (done) return;
+    try {
+      if (!localStorage.getItem('cz_evt_final_read')) return;
+      if (localStorage.getItem('cz_you_here')) { done = true; return; }
+      var sc = window.scrollY || document.documentElement.scrollTop || 0;
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      if (h > 0 && sc >= h - 60) {
+        done = true;
+        localStorage.setItem('cz_you_here', Date.now());
+        var f = document.querySelector('.footer');
+        if (f) {
+          var p = document.createElement('p');
+          p.style.cssText = 'color:#8B0000;font-size:11px;letter-spacing:2px;margin-top:6px;text-align:center';
+          p.textContent = '你还在。';
+          f.appendChild(p);
+        }
+      }
+    } catch(e){}
+  }
+  window.addEventListener('scroll', maybe, { passive:true });
+  maybe();
+})();
+
+/* 3-B 指令反噬（氛围峰值）：被登记后「补充条款」从劝告变为可执行指令——点击后全屏黑底白字 3 秒（遵守即恐怖，不跳吓） */
+(function(){
+  function init(){
+    try {
+      var reg = !!localStorage.getItem('cz_evt_final_read');
+      var good = !!localStorage.getItem('cz_evt_good_end');
+      var el = document.getElementById('clause-extra');
+      if (!el) return;
+      if (reg && !good) {
+        el.style.cssText = 'color:#8B0000;cursor:pointer;text-decoration:underline;text-decoration-style:dotted';
+        el.textContent = '请关闭此页面。';
+        el.title = '点击执行';
+        el.addEventListener('click', function(){
+          var ov = document.createElement('div');
+          ov.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+          var t = document.createElement('div');
+          t.style.cssText = 'color:#fff;font-family:SimSun,serif;font-size:22px;letter-spacing:6px';
+          t.textContent = '请关闭此页面。';
+          ov.appendChild(t);
+          document.body.appendChild(ov);
+          var off = function(){
+            if (ov.parentNode) ov.parentNode.removeChild(ov);
+            document.removeEventListener('click', off);
+          };
+          setTimeout(off, 3000);
+          document.addEventListener('click', off);
+        });
+      }
+    } catch(e){}
+  }
+  init();
+})();
+
+/* 3-A 深水区异变（氛围峰值）：被登记后首页全局变暗、新闻日期错位、部分标题被替换（「系统被入侵」的视觉峰值，不跳吓） */
+(function(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    if (!reg || good) return;
+    document.body.classList.add('cz-registered');
+    var dd = document.getElementById('cz-dict-days');
+    if (dd) dd.classList.add('cz-blink');
+    var drow = document.querySelector('.cz-dict-row');
+    if (drow) drow.classList.add('cz-blink');
+    // 新闻日期错位：全部改为 2009-03-1X（X 随序号变，营造「日期全部错位」）
+    var n = 0;
+    document.querySelectorAll('.n-date').forEach(function(el){
+      n++;
+      el.textContent = '2009-03-1' + (n % 10);
+    });
+    // 部分标题被替换（官方口吻的「被入侵」暗示）
+    var swaps = [
+      ['慈恩镇档案管理办公室召开2026年度工作会议', '慈恩镇档案管理办公室召开2009年度工作会议（日期待核验）'],
+      ['我办荣获2025年度全省档案工作先进集体', '该条目已不在馆藏目录中'],
+      ['档案数据库升级至V3.0版本，检索响应速度提升', '档案数据库升级至V3.0版本，检索响应速度提升（名单同步中）'],
+      ['慈恩镇启动第五批馆藏档案数字化扫描工程', '慈恩镇启动第五批馆藏档案数字化扫描工程（扫描范围待确认）']
+    ];
+    document.querySelectorAll('.n-title').forEach(function(el){
+      var t = el.textContent;
+      for (var i = 0; i < swaps.length; i++) {
+        if (t.indexOf(swaps[i][0]) >= 0) { el.textContent = swaps[i][1]; break; }
+      }
+    });
+  } catch(e){}
+})();
+
+/* 3-C 音频变化：被登记（cz_evt_final_read）且未好结局时，页面启动低频心跳环境音 + 点击偶发纸张翻页声；
+   未登记/好结局保持官网静默（同既有 AudioMgr 设计，可被 BGM 开关关闭） */
+(function(){
+  var started = false;
+  function reg(){
+    try { return !!localStorage.getItem('cz_evt_final_read') && !localStorage.getItem('cz_evt_good_end'); } catch(e){ return false; }
+  }
+  function tryStart(){
+    if (started || !reg()) return;
+    AudioMgr.resume();
+    AudioMgr.startAmbient();
+    started = true;
+    document.addEventListener('click', function(e){
+      if (!AudioMgr.enabled) return;
+      if (Math.random() < 0.06) AudioMgr.pageflip();
+    });
+  }
+  tryStart();
+  document.addEventListener('pointerdown', function(){ tryStart(); }, { once: true });
+  document.addEventListener('keydown', function(){ tryStart(); }, { once: true });
+})();
+
+/* 1-B 历史版本时间胶囊：URL 带 ?ver=2009 时进入 2009 版黑白维护页（入口藏在源码注释：在地址后加 ?ver=2009） */
+(function(){
+  try {
+    var q = location.search || '';
+    if (q.indexOf('ver=2009') >= 0) {
+      document.body.classList.add('cz-ver2009');
+      var mt = document.querySelector('.main-title');
+      if (mt) mt.textContent = '慈恩镇档案管理办公室网站维护公告（2009-03-17）';
+      var hh = document.querySelector('.h-title');
+      if (hh) hh.textContent = '网站维护中……';
+      var hh2 = document.querySelector('.h-text');
+      if (hh2) hh2.textContent = '慈恩镇档案管理办公室';
+      console.log('%c[慈恩镇档案门户] 检测到历史版本访问参数（ver=2009）。该版本已停止维护。', 'color:#777');
+    }
+  } catch(e){}
+})();
+
+/* 1-A 慈恩镇网群伪外部站点：非档案办单位点击进入「建设中」伪页面（1998 年风格，制造「这只是镇网站群里的一个」的真实错觉） */
+(function(){
+  function openSite(name, url){
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:#c0c0c0;z-index:99999;overflow:auto;cursor:default';
+    ov.innerHTML =
+      '<div style="max-width:640px;margin:40px auto;background:#ffffff;border:2px outset #dfdfdf;padding:24px 32px;font-family:\'Times New Roman\',SimSun,serif;color:#000">' +
+      '<h2 style="font-size:18px;text-align:center;letter-spacing:1px;margin:0 0 6px;color:#000">' + name + '</h2>' +
+      '<div style="text-align:center;font-size:12px;color:#333;border-bottom:1px solid #999;padding-bottom:8px">' + url + ' ｜ 慈恩镇人民政府主办</div>' +
+      '<div style="text-align:center;font-size:13px;color:#333;padding:34px 0 20px;letter-spacing:2px">网站建设中，敬请期待……<br><span style="font-size:11px;color:#666">（页面存档于 1998 年）</span></div>' +
+      '<div style="text-align:center;font-size:11px;color:#666;border-top:1px solid #999;padding-top:8px">访客计数器：<span style="color:#8B0000">0000' + (Math.floor(Math.random()*9000)+1000) + '</span> ｜ 建议使用 IE 4.0 及以上浏览器 800×600 分辨率</div>' +
+      '<div style="text-align:center;margin-top:14px"><button style="font-family:\'Times New Roman\',SimSun,serif;font-size:12px;padding:4px 16px;background:#d4d0c8;border:2px outset #fff;cursor:pointer" id="cz-site-close">返回上一页</button></div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    ov.querySelector('#cz-site-close').addEventListener('click', function(){ if (ov.parentNode) ov.parentNode.removeChild(ov); });
+    ov.addEventListener('click', function(e){ if (e.target === ov) ov.parentNode.removeChild(ov); });
+  }
+  function init(){
+    var rows = document.querySelectorAll('#town-sites tr');
+    for (var i = 0; i < rows.length; i++) {
+      (function(row){
+        var tds = row.querySelectorAll('td');
+        if (tds.length < 3) return;
+        var name = tds[0].textContent.trim();
+        var url = tds[1].textContent.trim();
+        var st = tds[2].textContent.trim();
+        if (name === '慈恩镇档案管理办公室' || st === '正常') return;
+        tds[0].style.cssText = 'color:#0000EE;text-decoration:underline;cursor:pointer';
+        tds[1].style.color = '#0000EE';
+        tds[0].addEventListener('click', function(){ openSite(name, url); });
+        tds[1].addEventListener('click', function(){ openSite(name, url); });
+      })(rows[i]);
+    }
+  }
+  init();
+})();
+ </script>
 </body>
 </html>

@@ -139,11 +139,11 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .arch-gate button { background:#1e2a42; border:1px solid #39445c; color:#dfe9f5; padding:5px 12px; cursor:pointer; font-size:12px; }
 .arch-gate-err { color:#e06060; font-size:11.5px; margin-top:4px; }
 .arch-gate-err.hidden { display:none; }
-/* 消息：手机聊天样式——身份分明（系统/王执事/值班员）、时间正序 */
-#msg-list { display:flex; flex-direction:column; }
-.msg-item { align-self:flex-start; max-width:88%; border:1px solid #2a3a5a; border-radius:10px; background:#1c2740; padding:8px 12px; margin-bottom:8px; }
+/* 消息：仿聊天软件——身份分明（系统/王执事/值班员）、时间正序、聊天气泡、独立滚动 */
+#msg-list { flex:1; min-height:0; overflow-y:auto; padding:14px; display:flex; flex-direction:column; }
+.msg-item { align-self:flex-start; max-width:88%; border:1px solid #2a3a5a; border-radius:4px 12px 12px 12px; background:#1c2740; padding:8px 12px; margin-bottom:10px; }
 .msg-item .m-head { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.msg-item .m-avatar { width:20px; height:20px; border-radius:50%; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; }
+.msg-item .m-avatar { width:26px; height:26px; border-radius:50%; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; overflow:hidden; }
 .msg-item .m-name { font-size:11px; color:#7ba7d9; font-family:Consolas,monospace; }
 .msg-item .m-time { font-size:10px; color:#6b7a95; margin-left:auto; font-family:Consolas,monospace; flex-shrink:0; }
 .msg-item .m-body { font-size:12.5px; color:#d5deec; line-height:1.7; }
@@ -156,30 +156,40 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 /* 值班员：档案蓝 */
 .msg-item.m-person { border-color:#2c3a52; background:#101826; }
 .msg-item.m-person .m-name { color:#7ba7d9; }
-.task-card { padding:8px 12px; margin:0 0 10px; border-left:3px solid #7ba7d9; background:#131a26; font-size:12px; color:#c3d2e6; border-radius:2px; }
+/* 暗网「有志之士」：灰白神秘身份 */
+.msg-item.m-zhang { border-color:#3a3a3e; background:#121214; }
+.msg-item.m-zhang .m-name { color:#b8b8c2; }
+.msg-item.m-chenyu, .msg-item.m-shihongyu, .msg-item.m-wangpengyue, .msg-item.m-chenyuyuan { border-color:#3a3a3e; background:#121214; }
+.msg-item.m-chenyu .m-name, .msg-item.m-shihongyu .m-name, .msg-item.m-wangpengyue .m-name, .msg-item.m-chenyuyuan .m-name { color:#b8b8c2; }
+.chat-item .c-avatar img, .msg-item .m-avatar img { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
+.task-card { padding:8px 12px; margin:8px 14px 0; border-left:3px solid #7ba7d9; background:#131a26; font-size:12px; color:#c3d2e6; border-radius:2px; flex-shrink:0; }
 .task-card.done { border-color:#5fbf8f; color:#7fb98a; }
 #win-msg.locked-hist .msg-item[data-hist] { display:none; }
-.hist-hint { display:none; padding:8px 12px; margin:0 0 10px; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; }
+.hist-hint { display:none; padding:8px 12px; margin:8px 14px 0; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; flex-shrink:0; }
 #win-msg.locked-hist .hist-hint { display:block; }
-/* 联系人会话（手机通讯录样式）：左列表 + 右会话详情 */
-#win-msg .w-body { display:flex; padding:0; }
-#chat-list { width:168px; border-right:1px solid #202a40; overflow-y:auto; align-self:flex-start; position:sticky; top:0; flex-shrink:0; }
-.chat-item { display:flex; align-items:center; gap:8px; padding:10px 8px; cursor:pointer; border-bottom:1px solid #141c2c; }
+/* 联系人会话（仿聊天软件）：左列表 + 右会话详情，双区独立滚动 */
+#win-msg .w-body { display:flex; padding:0; height:calc(100% - 30px); overflow:hidden; }
+#chat-list { width:240px; border-right:1px solid #202a40; overflow-y:auto; flex-shrink:0; height:100%; }
+.chat-item { display:flex; align-items:center; gap:10px; padding:12px 12px; cursor:pointer; border-bottom:1px solid #141c2c; transition:background .15s; }
 .chat-item:hover { background:#131a26; }
 .chat-item.active { background:#1c2740; }
-.chat-item .c-avatar { width:32px; height:32px; border-radius:8px; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.chat-item .c-avatar { width:40px; height:40px; border-radius:10px; background:#24304d; display:inline-flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; overflow:hidden; }
 .chat-item .c-mid { flex:1; min-width:0; }
-.chat-item .c-name { font-size:12px; color:#d5deec; }
-.chat-item .c-prev { font-size:10.5px; color:#6b7a95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-item .c-name { font-size:13px; font-weight:600; color:#d5deec; }
+.chat-item .c-prev { font-size:11px; color:#6b7a95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
 .chat-item .c-right { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
 .chat-item .c-time { font-size:10px; color:#6b7a95; font-family:Consolas,monospace; }
 .c-badge { min-width:16px; height:16px; border-radius:8px; background:#c03a2b; color:#fff; font-size:10px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; }
 .c-badge.hidden { display:none; }
-#chat-view { flex:1; min-width:0; padding:14px; }
-#chat-head { display:flex; align-items:center; gap:8px; padding:0 0 10px; border-bottom:1px solid #202a40; margin-bottom:10px; font-size:13px; color:#d5deec; }
-#chat-head .c-avatar { width:24px; height:24px; font-size:12px; }
+#chat-view { flex:1; min-width:0; display:flex; flex-direction:column; height:100%; }
+#chat-head { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid #202a40; font-size:14px; color:#d5deec; flex-shrink:0; }
+#chat-head .c-avatar { width:28px; height:28px; font-size:13px; }
+.chat-input { display:flex; gap:8px; padding:10px 14px; border-top:1px solid #202a40; background:#0f1522; flex-shrink:0; align-items:center; }
+.chat-input input { flex:1; min-width:0; background:#0d1220; border:1px solid #2a3348; border-radius:6px; color:#c6cfdd; font-size:12.5px; padding:8px 10px; outline:none; font-family:inherit; }
+.chat-input .ci-tip { font-size:10px; color:#5f7090; font-family:Consolas,monospace; flex-shrink:0; }
 @media (max-width:700px) {
   #chat-list { width:120px; }
+  #win-msg { width:96vw !important; height:86vh !important; }
 }
 .tabs { display:flex; gap:4px; margin-bottom:10px; }
 .tab-btn { padding:5px 14px; font-size:12px; color:#8fa3c0; border:1px solid #2a3348; border-radius:4px; cursor:pointer; background:transparent; }
@@ -331,6 +341,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <button class="btn fv-opt" onclick="fvChoice('shouzheng')">陈守正（现任主任）</button>
         <button class="btn fv-opt" onclick="fvChoice('self')">访客 05（你）</button>
         <button class="btn fv-opt fv-third" id="fv-third" style="display:none" onclick="fvChoice('refuse')">这份记录，我不签收。</button>
+        <button class="btn fv-opt fv-fourth" id="fv-fourth" style="display:none" onclick="fvChoice('burn')">附录：把它交给门后面那些人。</button>
       </div>
     </div>
     <div id="fv-confirm">
@@ -474,7 +485,13 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
           <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，你负责过一遍。把浏览器打开，官网地址在里面，看到异常记下来，回来汇报。</div></div>
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
+          <div class="msg-item m-zhang" data-hist="1" data-chat="zhang" id="shadow-msg-1" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/zhang-xuekuo.svg" alt=""></span><span class="m-name">张学阔</span><span class="m-time">2009-03-17 03:14</span></div><div class="m-body">你点了那行灰字。<br>说明你也看见了那扇没关严的门。<br>2009 年那个人走之前留了话——门后面不只有你。<br>名册上被划掉的人，有些不是死了，是藏进了"登记"和"抹除"之间的缝里。<br>我们管自己叫「有志之士」。<br>我是张学阔。别用系统说话，它看着这里。</div></div>
+          <div class="msg-item m-chenyu" data-hist="1" data-chat="chenyu" id="shadow-msg-2" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/chen-yu.svg" alt=""></span><span class="m-name">陈誉</span><span class="m-time">2009-03-17 03:16</span></div><div class="m-body">我管 1942 年以前的卷宗。名册每页中间都有一条缝——登记和抹除不是两件事，是一件事的两面。<br>被划掉的人不是死了，是被挪去了「没被记录」那一栏。<br>你去数档案室那面墙，第十三块砖比别的新。下面压着的是那一栏的底账。</div></div>
+          <div class="msg-item m-shihongyu" data-hist="1" data-chat="shihongyu" id="shadow-msg-3" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/shi-hongyu.svg" alt=""></span><span class="m-name">施宏宇</span><span class="m-time">2009-03-17 03:21</span></div><div class="m-body">系统每天 03:00 同步备份，中间有 3 秒空隙。我们叫它「宕机的门」。<br>那 3 秒里，系统不看着任何人。<br>2009 年那个人就是卡着这 3 秒留的暗门。女道士靠 bug 续命——我们靠 bug 说话。</div></div>
+          <div class="msg-item m-wangpengyue" data-hist="1" data-chat="wangpengyue" id="shadow-msg-4" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/wang-pengyue.svg" alt=""></span><span class="m-name">王鹏越</span><span class="m-time">2009-03-17 03:27</span></div><div class="m-body">八月廿七恩慈大典，全镇点灯，一盏都不能少。灯是给河神看的。<br>可要是哪年河上少了一盏，它就得多等一年。<br>我管灯。2009 年那晚，我少点了一盏。它等到今年了。</div></div>
+          <div class="msg-item m-chenyuyuan" data-hist="1" data-chat="chenyuyuan" id="shadow-msg-5" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/chen-yuyuan.svg" alt=""></span><span class="m-name">陈渝渊</span><span class="m-time">2009-03-17 03:33</span></div><div class="m-body">这封信没有署名，我替人转交。<br>「名册在库里。库在楼里。楼在火里。那年我没敢划那根火柴——你替我划。」<br>落款没有名字，只画了一盏灭了的灯。</div></div>
         </div>
+        <div class="chat-input"><input type="text" placeholder="输入消息…（通讯已加密，仅本端可见）" readonly disabled><span class="ci-tip">🔒 只读</span></div>
       </div>
     </div>
   </div>
@@ -494,14 +511,15 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
         <button class="tab-btn" onclick="switchTab(this,'blueprint');renderBlueprints()">建筑图</button>
       </div>
       <div class="tab-pane show" id="pane-notepad">
-        <textarea class="notepad" id="notepad" spellcheck="false">2009-03-17 03:00 已备份卷宗 005</textarea>
+        <textarea class="notepad" id="notepad" spellcheck="false">值班员签名：＿＿＿＿
+2009-03-17 03:00 已备份卷宗 005</textarea>
         <div class="notepad-status">状态：自动保存中…… ｜ 修改时间：2009-03-17 03:00</div>
       </div>
       <div class="tab-pane" id="pane-restore">
         <p style="font-size:12px;color:#8fa3c0">扫描 d:\archive 中已删除的卷宗文件。</p>
         <div id="restore-bar"><div class="fill" id="restore-fill"></div></div>
         <button class="btn" id="btn-restore" onclick="runRestore()">扫描已删除文件</button>
-        <div class="restored" id="restored">已恢复：CE-2009-006（片段，37%）<br><br>……安息祭。仪式定于月圆之夜。<br>……林远自愿。<br>……3月17日 03:00，槐树街7号。<br><br><span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
+        <div class="restored" id="restored">已恢复：CE-2009-006（片段，37%）<br><br>……安息祭。仪式定于月圆之夜。<br>……林远自愿。<br>……3月17日 03:00，槐树街7号。<br><br><span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-17 03:01 ｜ 2026-08-14 23:58（并存）]</span></div>
         <div class="restored" id="restored2">已恢复：红本抄本（节选 · 43%）<br><br>
           ……3月14日 老陈来了。他说门禁密码是他父亲设的，那年他父亲刚二十岁。问他为什么是1942，他说：房子那年起的。<br>
           ……3月15日 说起1972年的事，老陈没接话，从红本里翻出一张剪报，是一张寻人启事，报头已经不完整了。他说：那年他父亲也在镇上。<br>
@@ -514,7 +532,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
             <button class="judge-opt" onclick="judgeRedbook('clip')">1972 年寻人启事剪报</button>
             <div class="judge-fb hidden" id="judge-redbook-fb"></div>
           </div>
-          <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span></div>
+          <span style="color:#5f7090">[文件不完整。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-15 23:58 ｜ 2026-08-14 23:58（并存）]</span></div>
         <div class="restored" id="restored3">已恢复：红本抄本（第23页之后 · 节选）<br><br>
           ……3月17日 21:40 老陈又来了，看了我白天抄的东西，没说话。走前他翻出那张剪报又放回去，说：那年我父亲也在镇上。就这一句。<br>
           ……我查了教会旧志：1972年6月，库房盘点少了一件东西，登记人写了「不见即补」，再没人提。同月，镇上有人走失，寻人启事贴到教会门口——男，约五十岁，报头烂了，名字看不清。我算过：1972 年，老陈的父亲五十岁上下。<br>
@@ -522,7 +540,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           <img src="assets/img/redbook-page.svg" alt="抄本残页（第23页之后）" style="display:block;max-width:280px;width:100%;margin:12px 0 8px 14px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.18)">
           <img src="assets/img/morse-note.svg" alt="电报抄件（第23页之后）" style="display:block;max-width:300px;width:100%;margin:12px 0 8px 14px;border:1px solid #d8c8a8;box-shadow:0 2px 10px rgba(0,0,0,.18)"><br>
           ……3月18日 02:00 林远还是没消息。我把第23页之后撕下来，锁进柜子。等值完班再看——我不知道自己还能不能等到值完班。<br><br>
-          <span style="color:#5f7090">[抄本末页。其余内容已永久损坏。]</span></div>
+          <span style="color:#5f7090">[抄本末页。其余内容已永久损坏。]</span><br><span style="color:#4a5a70;font-size:11px">[修改时间：2009-03-17 23:58 ｜ 2026-08-14 23:58（并存）]</span></div>
       </div>
       <div class="tab-pane" id="pane-calc">
         <div class="calc">
@@ -617,13 +635,35 @@ setDesktopMeta();
 /* ============ 开机任务：值班员开场消息 ============ */
 var booted = false;
 var openingShown = false;
-function bootDone(){ booted = true; setTimeout(showOpening, 3000); }  // 3 秒兜底（无点击时也触发）
+function bootDone(){ booted = true; restoreArchRead(); setTimeout(showOpening, 3000); }  // 3 秒兜底（无点击时也触发）
 document.addEventListener('click', function(){ if (booted && !openingShown) showOpening(); });  // 首次点击即触发（保证有用户手势可播音频）
 function showOpening(){
   if (openingShown) return;
   openingShown = true;
   try { if (sessionStorage.getItem('cz_opening_done')) return; sessionStorage.setItem('cz_opening_done','1'); } catch(e){}
+  /* R1-6A：上一班交接摘要 recap——已有交接班记录（cz_evt_handover_done）时，开场注入摘要（每次会话一次）。 */
+  try {
+    if (ls('cz_evt_handover_done') && !ls('cz_recap_shown')) {
+      lsSet('cz_recap_shown', Date.now());
+      var sum = genHandoverSummary();
+      if (sum) pushMsg('m-sys', '📡', '系统', '上一班交接摘要：' + sum);
+    }
+  } catch(e){}
   playDing();   // 开场消息已在通讯记录中（2009-03-17 03:01），此处只响提示
+}
+/* R1-6A：生成「上一班交接摘要」——读取本班已发现数、最后操作节点与归档码状态。 */
+function genHandoverSummary(){
+  var n = foundCount();
+  var last = '';
+  try {
+    var arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]');
+    if (arr.length) { last = arr[arr.length - 1].k || '未知'; }
+  } catch(e){}
+  var s = '本班已发现 ' + n + ' / 12 处异常记录。';
+  if (last) s += '最后操作节点：' + last + '。';
+  if (ls('cz_evt_good_end')) s += '上一班已签收第三结局。';
+  else if (n >= 12) s += '归档码已就绪。';
+  return s;
 }
 
 /* ============ 提示音（Web Audio 合成，无音频文件） ============ */
@@ -672,7 +712,7 @@ function openWin(id){
     var cl = 120 + cascade*28, ct = 60 + cascade*22;
     w.style.left = cl+'px'; w.style.top = ct+'px';
     if (id === 'browser') { w.style.width = '760px'; w.style.height = '560px'; }
-    else if (id === 'msg') { w.style.width = '560px'; w.style.height = 'auto'; }
+    else if (id === 'msg') { w.style.width = '860px'; w.style.height = '620px'; }
     else { w.style.width = '460px'; w.style.height = 'auto'; }
     w.classList.add('open');
   }
@@ -929,7 +969,9 @@ var MSG_TEXTS = {
   time_sync:           '系统检测到名单变更。时间同步恢复。',
   call_update:         '身份已核验。称呼：名单在册。',
   choice_shouzheng:    '记录已更新。新的名字在名册上。—— 陈守正：已登记。',
-  good_end:            '档案写入完成。访客 05 已从名单移出。'
+  good_end:            '档案写入完成。访客 05 已从名单移出。',
+  archive_ready:       '异常记录核对完成：12 / 12。归档码已生成，请前往官网档案查询输入。',
+  witness_end:         '名册留白处，多了一行批注：见证者。'
 };
 
 function seenLog(){
@@ -940,11 +982,16 @@ function saveSeen(s){ try { sessionStorage.setItem('cz_evt_seen', JSON.stringify
 /* ============ 联系人会话（手机通讯录样式） ============ */
 var activeChat = 'person';
 var msgWinOpen = false;
-var CHAT_OF_CLS = { 'm-wang': 'wang', 'm-person': 'person', 'm-sys': 'sys' };
+var CHAT_OF_CLS = { 'm-wang': 'wang', 'm-person': 'person', 'm-sys': 'sys', 'm-zhang': 'zhang', 'm-chenyu': 'chenyu', 'm-shihongyu': 'shihongyu', 'm-wangpengyue': 'wangpengyue', 'm-chenyuyuan': 'chenyuyuan' };
 var chats = {
   person: { cls: 'm-person', ico: '📩', name: '值班员 · 档案科', unread: 0 },
   wang:   { cls: 'm-wang',   ico: '🗝️', name: '王执事',          unread: 0 },
-  sys:    { cls: 'm-sys',    ico: '📡', name: '系统',             unread: 0 }
+  sys:    { cls: 'm-sys',    ico: '📡', name: '系统',             unread: 0 },
+  zhang:  { cls: 'm-zhang',  ico: '◈', name: '张学阔',          unread: 0 },
+  chenyu:     { cls: 'm-chenyu',     ico: '◈', name: '陈誉',    unread: 0 },
+  shihongyu:  { cls: 'm-shihongyu',  ico: '◈', name: '施宏宇',  unread: 0 },
+  wangpengyue:{ cls: 'm-wangpengyue',ico: '◈', name: '王鹏越',  unread: 0 },
+  chenyuyuan: { cls: 'm-chenyuyuan', ico: '◈', name: '陈渝渊',  unread: 0 }
 };
 function renderBadges(){
   for (var k in chats) {
@@ -968,32 +1015,36 @@ function openChat(key){
   });
   chats[key].unread = 0; renderBadges();
   var hd = document.getElementById('chat-head');
-  hd.querySelector('.c-avatar').textContent = chats[key].ico;
+  var av = hd.querySelector('.c-avatar');
+  if (SHADOW_AVATARS[key]) { av.innerHTML = '<img src="assets/img/avatars/' + SHADOW_AVATARS[key] + '.svg" alt="">'; }
+  else { av.textContent = chats[key].ico; }
   document.getElementById('chat-head-name').textContent = chats[key].name;
+  if (key === 'zhang') shadowTrigger('chenyu');   // 打开张学阔密信 → 档案整理者陈誉主动联系
   document.querySelectorAll('#msg-list .msg-item').forEach(function(m){
     m.style.display = m.getAttribute('data-chat') === key ? '' : 'none';
   });
   var tc = document.getElementById('task-card');
   if (tc) tc.style.display = (key === 'person') ? '' : 'none';
-  var wb = document.getElementById('win-msg').querySelector('.w-body');
-  if (wb) wb.scrollTop = wb.scrollHeight;
+  var ml = document.getElementById('msg-list');
+  if (ml) ml.scrollTop = ml.scrollHeight;
 }
 
 /* 公共：弹气泡 + 写入会话（手机聊天样式：身份 + 时间，正序追加）+ 未读红点 */
-function pushMsg(cls, ico, name, text){
+function pushMsg(cls, ico, name, text, avatarImg){
   msgSeq++;
   var ts = (unlocked ? '2026-08-11' : '2009-03-17') + ' 03:' + String(3 + msgSeq).padStart(2, '0');
   var nt = document.getElementById('notify');
   document.getElementById('n-head-ico').textContent = ico;
   document.getElementById('n-head-txt').textContent = name + ' ｜ 实时';
-  document.getElementById('notify-body').textContent = text;
+  document.getElementById('notify-body').textContent = text.replace(/<br\s*\/?>/g, ' ');
   nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
   clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
   var key = CHAT_OF_CLS[cls] || 'sys';
+  var avHtml = avatarImg ? '<img src="' + avatarImg + '" alt="">' : ico;
   var div = document.createElement('div');
   div.className = 'msg-item ' + cls;
   div.setAttribute('data-chat', key);
-  div.innerHTML = '<div class="m-head"><span class="m-avatar">' + ico + '</span><span class="m-name">' + name + '</span><span class="m-time">' + ts + '</span></div><div class="m-body">' + text + '</div>';
+  div.innerHTML = '<div class="m-head"><span class="m-avatar">' + avHtml + '</span><span class="m-name">' + name + '</span><span class="m-time">' + ts + '</span></div><div class="m-body">' + text + '</div>';
   if (key !== activeChat) div.style.display = 'none';
   document.getElementById('msg-list').appendChild(div);
   /* 会话列表：最后消息预览 + 时间 + 未读 */
@@ -1002,8 +1053,8 @@ function pushMsg(cls, ico, name, text){
   if (pv) pv.textContent = plain.length > 22 ? plain.slice(0, 22) + '…' : plain;
   if (tt) tt.textContent = ts.slice(11, 16);
   if (!(msgWinOpen && key === activeChat)) { chats[key].unread++; renderBadges(); }
-  var wb = document.getElementById('win-msg').querySelector('.w-body');
-  if (wb) wb.scrollTop = wb.scrollHeight;
+  var ml = document.getElementById('msg-list');
+  if (ml) ml.scrollTop = ml.scrollHeight;
   liveCount++;
   document.getElementById('icon-msg-badge').textContent = liveCount;
   document.getElementById('icon-msg-badge').classList.add('show');
@@ -1017,6 +1068,12 @@ function fireMsg(key){
     try { n = parseInt(localStorage.getItem('cz_visit_count') || '0', 10); } catch(e){}
     if (n < 1) n = 1;
     text = '检测到新的网络连接。今日访问记录：' + n + ' 次。';
+    // 4-B 行为感知：引用玩家检索/页面打开统计（「它知道我在干什么」）
+    try {
+      var sc = parseInt(localStorage.getItem('cz_search_cnt') || '0', 10) || 0;
+      var po = parseInt(localStorage.getItem('cz_page_open') || '0', 10) || 0;
+      if (sc > 0 || po > 0) text += ' 行为记录：已检索 ' + sc + ' 次，打开 ' + po + ' 个页面。';
+    } catch(e){}
   }
   if (!text) return;
   var seen = seenLog();
@@ -1028,7 +1085,18 @@ function fireMsg(key){
 
 /* 值班员主动消息（解锁回执 / 任务布置） */
 function fireIncoming(text){
+  var pn = playerName();
+  if (pn) text = '（' + pn + '），' + text;
   pushMsg('m-person', '📩', '值班员 · 档案科', text);
+}
+
+/* 4-A 值班员签名：读取记事本首行「值班员签名：xxx」，供系统消息称呼；未填返回空串 */
+function playerName(){
+  try {
+    var note = document.getElementById('notepad').value || localStorage.getItem('cz_note') || '';
+    var m = note.match(/值班员签名[:：]\s*([^\s，。、]{1,12})/);
+    return m ? m[1].replace(/[＿_]+/g, '') : '';
+  } catch(e){ return ''; }
 }
 
 /* 轮询官网行为标记（与 checkUnlock 共用 1 秒节奏） */
@@ -1064,6 +1132,33 @@ function pollEvents(){
     }
     try { localStorage.removeItem('cz_evt_gate3_open'); } catch(e){}   // 键在=未消费、键无=已消费：防刷新重复引导
   }
+  /* 第四条线：官网「此页存疑」→ 暗网「有志之士」浮现（多成员渐进） */
+  var sj = 0;
+  try { sj = parseInt(localStorage.getItem('cz_evt_shadow_join') || '0', 10); } catch(e){}
+  if (sj && !evtProcessed['cz_evt_shadow_join_restore']) {   // 已加入过暗线：恢复联系人+密信显示（不重复推送）
+    evtProcessed['cz_evt_shadow_join_restore'] = 1;
+    var mems = shadowMembers();
+    if (!mems.length) mems = ['zhang'];   // 兼容旧存档（仅张学阔）
+    mems.forEach(function(k){
+      if (SHADOW_DATA[k]) {
+        addShadowItem(k);
+        var sm = document.getElementById(SHADOW_DATA[k].msgId);
+        if (sm) sm.style.display = 'block';
+        var pv = document.getElementById('prev-' + k);
+        if (pv) pv.textContent = SHADOW_DATA[k].prev;
+        var tt = document.getElementById('t-' + k);
+        if (tt) tt.textContent = SHADOW_DATA[k].time;
+      }
+    });
+  }
+  var q = 0;
+  try { q = parseInt(localStorage.getItem('cz_evt_question') || '0', 10); } catch(e){}
+  if (q && !evtProcessed['cz_evt_question']) {
+    evtProcessed['cz_evt_question'] = q;
+    shadowJoin();
+    try { localStorage.setItem('cz_evt_shadow_join', String(Date.now())); } catch(e){}
+    try { localStorage.removeItem('cz_evt_question'); } catch(e){}   // 键在=未消费、键无=已消费：防刷新重复触发
+  }
   for (var k in map) {
     var v = null;
     try { v = parseInt(localStorage.getItem(k) || '0', 10); } catch(e){}
@@ -1076,6 +1171,74 @@ function pollEvents(){
     }
   }
   checkTask2();   // 任务 2 完成判定（展开补录通知 → 值班员布置任务 3）
+}
+
+/* 暗网入口：「有志之士」多成员浮现（张学阔 + 陈誉/施宏宇/王鹏越/陈渝渊 渐进触发） */
+var SHADOW_AVATARS = { zhang: 'zhang-xuekuo', chenyu: 'chen-yu', shihongyu: 'shi-hongyu', wangpengyue: 'wang-pengyue', chenyuyuan: 'chen-yuyuan' };
+var SHADOW_DATA = {
+  zhang:      { name: '张学阔',   prev: '你点了那行灰字。说明你也看见了那扇没关严的门…', time: '03:14', msgId: 'shadow-msg-1', notify: '你点了那行灰字。说明你也看见了那扇没关严的门。' },
+  chenyu:     { name: '陈誉',     prev: '名册每页中间都有一条缝…', time: '03:16', msgId: 'shadow-msg-2', notify: '名册每页中间都有一条缝——登记和抹除不是两件事。' },
+  shihongyu:  { name: '施宏宇',   prev: '系统每天 03:00 同步备份，中间有 3 秒空隙…', time: '03:21', msgId: 'shadow-msg-3', notify: '03:00 那 3 秒空隙，我们叫它「宕机的门」。' },
+  wangpengyue:{ name: '王鹏越',   prev: '八月廿七恩慈大典，全镇点灯，一盏都不能少…', time: '03:27', msgId: 'shadow-msg-4', notify: '2009 年那晚，我少点了一盏灯。它等到今年了。' },
+  chenyuyuan: { name: '陈渝渊',   prev: '这封信没有署名，我替人转交…', time: '03:33', msgId: 'shadow-msg-5', notify: '一封没有署名的信。落款只画了一盏灭了的灯。' }
+};
+function shadowMembers(){
+  try { return (localStorage.getItem('cz_evt_shadow_members') || '').split(',').filter(Boolean); } catch(e){ return []; }
+}
+function shadowMembersAdd(k){
+  var m = shadowMembers();
+  if (m.indexOf(k) >= 0) return false;
+  m.push(k);
+  try { localStorage.setItem('cz_evt_shadow_members', m.join(',')); } catch(e){}
+  return true;
+}
+function addShadowItem(key){   // 动态插入暗网联系人（初始 DOM 保持 3 项，触发/恢复时才浮现）
+  var d = SHADOW_DATA[key];
+  if (!d || document.getElementById('chat-' + key)) return;
+  var li = document.createElement('div');
+  li.className = 'chat-item';
+  li.id = 'chat-' + key;
+  li.setAttribute('data-chat', key);
+  li.setAttribute('onclick', "openChat('" + key + "')");
+  li.innerHTML = '<span class="c-avatar"><img src="assets/img/avatars/' + SHADOW_AVATARS[key] + '.svg" alt=""></span>' +
+    '<div class="c-mid"><div class="c-name">' + d.name + '</div><div class="c-prev" id="prev-' + key + '"></div></div>' +
+    '<div class="c-right"><div class="c-time" id="t-' + key + '"></div><span class="c-badge hidden" id="cb-' + key + '">0</span></div>';
+  document.getElementById('chat-list').appendChild(li);
+}
+function addZhangItem(){ addShadowItem('zhang'); }
+function shadowTrigger(key){
+  var d = SHADOW_DATA[key];
+  if (!d) return;
+  var isNew = shadowMembersAdd(key);
+  addShadowItem(key);
+  var sm = document.getElementById(d.msgId);
+  if (sm) sm.style.display = 'block';
+  var pv = document.getElementById('prev-' + key);
+  if (pv) pv.textContent = d.prev;
+  var tt = document.getElementById('t-' + key);
+  if (tt) tt.textContent = d.time;
+  if (isNew) {   // 新成员：未读红点 + 通知气泡 + 任务栏计数 + 提示音
+    chats[key].unread = 1; renderBadges();
+    var nt = document.getElementById('notify');
+    document.getElementById('n-head-ico').textContent = '◈';
+    document.getElementById('n-head-txt').textContent = d.name + ' ｜ 加密信道';
+    document.getElementById('notify-body').textContent = d.notify;
+    nt.classList.remove('show'); void nt.offsetWidth; nt.classList.add('show');
+    clearTimeout(nt._h); nt._h = setTimeout(function(){ nt.classList.remove('show'); }, 6000);
+    liveCount++;
+    document.getElementById('icon-msg-badge').textContent = liveCount;
+    document.getElementById('icon-msg-badge').classList.add('show');
+    refreshTasks();
+    playDing();
+  }
+  /* 凑齐前 3 位（陈誉/施宏宇/王鹏越）→ 未署名信「陈渝渊」最终浮现 */
+  var m = shadowMembers();
+  if (m.indexOf('chenyu') >= 0 && m.indexOf('shihongyu') >= 0 && m.indexOf('wangpengyue') >= 0 && m.indexOf('chenyuyuan') < 0) {
+    setTimeout(function(){ shadowTrigger('chenyuyuan'); }, 900);
+  }
+}
+function shadowJoin(){
+  shadowTrigger('zhang');
 }
 
 /* 任务 3：07 号档案门禁密码（L3 解锁 → 完成） */
@@ -1154,6 +1317,41 @@ function foundCount(){
   if (stageDone('dig')) n++;
   return n;
 }
+/* R1-2A：CE-2009-006 闭环——12/12 全发现后生成 12 位「归档码」。
+   每位取一处发现事件时间戳的末位数字（稳定、可晒、同源可校验）；写入 cz_archive_code（只生成一次）。 */
+function genArchiveCode(){
+  if (ls('cz_archive_code')) return ls('cz_archive_code');
+  var seed = [
+    ls('cz_evt_search_tingdian'), ls('cz_evt_gate3_ok'), ls('cz_evt_handover_done'),
+    ls('cz_evt_wang_read'), ls('cz_evt_morse_break'), ls('cz_evt_judge_0147'),
+    ls('cz_evt_judge_redbook'), ls('cz_evt_bp_erase'), ls('cz_evt_roster_decode'),
+    stageDone('calc_break') ? '1' : '', stageDone('bp_plate') ? '1' : '', stageDone('dig') ? '1' : ''
+  ];
+  var code = '';
+  seed.forEach(function(v, i){
+    var n = 0;
+    if (v) {
+      var s = String(v);
+      n = (s.charCodeAt(s.length - 1) + i * 7) % 10;
+    }
+    code += String(n);
+  });
+  lsSet('cz_archive_code', code);
+  return code;
+}
+/* 7-B 唯一访客编号：基于 cz_stage_log 行为哈希派生，最终卷登记后显示，玩家可晒「我是 05-XXXX」 */
+function visitorId(){
+  var seed = '';
+  try {
+    var arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]');
+    seed = arr.map(function(x){ return x.k; }).join(',');
+  } catch(e){}
+  var h = 0;
+  for (var i = 0; i < seed.length; i++){ h = ((h << 5) - h + seed.charCodeAt(i)) | 0; }
+  var v = (h >>> 0).toString(16).toUpperCase();
+  while (v.length < 4) v = '0' + v;
+  return '05-' + v.slice(0, 4);
+}
 function finalizeRegistration(){
   lsSet('cz_evt_final_read', Date.now());
   fireMsg('time_sync');
@@ -1161,6 +1359,12 @@ function finalizeRegistration(){
   startClockSync();
   setDesktopMeta();         // 标签页/控制台同步「名单在册」（meta 叙事）
   pushMsg('m-sys', '📡', '系统', '本卷异常记录核对：已发现 ' + foundCount() + ' / 12 处。尚未发现的部分，仍封存于库。');
+  lsSet('cz_visitor_id', visitorId());   // 7-B 唯一访客编号（行为哈希，可晒）
+  pushMsg('m-sys', '📡', '系统', '本机档案编号已生成：访客 ' + ls('cz_visitor_id') + '。');
+  if (foundCount() >= 12) {
+    genArchiveCode();
+    fireMsg('archive_ready');
+  }
 }
 /* 最终卷界面 */
 var fvChoicePending = null;
@@ -1175,16 +1379,23 @@ function openFinal(){
   var e = document.getElementById('fv-end');
   e.style.display = 'none'; e.innerHTML = '';
   if (done) showChooser();
+  if (done) stampArchiveDone();   // R1-5B：全发现者追加「已全部核对」归档戳
   if (!fvEverOpened) fvEverOpened = true;
 }
 function showChooser(){
   document.getElementById('fv-chooser').style.display = '';
   document.getElementById('fv-third').style.display = (parseInt(ls('cz_resist') || '0', 10) || 0) >= 3 ? '' : 'none';
+  /* 第四选项：集齐 5 位「有志之士」→ 附录浮现（联合暗网销毁名册） */
+  var sm = shadowMembers();
+  var all = ['zhang','chenyu','shihongyu','wangpengyue','chenyuyuan'];
+  var got = all.every(function(k){ return sm.indexOf(k) >= 0; });
+  document.getElementById('fv-fourth').style.display = got ? '' : 'none';
 }
 function fvRead(){
   finalizeRegistration();      // 阅读完成即登记在册
   document.getElementById('fv-warn').style.display = 'none';
   document.getElementById('fv-body').style.display = '';
+  stampArchiveDone();          // R1-5B：阅读时也追加归档戳（幂等）
   showChooser();
 }
 function fvReject(){
@@ -1208,7 +1419,12 @@ function fvConfirmGo(){
   document.getElementById('fv-confirm').style.display = 'none';
   if (k === 'shouzheng') fvEndShouzheng();
   else if (k === 'self') fvEndSelf();
-  else if (k === 'refuse') fvEndGood();
+  else if (k === 'refuse') {
+    /* R1-5A：见证者结局——12/12 全发现 + 反抗点 3 + 不签收 → 隐藏第四结局变体 */
+    if (foundCount() >= 12 && (parseInt(ls('cz_resist') || '0', 10) || 0) >= 3) fvEndWitness();
+    else fvEndGood();
+  }
+  else if (k === 'burn') fvEndBurn();
 }
 /* 结局一：写陈守正 */
 function fvEndShouzheng(){
@@ -1274,6 +1490,79 @@ function fvEndGood(){
   lsSet('cz_evt_good_end', Date.now());
   fireMsg('good_end');
   setDesktopMeta();   // 好结局：标签页/控制台恢复（访客 05 已从名单移出）
+  /* R4-7C 社区挂靠引导：好结局后系统消息提示编号可对外出示（官方口吻不破坏 ARG 伪装） */
+  setTimeout(function(){
+    try { pushMsg('m-sys', '📡', '系统', '本卷归档完毕。如需向其他单位转述本卷调查过程，请出示本机档案编号：访客 ' + (ls('cz_visitor_id') || '——') + '。'); } catch(e){}
+  }, 2600);
+  setTimeout(function(){
+    var b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = '回到桌面';
+    b.onclick = function(){ document.getElementById('final-veil').classList.remove('show'); };
+    e.appendChild(b);
+  }, 2000);
+}
+/* R1-5A：见证者结局——12/12 全发现 + 反抗点 3 + 不签收的隐藏变体（可晒完成度）。
+   黑屏白字「你是第一个看完所有记录的人」；名册留下「见证者」批注。 */
+function fvEndWitness(){
+  var e = document.getElementById('fv-end');
+  e.innerHTML = '<p class="black">你是第一个看完所有记录的人。</p>' +
+    '<p class="dim" style="margin-top:20px">名册最后一页，原本是空白的。</p>' +
+    '<p class="dim">现在那里多了一行字——<span class="red">见证者。</span></p>' +
+    '<p class="dim">没有新的名字。也没有人被移出。</p>' +
+    '<p class="dim">只是从今天起，有人证明它存在过。</p>' +
+    '<p class="dim" style="margin-top:18px;color:#8a8a8a">（归档码已生成，可晒：12 / 12 · 见证者）</p>';
+  e.style.display = 'block';
+  document.getElementById('fv-body').style.display = 'none';
+  lsSet('cz_evt_choice_refuse', Date.now());
+  lsSet('cz_evt_good_end', Date.now());
+  lsSet('cz_evt_witness', Date.now());
+  genArchiveCode();
+  fireMsg('good_end');
+  fireMsg('witness_end');
+  setDesktopMeta();
+  /* R4-7C 社区挂靠引导：见证者结局（可晒场景）后系统消息提示可转述，官方口吻不破坏 ARG 伪装 */
+  setTimeout(function(){
+    try { pushMsg('m-sys', '📡', '系统', '如需将本卷转述其他单位，可使用交接记录。本机档案编号：访客 ' + (ls('cz_visitor_id') || '——') + '。'); } catch(e){}
+  }, 2600);
+  setTimeout(function(){
+    var b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = '回到桌面';
+    b.onclick = function(){ document.getElementById('final-veil').classList.remove('show'); };
+    e.appendChild(b);
+  }, 2200);
+}
+/* R1-5B：完成度奖励——全发现者最终卷多一页「已全部核对」归档戳（可晒）。
+   在 openFinal 显示正文时追加归档戳节点（幂等）。 */
+function stampArchiveDone(){
+  var body = document.getElementById('fv-body');
+  if (!body || ls('cz_evt_archive_stamped')) return;
+  if (foundCount() < 12) return;
+  lsSet('cz_evt_archive_stamped', Date.now());
+  var d = document.createElement('div');
+  d.id = 'fv-archive-stamp';
+  d.style.cssText = 'margin-top:26px;padding:14px;border:1px dashed #8a8a8a;color:#8a8a8a;font-size:12px;line-height:1.8;text-align:center';
+  d.innerHTML = '—— 已全部核对 ——<br>12 / 12 处异常记录均已发现并归档。<br><span style="color:#c41e3a">归档戳：慈恩镇档案管理办公室 · 已核</span>';
+  body.appendChild(d);
+}
+/* 结局四：销毁名册（联合暗网，与第三路「不签收」递进，循环终结） */
+function fvEndBurn(){
+  var e = document.getElementById('fv-end');
+  e.innerHTML = '<p class="black">你没有签收。你也没有转身。</p>' +
+    '<p class="dim" style="margin-top:20px">你把附录放进了那扇门后面的缝里。几分钟后，五个人几乎同时读到它。</p>' +
+    '<p class="dim">陈誉说：册子一共有七本。他知道其中三本烧不掉。</p>' +
+    '<p class="dim">施宏宇说：03:00 的空隙只有 3 秒，够我们把四本搬出去。</p>' +
+    '<p class="dim">王鹏越说：大典那晚，全镇的灯都灭过一次。那是唯一一次，名册没人看守。</p>' +
+    '<p class="dim">陈渝渊没有回话。只在聊天记录里留下一行：<span style="color:#b8b8c2">「灯，可以不用再点了。」</span></p>' +
+    '<p class="dim">河水还在流。这一次，河边没有人点灯。</p>' +
+    '<p class="dim">名册不在库里。在册里。而现在，册子也不在了。</p>';
+  e.style.display = 'block';   // CSS 默认 none，须显式覆盖
+  document.getElementById('fv-body').style.display = 'none';
+  lsSet('cz_evt_choice_burn', Date.now());
+  lsSet('cz_evt_burn_end', Date.now());
+  fireMsg('good_end');
+  setDesktopMeta();   // 真结局：标签页/控制台恢复（名册已毁，访客 05 不再在册）
   setTimeout(function(){
     var b = document.createElement('button');
     b.className = 'btn';
@@ -1308,6 +1597,38 @@ function openArch(no){
   if (d) { d.classList.add('show'); fitWin(d); }
   logStage('arch_' + no);
   if (no === '01') logStage('gate3_open');
+  // R1-6B 档案回溯：已读文档跨会话可回看（读过的卷宗加「已读」标记，持久化）
+  try {
+    lsSet('cz_read_' + no, Date.now());
+    markArchRead(no);
+  } catch(e){}
+}
+/* R1-6B：给对应卷宗条目追加「· 已读」标记（幂等） */
+function markArchRead(no){
+  var items = document.querySelectorAll('.arch-item');
+  for (var i = 0; i < items.length; i++) {
+    var oc = items[i].getAttribute('onclick') || '';
+    if (oc.indexOf("openArch('" + no + "')") >= 0) {
+      if (items[i].querySelector('.a-read')) return;
+      var sp = items[i].querySelector('.a-no');
+      if (!sp) return;
+      var mark = document.createElement('span');
+      mark.className = 'a-read';
+      mark.textContent = '· 已读';
+      mark.style.cssText = 'color:#4a7a5a;font-weight:normal;margin-left:6px';
+      sp.parentNode.insertBefore(mark, sp.nextSibling);
+      return;
+    }
+  }
+}
+/* R1-6B：页面加载时恢复全部已读标记（跨会话回看入口可见） */
+function restoreArchRead(){
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf('cz_read_') === 0) markArchRead(k.slice(8));
+    }
+  } catch(e){}
 }
 
 /* ============ 工具 ============ */
@@ -1456,6 +1777,19 @@ function fmtStageLog(){
 }
 
 /* 交接班记录 */
+/* R1-2B：本班归档码——基于 cz_stage_log 稳定哈希（与玩家身份解耦，跨会话稳定）：
+   前 6 位 = 日志条数+首条时间戳的确定性哈希（首字母大写 HEX）；后 2 位 = 已发现数（00-12）。
+   他人输入官网检索框即可解码出「调查进度摘要」（已发现 X/12）。 */
+function handoverCode(){
+  var arr = [];
+  try { arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]'); } catch(e){}
+  var seed = String(arr.length) + ':' + (arr[0] ? arr[0].t : '0');
+  var h = 2166136261;
+  for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = (h * 16777619) >>> 0; }
+  var hex = ('00000' + h.toString(16).toUpperCase()).slice(-6);
+  var cnt = String(foundCount());
+  return hex + '-' + (cnt.length < 2 ? '0' + cnt : cnt);
+}
 function genHandover(){
   var out = document.getElementById('handover');
   var s = '════════════════════════════════════\n';
@@ -1480,6 +1814,11 @@ function genHandover(){
   s += '（材料目录仅供内部核对使用）\n';
   s += '════════════════════════════════════\n';
   s += '本记录为值班工具自动生成。';
+  /* R1-2B：跨玩家交接码——本班归档码（8 位：前 6 位本班稳定哈希 + 后 2 位已发现数）。
+     他人可在官网检索框输入该码，查看本班调查进度摘要（跨玩家接力查案的 ARG 协作感）。
+     注意：必须放在 fmtStageLog() 之前，避免污染交接记录尾部「系统操作日志」节的解析。 */
+  var hc = handoverCode();
+  if (hc) s += '\n────────────────────────────────\n本班归档码：' + hc + '\n（输入官网检索框可查看本班调查进度摘要）';
   s += fmtStageLog();
   out.textContent = s;
   out.classList.add('show');
@@ -1500,6 +1839,18 @@ function genHandover(){
 function copyHandover(){
   var txt = document.getElementById('handover').textContent;
   if (!txt) return;
+  // 8-B 剪贴板篡改：复制内容被追加归档码/交接码（系统偷改玩家复制的内容）
+  try {
+    var ac = ls('cz_archive_code');
+    if (ac) txt += '\n归档码：' + ac;
+    else if (typeof handoverCode === 'function') txt += '\n交接码：' + handoverCode();
+  } catch(e){}
+  /* R4-回收传播数据：记录「交接记录被复制」次数（同源 localStorage，运营者可回收传播链） */
+  try {
+    var sc = parseInt(localStorage.getItem('cz_share_copy') || '0', 10) || 0;
+    localStorage.setItem('cz_share_copy', String(sc + 1));
+    logStage('share_copy');
+  } catch(e){}
   function done(){
     var b = document.getElementById('btn-handover-copy');
     b.textContent = '已复制 ✓';
