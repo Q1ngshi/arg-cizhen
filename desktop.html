@@ -212,6 +212,25 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
 .calc .disp.calc-break { animation: calcBreakGlow .9s ease-out 2; }
 @keyframes calcBreakGlow { 0%{box-shadow:0 0 0 rgba(64,192,255,0)} 30%{box-shadow:0 0 26px rgba(64,192,255,.6)} 100%{box-shadow:0 0 0 rgba(64,192,255,0)} }
 
+/* ============ R5-1A：深渊区视觉高光（被登记瞬间「系统被入侵」的感官记忆点） ============ */
+/* 克制原则：不跳吓（淡入而非闪现）、不血腥（暗红衬线文字，无溅射无红屏）、不直白（以 03:01 呼应叙事）、
+   不卖惨、不出戏（终端拟真，字距拉大如系统提示）、不嘲讽玩家；约 3.5 秒后自然恢复。 */
+#invasion-veil { position:fixed; inset:0; background:rgba(0,0,0,.58); z-index:10000; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0; pointer-events:none; }
+#invasion-veil.show { animation: czInvasionFade 3.4s ease forwards; }
+#invasion-veil .iv-clock { font-family:'Times New Roman',SimSun,serif; font-size:76px; letter-spacing:10px; color:#7a1f1f; text-shadow:0 0 22px rgba(122,31,31,.45); animation: czInvasionFlicker .8s steps(2,start) 3; }
+#invasion-veil .iv-sub { font-family:'Times New Roman',SimSun,serif; font-size:14px; letter-spacing:6px; color:#8a6a52; margin-top:18px; }
+@keyframes czInvasionFade { 0%{opacity:0} 18%{opacity:1} 62%{opacity:1} 100%{opacity:0} }
+@keyframes czInvasionFlicker { 0%{opacity:1} 50%{opacity:.45} 100%{opacity:1} }
+/* 滚动异常：桌面容器短暂抖动（滚动条失灵感，±3px 克制，非跳吓） */
+.cz-scroll-glitch { animation: czScrollGlitch 1.8s steps(2, jump-none) 2; }
+@keyframes czScrollGlitch {
+  0%,100% { transform:translateX(0) translateY(0); }
+  20% { transform:translateX(-3px) translateY(1px); }
+  40% { transform:translateX(3px) translateY(-1px); }
+  60% { transform:translateX(-2px) translateY(1px); }
+  80% { transform:translateX(2px) translateY(-1px); }
+}
+
 /* ============ 最终卷（终局揭示层 v4）============ */
 #final-veil { position:fixed; inset:0; background:#000; z-index:999; display:none; }
 #final-veil.show { display:flex; align-items:center; justify-content:center; }
@@ -641,15 +660,26 @@ function showOpening(){
   if (openingShown) return;
   openingShown = true;
   try { if (sessionStorage.getItem('cz_opening_done')) return; sessionStorage.setItem('cz_opening_done','1'); } catch(e){}
-  /* R1-6A：上一班交接摘要 recap——已有交接班记录（cz_evt_handover_done）时，开场注入摘要（每次会话一次）。 */
+  /* R1-6A + R5-2A：进度 recap——重开桌面时开场消息附「上一班交接摘要」，解决跨日失忆（Phillips catch-up）。
+     触发条件：本班已有任意进度（发现数 >0 或操作日志非空或已生成交接记录）；
+     标记改为会话级（sessionStorage），每次重开（新标签页 = 新会话）都会 recap，而非仅首次。 */
   try {
-    if (ls('cz_evt_handover_done') && !ls('cz_recap_shown')) {
-      lsSet('cz_recap_shown', Date.now());
+    if (!sessionStorage.getItem('cz_recap_shown') && hasProgress()) {
+      sessionStorage.setItem('cz_recap_shown', '1');
       var sum = genHandoverSummary();
       if (sum) pushMsg('m-sys', '📡', '系统', '上一班交接摘要：' + sum);
     }
   } catch(e){}
   playDing();   // 开场消息已在通讯记录中（2009-03-17 03:01），此处只响提示
+}
+/* R5-2A：本班是否已有可交接进度——仅统计实质发现（发现数 >0 / 已生成交接记录）。
+   不含 stage_log：解锁/开窗等「本班操作」类日志不应让首访玩家被误判为「上一班有进度」。 */
+function hasProgress(){
+  try {
+    if (foundCount() > 0) return true;
+    if (ls('cz_evt_handover_done')) return true;
+  } catch(e){}
+  return false;
 }
 /* R1-6A：生成「上一班交接摘要」——读取本班已发现数、最后操作节点与归档码状态。 */
 function genHandoverSummary(){
@@ -657,7 +687,7 @@ function genHandoverSummary(){
   var last = '';
   try {
     var arr = JSON.parse(localStorage.getItem('cz_stage_log') || '[]');
-    if (arr.length) { last = arr[arr.length - 1].k || '未知'; }
+    if (arr.length) { var k = arr[arr.length - 1].k || '未知'; last = STAGE_NAMES[k] || k; }
   } catch(e){}
   var s = '本班已发现 ' + n + ' / 12 处异常记录。';
   if (last) s += '最后操作节点：' + last + '。';
@@ -1409,9 +1439,36 @@ function visitorId(){
   while (v.length < 4) v = '0' + v;
   return '05-' + v.slice(0, 4);
 }
+/* R5-1A：被登记瞬间的页面级异变——全站日期跳变 + 滚动异常 + 倒计时血字。
+   克制原则：不跳吓（淡入而非闪现）、不血腥（暗红衬线文字）、不直白（以 03:01 呼应叙事）、
+   不卖惨、不出戏（终端拟真）、不嘲讽玩家；约 3.5 秒后自然恢复，仅触发一次（cz_invasion_terminal 幂等）。 */
+function triggerInvasion(){
+  try { if (ls('cz_invasion_terminal')) return; lsSet('cz_invasion_terminal', Date.now()); } catch(e){ return; }
+  /* 1) 全站日期跳变：时钟短暂错乱后恢复（startClockSync 已在登记流程中兜底真实时间） */
+  var clk = document.getElementById('clock');
+  if (clk) {
+    var seq = ['2009-03-17 03:01:58', '2026-08-15 03:01', '19??-??-?? ??:??', '系统时间未校准', '2009-03-17 03:01'];
+    var i = 0;
+    var t = setInterval(function(){
+      if (i < seq.length) { clk.textContent = seq[i++]; }
+      else { clearInterval(t); }
+    }, 320);
+  }
+  /* 2) 滚动异常：桌面容器短暂抖动（滚动条失灵感，±3px 克制） */
+  var dt = document.getElementById('desktop');
+  if (dt) { dt.classList.add('cz-scroll-glitch'); setTimeout(function(){ dt.classList.remove('cz-scroll-glitch'); }, 1900); }
+  /* 3) 倒计时血字：全屏暗红衬线字「03:01」，淡入 → 保持 → 淡出 */
+  var v = document.createElement('div');
+  v.id = 'invasion-veil';
+  v.innerHTML = '<div class="iv-clock">03:01</div><div class="iv-sub">登记倒计时 · 外部时间同步中断</div>';
+  v.classList.add('show');
+  document.body.appendChild(v);
+  setTimeout(function(){ if (v.parentNode) v.parentNode.removeChild(v); }, 3600);
+}
 function finalizeRegistration(){
   lsSet('cz_evt_final_read', Date.now());
   startHeartbeatAmbient();   // R3-3C：被登记 → 极低频心跳环境音启动
+  triggerInvasion();         // R5-1A：被登记瞬间的页面级异变（视觉高光）
   fireMsg('time_sync');
   fireMsg('call_update');   // 称呼切换：访客 05 → 名单在册（好结局回归访客 05 见 good_end）
   startClockSync();

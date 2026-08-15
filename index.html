@@ -1881,6 +1881,33 @@ logStage('site_open');
   } catch(e){}
 })();
 
+/* R5-1B：被登记后首次打开官网 → 顶部日期瞬时跳变（「全站日期跳变」的一次性记忆点，cz_invasion_site 幂等）。
+   跳变后恢复真实日期（政府网站拟真不受损）；长期异变由 3-A 承担：新闻日期错位 + 标题替换 + 变暗。
+   克制：无跳吓、无血腥、无直白文案，仅「日期错乱」的系统被入侵感。 */
+(function(){
+  try {
+    var reg = !!localStorage.getItem('cz_evt_final_read');
+    var good = !!localStorage.getItem('cz_evt_good_end');
+    if (!reg || good || localStorage.getItem('cz_invasion_site')) return;
+    localStorage.setItem('cz_invasion_site', Date.now());
+    var el = document.getElementById('today');
+    if (!el) return;
+    var d = new Date();
+    var real = '今天是 <b>' + d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日</b> 星期' + ['日','一','二','三','四','五','六'][d.getDay()];
+    var seq = [
+      '今天是 <b>2009年3月17日</b> 星期二',
+      '今天是 <b>1942年6月19日</b> 星期五',
+      '今天是 <b>????年??月??日</b> 星期?',
+      real
+    ];
+    var i = 0;
+    var t = setInterval(function(){
+      if (i < seq.length) { el.innerHTML = seq[i++]; }
+      else { clearInterval(t); el.innerHTML = real; }
+    }, 420);
+  } catch(e){}
+})();
+
 /* 3-C 音频变化：被登记（cz_evt_final_read）且未好结局时，页面启动低频心跳环境音 + 点击偶发纸张翻页声；
    未登记/好结局保持官网静默（同既有 AudioMgr 设计，可被 BGM 开关关闭） */
 (function(){
