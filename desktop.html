@@ -819,9 +819,14 @@ function openWin(id){
     cascade = (cascade + 1) % 5;
     var cl = 120 + cascade*28, ct = 60 + cascade*22;
     w.style.left = cl+'px'; w.style.top = ct+'px';
-    if (id === 'browser') { w.style.width = '760px'; w.style.height = '560px'; }
-    else if (id === 'msg') { w.style.width = '860px'; w.style.height = '620px'; }
-    else { w.style.width = '460px'; w.style.height = 'auto'; }
+    if (id === 'browser') {
+      /* 浏览器是主内容界面：打开直接最大化（大屏看官网，减少滚动摩擦）；
+         取消最大化（▢/双击标题栏）时回退到 760×560 基准窗口 */
+      winBaseSize(id, w);
+      w.classList.add('maxed');
+    }
+    else if (id === 'msg') { winBaseSize(id, w); }
+    else { winBaseSize(id, w); }
     w.classList.add('open');
   }
   focusWin(id);
@@ -845,9 +850,20 @@ function minWin(id){
 }
 function maxWin(id){
   var w = document.getElementById('win-'+id);
+  var wasMaxed = w.classList.contains('maxed');
   w.classList.toggle('maxed');
-  if (w.classList.contains('maxed')) { w.style.width=''; w.style.height=''; }
+  if (w.classList.contains('maxed')) {
+    w.style.width=''; w.style.height='';   // 进入最大化：交还 CSS 控制
+  } else if (wasMaxed) {
+    winBaseSize(id, w);                    // 取消最大化：恢复基准尺寸（防窄窗）
+  }
   focusWin(id);
+}
+/* 窗口基准尺寸（openWin 与 maxWin 取消最大化共用） */
+function winBaseSize(id, w){
+  if (id === 'browser') { w.style.width = '760px'; w.style.height = '560px'; }
+  else if (id === 'msg') { w.style.width = '860px'; w.style.height = '620px'; }
+  else { w.style.width = '460px'; w.style.height = 'auto'; }
 }
 function launch(id){ openWin(id); toggleStart(false); }
 
@@ -903,6 +919,10 @@ document.querySelectorAll('.w-titlebar').forEach(function(tb){
     window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up);
   });
   tb.addEventListener('pointerdown', function(){ focusWin(win.id.replace('win-','')); });
+  tb.addEventListener('dblclick', function(e){
+    if (e.target.classList.contains('t-btn')) return;
+    maxWin(win.id.replace('win-',''));   // 双击标题栏：最大化/还原
+  });
 });
 
 /* 双击桌面图标 */

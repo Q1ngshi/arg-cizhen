@@ -94,6 +94,30 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('D1 统计消息含「CE-2009-006」暗示', msgTxt.includes('CE-2009-006'));
   await pd.close();
 
+  /* ================= E：浏览器窗口默认最大化（主内容界面大屏） ================= */
+  console.log('【E 浏览器默认大屏】');
+  const pe = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  track(pe);
+  await pe.goto(BASE + '/desktop.html', { waitUntil: 'networkidle' });
+  await pe.evaluate(() => { localStorage.clear(); localStorage.setItem('cz_admin_ok', '1'); });
+  await pe.reload({ waitUntil: 'networkidle' });
+  await pe.waitForFunction(() => document.querySelectorAll('.icon.locked').length === 0, null, { timeout: 20000 });
+  await pe.dblclick('.icon[data-win="browser"]');
+  await sleep(300);
+  ok('E1 浏览器打开即最大化', await pe.evaluate(() => document.getElementById('win-browser').classList.contains('maxed')));
+  const bw = await pe.locator('#win-browser').boundingBox();
+  ok('E2 大屏宽度 ≈ 视口（非 760 小窗）', bw && bw.width > 1000);
+  // ▢ 取消最大化 → 恢复 760×560 基准
+  await pe.click('#win-browser .t-btn:has-text("▢")');
+  await sleep(200);
+  const bw2 = await pe.locator('#win-browser').boundingBox();
+  ok('E3 取消最大化恢复基准 760×560', bw2 && Math.abs(bw2.width - 760) < 4 && Math.abs(bw2.height - 560) < 4);
+  // 双击标题栏 → 再次最大化
+  await pe.dblclick('#win-browser .w-titlebar');
+  await sleep(200);
+  ok('E4 双击标题栏可最大化', await pe.evaluate(() => document.getElementById('win-browser').classList.contains('maxed')));
+  await pe.close();
+
   await browser.close();
   const errs = errors.filter(e => !e.includes('favicon'));
   console.log(errs.length ? '⚠ 页面错误：\n' + errs.join('\n') : '（无页面 JS 错误）');
