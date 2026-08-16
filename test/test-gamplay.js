@@ -114,7 +114,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await pf.click('#win-archform .btn');
   await sleep(400);
   ok('F3 改 2026 归档：归档完成', (await pf.locator('#archform-fb').textContent()).includes('归档完成'));
-  ok('F3 写入 cz_evt_archive_filed + 任务①✅', await pf.evaluate(() => !!localStorage.getItem('cz_evt_archive_filed') && document.getElementById('task-1').textContent.includes('✅')));
+  ok('F3 写入 cz_evt_archive_filed + 归档记录✅', await pf.evaluate(() => !!localStorage.getItem('cz_evt_archive_filed') && document.getElementById('rec-archform').textContent.includes('✅')));
+  ok('F3 归档后：登记人异常记录出现（发现式）', await pf.evaluate(() => document.getElementById('rec-acct').textContent.includes('已停用')));
   ok('F4 收集进度条存在（已归档异常记录 N/12）', (await pf.locator('#collect-prog').textContent()).match(/已归档异常记录：\d+ \/ 12/));
   await pf.close();
 

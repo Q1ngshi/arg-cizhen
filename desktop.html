@@ -163,6 +163,8 @@ body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; overflow:hidden; 
 .msg-item.m-chenyu .m-name, .msg-item.m-shihongyu .m-name, .msg-item.m-wangpengyue .m-name, .msg-item.m-chenyuyuan .m-name { color:#b8b8c2; }
 .chat-item .c-avatar img, .msg-item .m-avatar img { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
 .task-card { padding:8px 12px; margin:8px 14px 0; border-left:3px solid #7ba7d9; background:#131a26; font-size:12px; color:#c3d2e6; border-radius:2px; flex-shrink:0; }
+.rec-item { font-size:12px; color:#c3d2e6; padding:4px 0; line-height:1.7; }
+.rec-item.done { color:#7fb98a; }
 .task-card.done { border-color:#5fbf8f; color:#7fb98a; }
 #win-msg.locked-hist .msg-item[data-hist] { display:none; }
 .hist-hint { display:none; padding:8px 12px; margin:8px 14px 0; border-left:3px solid #a06a6a; background:#1a1216; font-size:11px; color:#a06a6a; flex-shrink:0; }
@@ -534,9 +536,10 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
       <div id="chat-view">
         <div id="chat-head"><span class="c-avatar">📩</span><span id="chat-head-name">值班员 · 档案科</span></div>
         <div class="task-card" id="task-card">
-          <div id="task-1">📋 任务 1/3：整理今日补录档案 → 打开「待归档文件」核对登记表 → 完成归档</div>
-          <div id="task-2" style="display:none">📋 任务 2/3：核对 05 号档案登记异常（馆藏动态 → 补录通知）</div>
-          <div id="task-3" style="display:none">📋 任务 3/3：07 号档案需门禁密码（调阅限制）</div>
+          <div style="color:#8fa3c0;font-size:11px;letter-spacing:2px;margin-bottom:6px">本班记录</div>
+          <div id="record-list">
+            <div class="rec-item" id="rec-archform">📄 待归档文件：补录登记表（在桌面）</div>
+          </div>
           <div id="collect-prog" style="font-size:11px;color:#5f7090;margin-top:8px;font-family:Consolas,monospace">已归档异常记录：0 / 12</div>
         </div>
         <div class="hist-hint" id="hist-hint">🔒 历史通讯记录需管理员权限</div>
@@ -545,7 +548,7 @@ textarea.notepad { width:100%; height:150px; background:#0d1220; border:1px soli
           <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-15 21:03</span></div><div class="m-body">老陈说17号停电，系统会停半天。正好。</div></div>
           <div class="msg-item m-wang" data-hist="1" data-chat="wang"><div class="m-head"><span class="m-avatar">🗝️</span><span class="m-name">王执事</span><span class="m-time">2009-03-16 23:54</span></div><div class="m-body">明天的事，你我都别露面。</div></div>
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:00</span></div><div class="m-body">账号 xf001 上次登录：2009-03-17 03:00。<br>当前登录：2009-03-17 03:00。</div></div>
-          <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天的补录档案还没整理，桌面有个「待归档文件」——登记表我先按系统记录填了一版，你打开看看，拿不准的对照官网核对，没问题就归档。对了，官网「馆藏动态」里新补录的那条通知，留意一下日期。</div></div>
+          <div class="msg-item m-person" data-hist="1" data-chat="person"><div class="m-head"><span class="m-avatar">📩</span><span class="m-name">值班员 · 档案科</span><span class="m-time">2009-03-17 03:01</span></div><div class="m-body">新来的？我是档案科值班员。今天补录的档案还没整理，桌上有份「待归档文件」——登记表我按系统记录填了一半，有个数拿不准，你核一下。补录通知在官网「馆藏动态」，日期对上了就归档。</div></div>
           <div class="msg-item m-sys" data-hist="1" data-chat="sys"><div class="m-head"><span class="m-avatar">📡</span><span class="m-name">系统</span><span class="m-time">2009-03-17 03:02</span></div><div class="m-body">消息发送失败：接收人账号已注销。</div></div>
           <div class="msg-item m-zhang" data-hist="1" data-chat="zhang" id="shadow-msg-1" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/zhang-xuekuo.svg" alt=""></span><span class="m-name">张学阔</span><span class="m-time">2009-03-17 03:14</span></div><div class="m-body">你点了那行灰字。<br>说明你也看见了那扇没关严的门。<br>2009 年那个人走之前留了话——门后面不只有你。<br>名册上被划掉的人，有些不是死了，是藏进了"登记"和"抹除"之间的缝里。<br>我们管自己叫「有志之士」。<br>我是张学阔。别用系统说话，它看着这里。</div></div>
           <div class="msg-item m-chenyu" data-hist="1" data-chat="chenyu" id="shadow-msg-2" style="display: none"><div class="m-head"><span class="m-avatar"><img src="assets/img/avatars/chen-yu.svg" alt=""></span><span class="m-name">陈誉</span><span class="m-time">2009-03-17 03:16</span></div><div class="m-body">我管 1942 年以前的卷宗。名册每页中间都有一条缝——登记和抹除不是两件事，是一件事的两面。<br>被划掉的人不是死了，是被挪去了「没被记录」那一栏。<br>你去数档案室那面墙，第十三块砖比别的新。下面压着的是那一栏的底账。</div></div>
@@ -1096,17 +1099,14 @@ function checkUnlock(){
       adminToast();
       fireMsg('admin_ok');
       logStage('unlock');   // 先记解锁，再记任务 1（保持 unlock→task1_done 相邻的既有断言）
-      // 任务闭环：任务 1 完成 → 显示任务 2（值班员布置核对）
       if (!task1DoneFlag) {   // 若玩家已通过「待归档文件」完成归档，则不重复/不覆盖
-        var t1 = document.getElementById('task-1');
-        if (t1) { t1.textContent = '✅ 任务 1/3：补录档案已整理，记录已存档。'; t1.style.color = '#7fb98a'; }
+        recAdd('rec-archform', '✅ 补录档案已整理，记录已存档。', true);
         task1DoneFlag = true;
         logStage('task1_done');
       }
-      var t2 = document.getElementById('task-2');
-      if (t2) { t2.style.display = 'block'; }
+      if (!task2Done) recAdd('rec-05', '⚠ 05 号档案补录登记异常：登记人账号已停用（待核对）');   // 若已核对过（动画期间 checkTask2 先跑）则不覆盖 ✅
       playUnlockMelody();
-      fireIncoming('收到。整理记录我已存档。今天补录里那份 05 号档案登记得有点怪，你有空去官网「馆藏动态」再核对一遍。');
+      fireIncoming('收到，整理记录我已存档。对了——05 号补录的登记人账号是 2009-03-17 停用的，2026 年还在补录？你核核那条补录通知，日期对不上。');
     });
   }
 }
@@ -1274,10 +1274,10 @@ function archFormCheck(){
     try { if (!localStorage.getItem('cz_evt_archive_filed')) localStorage.setItem('cz_evt_archive_filed', Date.now()); } catch(e){}
     if (!task1DoneFlag) {
       task1DoneFlag = true;
-      var t1 = document.getElementById('task-1');
-      if (t1) { t1.textContent = '✅ 任务 1/3：补录档案已归档（登记表已核对入档）。'; t1.style.color = '#7fb98a'; }
+      recAdd('rec-archform', '✅ 补录登记表已归档（05 · 2026）', true);
       logStage('task1_done');
     }
+    recAdd('rec-acct', '⚠ 登记人账号状态异常：xf001 · 2009-03-17 已停用');
     playDing();
   } else if (y === '2009') {
     fb.style.color = '#e0b64b';
@@ -1293,7 +1293,24 @@ function updateCollectProg(){
   if (el) el.textContent = '已归档异常记录：' + foundCount() + ' / 12';
 }
 
-/* 值班员主动消息（解锁回执 / 任务布置） */
+/* 本班记录：发现式（行为驱动——发现什么记录什么，无「去哪做什么」指引；ARG 式引导） */
+function recAdd(id, html, done){
+  var list = document.getElementById('record-list');
+  if (!list) return;
+  var el = document.getElementById(id);
+  if (el) {
+    if (html) el.innerHTML = html;
+    if (done !== undefined) el.className = 'rec-item' + (done ? ' done' : '');
+    return;
+  }
+  var d = document.createElement('div');
+  d.className = 'rec-item' + (done ? ' done' : '');
+  d.id = id;
+  d.innerHTML = html;
+  list.appendChild(d);
+}
+
+/* 值班员主动消息（回应式：同事口吻，指向反常而非派任务） */
 function fireIncoming(text){
   var pn = playerName();
   if (pn) text = '（' + pn + '），' + text;
@@ -1460,8 +1477,7 @@ function task3Done(){
   task3DoneFlag = true;
   logStage('task3_done');
   fireMsg('gate3_ok');
-  var t3 = document.getElementById('task-3');
-  if (t3) { t3.textContent = '✅ 任务 3/3：07 号档案已调阅（地下档案室备案记录）。'; t3.style.color = '#7fb98a'; }
+  recAdd('rec-07', '✅ 07 号档案已调阅（地下档案室备案记录）', true);
   playDing();
   fireIncoming('07 号档案你调出来了？看完了别声张。老王说地下室每份东西他都有备份——交接记录在工具里，你整理一下，交给下一位值班员。');
 }
@@ -1475,12 +1491,9 @@ function checkTask2(){
   if (!v) return;
   task2Done = true;
   logStage('task2_done'); logStage('check05');
-  var t2 = document.getElementById('task-2');
-  if (t2) { t2.textContent = '✅ 任务 2/3：05 号档案登记异常已核对。'; t2.style.color = '#7fb98a'; }
-  var t3 = document.getElementById('task-3');
-  if (t3) { t3.style.display = 'block'; }
+  recAdd('rec-05', '✅ 05 号档案登记异常已核对（登记人账号停用属实）', true);
   playDing();
-  fireIncoming('核对结果我看了，登记人确实对不上。先记一笔。还有件事——07 号档案要门禁密码才能调阅，老王走之前留了点东西，你有空查查。');
+  fireIncoming('核对结果我看了，登记人确实对不上，先记一笔。07 号档案要门禁密码——老王走之前留过话，红本里应该有。');
 }
 setInterval(pollEvents, 1000);
 

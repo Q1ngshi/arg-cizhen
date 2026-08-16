@@ -42,8 +42,8 @@ async function try3(fn) {
     await page.dblclick('.icon[data-win="msg"]');
     await page.waitForSelector('#win-msg.open', { timeout: 3000 });
   });
-  const taskText = await page.locator('#task-1').textContent().catch(() => '');
-  step('打开「信息」读任务①', '任务让打开「待归档文件」核对登记表——桌面上有个文件图标', msgOpen, '任务①:' + (taskText || '').slice(0, 36));
+  const taskText = await page.locator('#record-list').textContent().catch(() => '');
+  step('打开「信息」看本班记录', '本班记录：待归档文件（登记表在桌面）——那就是要处理的东西', msgOpen, '记录:' + (taskText || '').replace(/\s+/g, ' ').slice(0, 30));
 
   /* 3. 打开「待归档文件」→ 看表 → 直接归档（预填 2009）→ 应被拦下 */
   const afOpen = await try3(async () => {
@@ -83,8 +83,8 @@ async function try3(fn) {
   });
   const afOk = await page.locator('#archform-fb').textContent().catch(() => '');
   step('改补录年份为 2026 → 归档', '归档成功！系统还提了一句：登记人账号 2009-03-17 已停用？日期对不上，记下', afFix && afOk.includes('归档完成'), '反馈:' + afOk.slice(0, 30) + '… cz_evt_archive_filed:' + await page.evaluate(() => !!localStorage.getItem('cz_evt_archive_filed')));
-  const task1 = await page.locator('#task-1').textContent().catch(() => '');
-  step('任务①完成', '任务卡变绿了——第一次「做事」完成', task1.includes('✅'), '任务卡:' + task1.slice(0, 30));
+  const task1 = await page.locator('#rec-archform').textContent().catch(() => '');
+  step('本班记录更新（归档完成）', '记录里补录登记表打勾了，还多了一条「登记人账号异常」——记下', task1.includes('✅'), '记录:' + task1.slice(0, 26));
 
   /* 6. 继续：检查点①③（红色标题/学员名单）→ 密码门 linyuan */
   const redOk = await try3(async () => { await page.dblclick('.icon[data-win="browser"]'); await frame().locator('.news-tab[data-tab="tab1"]').click(); await frame().locator('.news-item .n-title.alert').first().click(); await sleep(300); });
@@ -176,14 +176,15 @@ async function try3(fn) {
   const dossier3Shown = await frame().locator('#dossier3').evaluate(el => el.classList.contains('show')).catch(() => false);
   step('门禁输入 1942（计算器结果）', '计算器破译的 1942 就是门禁密码', g3b && dossier3Shown, '07 档案解锁:' + dossier3Shown);
 
-  /* 12. 三任务闭环 + 收集进度 */
+  /* 12. 本班记录闭环 + 收集进度 */
   await sleep(1200);
-  const t1 = await page.locator('#task-1').textContent().catch(() => '');
-  const t2 = await page.locator('#task-2').textContent().catch(() => '');
-  const t3 = await page.locator('#task-3').textContent().catch(() => '');
-  const tasksDone = [t1, t2, t3].every(t => (t || '').trim().startsWith('✅'));
+  const recArch = await page.locator('#rec-archform').textContent().catch(() => '');
+  const rec05 = await page.locator('#rec-05').textContent().catch(() => '');
+  const rec07 = await page.locator('#rec-07').textContent().catch(() => '');
+  const recs = [recArch, rec05, rec07];
+  const recsDone = recs.filter(Boolean).every(t => (t || '').trim().startsWith('✅'));
   const prog = await page.locator('#collect-prog').textContent().catch(() => '');
-  step('回桌面看任务卡 + 收集进度', '三个任务都完成了；收集进度条在任务卡下方', tasksDone, [t1, t2, t3].map(t => (t || '').slice(0, 20)).join(' | ') + ' ｜ ' + prog);
+  step('回桌面看本班记录 + 收集进度', '归档✅、05 核对✅、07 调阅✅——三件都完成了；收集进度条在下方', recsDone, recs.map(t => (t || '').slice(0, 20)).join(' | ') + ' ｜ ' + prog);
 
   const stuck = results.filter(r => !r.ok);
   console.log('\n════════════════════════════════════');
