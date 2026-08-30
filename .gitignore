@@ -6,6 +6,9 @@ temp/
 # 测试产物截图
 shots/
 
+# 剧透防护：test/ 含全部密码与通关流程，不进仓库（本地保留，npm test 照常可跑）
+test/
+
 # 系统
 node_modules/
 .DS_Store
